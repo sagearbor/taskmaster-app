@@ -32,6 +32,25 @@ dependencies:
   intl: ^0.18.1
   collection: ^1.17.2
   get_it: ^7.6.0
+  
+  # Location Services
+  geolocator: ^10.1.0
+  permission_handler: ^11.0.1
+  
+  # Monetization
+  google_mobile_ads: ^4.0.0
+  in_app_purchase: ^3.1.11
+  
+  # AR Support
+  ar_flutter_plugin: ^0.7.3
+  
+  # AI Integration
+  http: ^1.1.0
+  
+  # Additional Utils
+  share_plus: ^7.2.1
+  url_launcher: ^6.2.1
+  path_provider: ^2.1.1
 
 dev_dependencies:
   flutter_test:

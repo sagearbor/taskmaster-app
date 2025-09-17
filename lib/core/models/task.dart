@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'submission.dart';
+import 'task_modifier.dart';
 
 enum TaskType { video, puzzle }
 
@@ -10,6 +11,7 @@ class Task extends Equatable {
   final TaskType taskType;
   final String? puzzleAnswer;
   final List<Submission> submissions;
+  final List<TaskModifier> modifiers;
 
   const Task({
     required this.id,
@@ -18,6 +20,7 @@ class Task extends Equatable {
     required this.taskType,
     this.puzzleAnswer,
     required this.submissions,
+    this.modifiers = const [],
   });
 
   factory Task.fromMap(Map<String, dynamic> map) {
@@ -33,6 +36,9 @@ class Task extends Equatable {
       submissions: (map['submissions'] as List<dynamic>?)
           ?.map((e) => Submission.fromMap(e as Map<String, dynamic>))
           .toList() ?? [],
+      modifiers: (map['modifiers'] as List<dynamic>?)
+          ?.map((e) => TaskModifier.fromMap(e as Map<String, dynamic>))
+          .toList() ?? [],
     );
   }
 
@@ -44,6 +50,7 @@ class Task extends Equatable {
       'taskType': taskType.name,
       'puzzleAnswer': puzzleAnswer,
       'submissions': submissions.map((e) => e.toMap()).toList(),
+      'modifiers': modifiers.map((e) => e.toMap()).toList(),
     };
   }
 
@@ -54,6 +61,7 @@ class Task extends Equatable {
     TaskType? taskType,
     String? puzzleAnswer,
     List<Submission>? submissions,
+    List<TaskModifier>? modifiers,
   }) {
     return Task(
       id: id ?? this.id,
@@ -62,6 +70,7 @@ class Task extends Equatable {
       taskType: taskType ?? this.taskType,
       puzzleAnswer: puzzleAnswer ?? this.puzzleAnswer,
       submissions: submissions ?? this.submissions,
+      modifiers: modifiers ?? this.modifiers,
     );
   }
 
@@ -91,6 +100,14 @@ class Task extends Equatable {
            submissions.every((sub) => sub.isJudged);
   }
 
+  int get totalPointsMultiplier {
+    return modifiers.fold(1, (total, modifier) => total * modifier.pointsMultiplier);
+  }
+
+  bool get hasActiveModifiers => modifiers.any((modifier) => modifier.isActive);
+
+  List<TaskModifier> get activeModifiers => modifiers.where((modifier) => modifier.isActive).toList();
+
   @override
   List<Object?> get props => [
         id,
@@ -99,5 +116,6 @@ class Task extends Equatable {
         taskType,
         puzzleAnswer,
         submissions,
+        modifiers,
       ];
 }
