@@ -85,9 +85,10 @@ class _AuthFormState extends State<AuthForm> {
 
         return Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+          child: AutofillGroup(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               if (widget.showDisplayNameField) ...[
                 TextFormField(
                   controller: _displayNameController,
@@ -98,6 +99,8 @@ class _AuthFormState extends State<AuthForm> {
                   validator: _validateDisplayName,
                   enabled: !isLoading,
                   textInputAction: TextInputAction.next,
+                  autocorrect: false,
+                  autofillHints: const [AutofillHints.name],
                 ),
                 const SizedBox(height: 16),
               ],
@@ -111,6 +114,8 @@ class _AuthFormState extends State<AuthForm> {
                 enabled: !isLoading,
                 keyboardType: TextInputType.emailAddress,
                 textInputAction: TextInputAction.next,
+                autocorrect: false,
+                autofillHints: const [AutofillHints.email],
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -134,6 +139,8 @@ class _AuthFormState extends State<AuthForm> {
                 obscureText: !_isPasswordVisible,
                 textInputAction: TextInputAction.done,
                 onFieldSubmitted: (_) => _submit(),
+                autocorrect: false,
+                autofillHints: const [AutofillHints.password],
               ),
               const SizedBox(height: 24),
               ElevatedButton(
@@ -147,6 +154,7 @@ class _AuthFormState extends State<AuthForm> {
                     : Text(widget.buttonText),
               ),
             ],
+            ),
           ),
         );
       },

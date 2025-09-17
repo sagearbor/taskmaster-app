@@ -1,3 +1,10 @@
+/// Entry point for running with mock services only (no Firebase required)
+/// 
+/// Use this to run the app without Firebase setup:
+/// ```bash
+/// flutter run -d chrome -t lib/main_mock.dart
+/// ```
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -29,10 +36,8 @@ void main() async {
 Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Set environment based on build mode
-  AppConfig.setEnvironment(
-    kDebugMode ? Environment.development : Environment.production,
-  );
+  // Set environment to development
+  AppConfig.setEnvironment(Environment.development);
   
   // Initialize error handling
   FlutterError.onError = (details) {
@@ -52,16 +57,8 @@ Future<void> _initializeApp() async {
     DeviceOrientation.portraitDown,
   ]);
   
-  // Initialize service locator
-  await ServiceLocator.init(
-    useMockServices: AppConfig.isDevelopment || BuildConfig.useMockServices,
-  );
-  
-  // Initialize ads service if enabled
-  if (AppConfig.enableAds) {
-    final adService = sl<AdService>();
-    await adService.initialize();
-  }
+  // Initialize service locator with MOCK services only
+  await ServiceLocator.init(useMockServices: true);
 }
 
 class TaskmasterApp extends StatelessWidget {
@@ -73,8 +70,10 @@ class TaskmasterApp extends StatelessWidget {
       title: 'Taskmaster Party App',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const App(),
       debugShowCheckedModeBanner: false,
+      home: const Material(
+        child: App(),
+      ),
     );
   }
 }

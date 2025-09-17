@@ -21,11 +21,15 @@ This is a cross-platform Flutter application for hosting Taskmaster-style party 
 # Create new Flutter project (if not exists)
 flutter create taskmaster_app
 
+# IMPORTANT: Add platform support (required for web/desktop)
+flutter create --platforms=web,linux,windows .
+
 # Install dependencies
 flutter pub get
 
 # Run the app
-flutter run
+flutter run -d chrome  # For web
+flutter run -d linux   # For Linux desktop
 
 # Check Flutter environment
 flutter doctor

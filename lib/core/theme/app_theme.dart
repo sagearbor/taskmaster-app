@@ -39,11 +39,9 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        // Note: shape is set via Card widget directly to avoid compilation issues
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
@@ -83,11 +81,9 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardThemeData(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        // Note: shape is set via Card widget directly to avoid compilation issues
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(

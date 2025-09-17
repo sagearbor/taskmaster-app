@@ -58,15 +58,26 @@ CI/CD & Deployment: Codemagic - To automate the build and release process for th
 git clone <your-repo-url>
 cd taskmaster-app
 
+# IMPORTANT: Add platform support (first time only)
+flutter create --platforms=web,linux,windows .
+
 # Install dependencies
 flutter pub get
 
-# Run on Chrome
+# Option 1: Run with mock services only (no Firebase needed)
+flutter run -d chrome -t lib/main_mock.dart
+
+# Option 2: Run with Firebase (requires Firebase setup)
 flutter run -d chrome
 
 # OR run on web server (opens in any browser)
-flutter run -d web-server --web-port=8080
+flutter run -d web-server --web-port=8080 -t lib/main_mock.dart
+
+# OR run on Linux desktop
+flutter run -d linux -t lib/main_mock.dart
 ```
+
+**Note**: If you get Firebase compilation errors, use `main_mock.dart` which runs the app with mock services only.
 
 ### What Works in Mock Mode
 - ✅ Complete game flow from creation to scoring
