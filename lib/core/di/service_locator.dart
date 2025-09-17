@@ -18,8 +18,8 @@ import '../../features/tasks/data/datasources/task_remote_data_source.dart';
 import '../../features/tasks/data/datasources/mock_task_data_source.dart';
 import '../../features/tasks/data/datasources/firebase_task_data_source.dart';
 
-import '../services/ad_service.dart';
-import '../services/purchase_service.dart';
+import '../services/ad_service_simple.dart';
+import '../services/purchase_service_simple.dart';
 import '../services/ai_task_service.dart';
 
 final GetIt sl = GetIt.instance;

@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+// import 'package:google_mobile_ads/google_mobile_ads.dart'; // Uncomment when ready
 
 abstract class AdService {
   Future<void> initialize();

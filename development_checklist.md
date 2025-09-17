@@ -49,51 +49,57 @@ This entire phase requires no coding. It's about setting up the free accounts an
 ✅ Phase 2: Core App Development (Writing the MVP Code)
 This is where you'll build the app's essential features in Flutter.
 
-[ ] 1. Initialize Flutter Project & Connect Firebase:
+[x] 1. Initialize Flutter Project & Connect Firebase:
 
-[ ] Create a new Flutter project: flutter create taskmaster_app
+[x] Create a new Flutter project: flutter create taskmaster_app
 
-[ ] Add Firebase to your Flutter app using the flutterfire CLI tools.
+[x] Add Firebase packages (ready for configuration)
 
-[ ] 2. Implement Mocking & Service Layers:
+[ ] Configure Firebase using flutterfire CLI tools (requires Firebase project)
 
-[ ] Create abstract service classes for Database and Authentication.
+[x] 2. Implement Mocking & Service Layers:
 
-[ ] Create mock service implementations that return hard-coded data for offline UI development and testing.
+[x] Create abstract service classes for Database and Authentication.
 
-[ ] 3. Build User Authentication:
+[x] Create mock service implementations that return hard-coded data for offline UI development and testing.
 
-[ ] Create a "Login/Register" screen.
+[x] 3. Build User Authentication:
 
-[ ] Implement sign-in logic using the firebase_auth package within your final service.
+[x] Create a "Login/Register" screen.
 
-[ ] Create a "wrapper" widget that shows the Login screen if logged out, and the Home screen if logged in.
+[x] Implement sign-in logic with mock auth service
 
-[ ] 4. Design the Core App Screens:
+[x] Create a "wrapper" widget that shows the Login screen if logged out, and the Home screen if logged in.
 
-[ ] Home Screen: List of games, button to "Create New Game".
+[ ] Connect to real Firebase Auth (requires Firebase setup)
 
-[ ] Create Game Screen: Form to name the game.
+[x] 4. Design the Core App Screens:
 
-[ ] Game Lobby Screen: Shows players, invite code, and tasks. Button for creator to "Start Game".
+[x] Home Screen: List of games, button to "Create New Game".
 
-[ ] Task View Screen: Displays task description. Text field to paste video link and a "Submit" button.
+[x] Create Game Screen: Form to name the game.
 
-[ ] Judging Screen: For the judge. Shows list of submission links. Interface to assign points (e.g., 1 to 5).
+[x] Game Lobby Screen: Shows players, invite code, and tasks. Button for creator to "Start Game".
 
-[ ] Scoreboard Screen: Simple table of player names and total scores.
+[x] Task View Screen: Displays task description. Text field to paste video link and a "Submit" button.
 
-[ ] 5. Implement Firestore Logic (The "Brain"):
+[x] Judging Screen: For the judge. Shows list of submission links. Interface to assign points (e.g., 1 to 5).
 
-[ ] Games Collection: Implement the logic in your FirebaseDataService to manage game documents according to the specified data model.
+[x] Scoreboard Screen: Simple table of player names and total scores.
 
-[ ] Real-Time Updates: Use Firestore's snapshots() (streams) so the UI for all players updates automatically when data changes.
+[x] 5. Implement Firestore Logic (The "Brain"):
 
-[ ] 6. Implement Testing:
+[x] Games Collection: Mock implementation ready
 
-[ ] Write Unit Tests for all business logic (e.g., score calculation).
+[x] Real-Time Updates: Simulated with streams in mock services
 
-[ ] Write Widget Tests for every screen and component, using your mock services.
+[ ] Connect to real Firestore (requires Firebase setup)
+
+[x] 6. Implement Testing:
+
+[x] Write Unit Tests for all business logic (e.g., score calculation).
+
+[x] Write Widget Tests for every screen and component, using your mock services.
 
 ✅ Phase 3-4: Deployment & Launch
 Follow the original Phase 3 (Web) and Phase 4 (Mobile) deployment steps to get the MVP live.
@@ -108,54 +114,70 @@ Follow the original Phase 3 (Web) and Phase 4 (Mobile) deployment steps to get t
 ✅ Phase 6: V2 - Enhancing Gameplay & Community (Novel & Easy)
 Focus on features that dramatically increase fun and replayability with minimal code complexity.
 
-[ ] 1. User-Generated Content (UGC) Tasks:
+[x] 1. User-Generated Content (UGC) Tasks:
 
-[ ] Task Submission: Add a screen where any user can write and submit a task idea to a central community_tasks collection in Firestore.
+[x] Task Submission: Add a screen where any user can write and submit a task idea to a central community_tasks collection.
 
-[ ] Community Task Browser: Create a "Community" tab in the app where users can browse all submitted tasks.
+[x] Community Task Browser: Create a "Community" tab in the app where users can browse all submitted tasks.
 
-[ ] Upvote System: Implement a simple upvote/downvote button for each community task.
+[x] Upvote System: Implement a simple upvote/downvote button for each community task.
 
-[ ] 2. Advanced Game Modes:
+[ ] Connect to real Firestore for persistence (requires Firebase setup)
 
-[ ] Team vs. Team: Add an option during game creation to sort players into teams.
+[x] 2. Advanced Game Modes:
 
-[ ] Secret Individual Tasks: Randomly assign one player a secret side-mission.
+[x] Team vs. Team: Add an option during game creation to sort players into teams.
 
-[ ] 3. Task Modifiers:
+[x] Secret Individual Tasks: Randomly assign one player a secret side-mission (17 secret tasks implemented).
 
-[ ] Before each task begins, randomly apply a "modifier" from a predefined list.
+[x] 3. Task Modifiers:
 
-[ ] 4. Geo-Located Tasks:
+[x] Before each task begins, randomly apply a "modifier" from a predefined list (18 modifiers implemented).
 
-[ ] Integrate a Flutter location package (e.g., geolocator).
+[x] 4. Geo-Located Tasks:
 
-[ ] Create a new task type for physical location-based challenges.
+[x] Integrate a Flutter location package (geolocator).
 
-[ ] 5. Autograded Puzzle Tasks:
+[x] Create a new task type for physical location-based challenges (12 location types).
 
-[ ] Add a new task type ("puzzle") that accepts a text input instead of a video link.
+[ ] Enable actual GPS functionality (requires permissions setup)
 
-[ ] Implement logic to automatically check the submission against a stored answer and award points.
+[x] 5. Autograded Puzzle Tasks:
+
+[x] Add a new task type ("puzzle") that accepts a text input instead of a video link.
+
+[x] Implement logic to automatically check the submission against a stored answer and award points.
 
 ✅ Phase 7: V3 - Monetization & Revenue (The Business Model)
 Introduce revenue streams once the app has a stable, engaged user base.
 
-[ ] 1. Implement In-App Advertising:
+[x] 1. Implement In-App Advertising (MOCK ONLY):
 
-[ ] Integrate the Google AdMob SDK for Flutter.
+[x] Created AdService interface with mock implementation
 
-[ ] Place banner and interstitial ads strategically.
+[x] Placeholder ad spaces in UI (ready for AdMob integration)
 
-[ ] 2. Create "Taskmaster Pro":
+[ ] Integrate the actual Google AdMob SDK for Flutter (production)
 
-[ ] Implement in-app purchases (use a package like RevenueCat).
+[ ] Configure real ad unit IDs (requires AdMob account)
 
-[ ] Offer a subscription or one-time purchase to remove ads.
+[x] 2. Create "Taskmaster Pro" (UI ONLY):
 
-[ ] 3. Curated "Task Packs" (Marketplace V1):
+[x] Store screen with Pro version UI
 
-[ ] Sell themed, high-quality task packs as small, individual in-app purchases.
+[x] Mock purchase flow for testing
+
+[ ] Implement actual in-app purchases (requires store accounts)
+
+[ ] Configure products in Google Play / App Store
+
+[x] 3. Curated "Task Packs" (UI ONLY):
+
+[x] Task pack cards in store interface
+
+[x] Mock purchase buttons
+
+[ ] Actual IAP implementation with real products
 
 [ ] 4. Paid Judge Marketplace:
 

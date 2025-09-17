@@ -21,7 +21,6 @@ dependencies:
   firebase_core: ^2.15.0
   firebase_auth: ^4.7.2
   cloud_firestore: ^4.8.4
-  firebase_hosting: ^0.1.0+1
   
   # UI Components
   cupertino_icons: ^1.0.2
@@ -39,12 +38,12 @@ dependencies:
   geolocator: ^10.1.0
   permission_handler: ^11.0.1
   
-  # Monetization
-  google_mobile_ads: ^4.0.0
-  in_app_purchase: ^3.1.11
+  # Monetization (commented out for initial testing)
+  # google_mobile_ads: ^4.0.0
+  # in_app_purchase: ^3.1.11
   
-  # AR Support
-  ar_flutter_plugin: ^0.7.3
+  # AR Support (commented out - requires additional setup)
+  # ar_flutter_plugin: ^0.7.3
   
   # AI Integration
   http: ^1.1.0

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
 
 import '../../../../core/di/service_locator.dart';
-import '../../../../core/services/purchase_service.dart';
-import '../../../../core/widgets/ad_banner_widget.dart';
+import '../../../../core/services/purchase_service_simple.dart';
+import '../../../../core/widgets/ad_banner_widget_simple.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({super.key});
