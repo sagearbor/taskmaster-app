@@ -18,6 +18,10 @@ import '../../features/tasks/data/datasources/task_remote_data_source.dart';
 import '../../features/tasks/data/datasources/mock_task_data_source.dart';
 import '../../features/tasks/data/datasources/firebase_task_data_source.dart';
 
+import '../services/ad_service.dart';
+import '../services/purchase_service.dart';
+import '../services/ai_task_service.dart';
+
 final GetIt sl = GetIt.instance;
 
 class ServiceLocator {
@@ -56,6 +60,17 @@ class ServiceLocator {
     sl.registerLazySingleton<TaskRepository>(
       () => TaskRepositoryImpl(sl()),
     );
+    
+    // Additional Services
+    if (useMockServices) {
+      sl.registerLazySingleton<AdService>(() => MockAdService());
+      sl.registerLazySingleton<PurchaseService>(() => MockPurchaseService());
+      sl.registerLazySingleton<AITaskService>(() => MockAITaskService());
+    } else {
+      sl.registerLazySingleton<AdService>(() => AdServiceImpl());
+      sl.registerLazySingleton<PurchaseService>(() => PurchaseServiceImpl());
+      sl.registerLazySingleton<AITaskService>(() => AITaskServiceImpl());
+    }
   }
 }
 

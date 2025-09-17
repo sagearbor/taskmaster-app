@@ -32,6 +32,8 @@ dependencies:
   intl: ^0.18.1
   collection: ^1.17.2
   get_it: ^7.6.0
+  shared_preferences: ^2.2.2
+  connectivity_plus: ^5.0.1
   
   # Location Services
   geolocator: ^10.1.0
