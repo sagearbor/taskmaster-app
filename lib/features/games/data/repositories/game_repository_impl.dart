@@ -2,6 +2,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/models/game.dart';
 import '../../../../core/models/player.dart';
+import '../../../../core/models/player_task_status.dart';
 import '../../../../core/models/submission.dart';
 import '../../../../core/models/task.dart';
 import '../../domain/repositories/game_repository.dart';
@@ -65,9 +66,60 @@ class GameRepositoryImpl implements GameRepository {
 
   @override
   Future<void> startGame(String gameId) async {
-    await remoteDataSource.updateGame(gameId, {
-      'status': GameStatus.inProgress.name,
-    });
+    // Load the current game state
+    final game = await remoteDataSource.getGame(gameId);
+
+    if (game == null) {
+      throw Exception('Game not found');
+    }
+
+    // Validate game can be started
+    if (game.players.length < 2) {
+      throw Exception('Need at least 2 players to start');
+    }
+
+    if (game.tasks.isEmpty) {
+      throw Exception('Need at least 1 task to start');
+    }
+
+    // Initialize playerStatuses for all tasks
+    final updatedTasks = game.tasks.map((task) {
+      final playerStatuses = <String, PlayerTaskStatus>{};
+
+      for (final player in game.players) {
+        playerStatuses[player.userId] = PlayerTaskStatus(
+          playerId: player.userId,
+          state: TaskPlayerState.not_started,
+        );
+      }
+
+      return task.copyWith(
+        playerStatuses: playerStatuses,
+        status: TaskStatus.waiting_for_submissions,
+      );
+    }).toList();
+
+    // Calculate deadline for first task (if settings specify)
+    DateTime? firstTaskDeadline;
+    if (game.settings.taskDeadlineHours != null) {
+      firstTaskDeadline = DateTime.now().add(
+        Duration(hours: game.settings.taskDeadlineHours!),
+      );
+    }
+
+    // Update first task with deadline
+    if (updatedTasks.isNotEmpty && firstTaskDeadline != null) {
+      updatedTasks[0] = updatedTasks[0].copyWith(deadline: firstTaskDeadline);
+    }
+
+    // Update game to in-progress with initialized tasks
+    final updatedGame = game.copyWith(
+      status: GameStatus.inProgress,
+      tasks: updatedTasks,
+      currentTaskIndex: 0,
+    );
+
+    await updateGame(gameId, updatedGame);
   }
 
   @override
