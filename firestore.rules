@@ -1,0 +1,54 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper function to check if user is authenticated (including anonymous)
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper function to check if user is the game creator
+    function isGameCreator(gameData) {
+      return isSignedIn() && request.auth.uid == gameData.creatorId;
+    }
+
+    // Helper function to check if user is the game judge
+    function isGameJudge(gameData) {
+      return isSignedIn() && request.auth.uid == gameData.judgeId;
+    }
+
+    // Games collection rules
+    match /games/{gameId} {
+      // Anyone authenticated can read any game (needed for join by invite code)
+      allow read: if isSignedIn();
+
+      // Any authenticated user can create a game
+      allow create: if isSignedIn() &&
+                       request.resource.data.creatorId == request.auth.uid;
+
+      // Allow updates if:
+      // - User is the creator
+      // - User is the judge
+      // - Any authenticated user (for joining games and updating game state)
+      allow update: if isSignedIn();
+
+      // Only creator can delete a game
+      allow delete: if isSignedIn() && isGameCreator(resource.data);
+    }
+
+    // Users collection rules (if needed)
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Community tasks collection rules
+    match /community_tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn();
+    }
+  }
+}
