@@ -1,15 +1,50 @@
-// Web-safe Firebase Auth implementation
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'auth_remote_data_source.dart';
-import 'mock_auth_data_source.dart';
 
-// Conditional implementation that falls back to mock if Firebase isn't available
-class FirebaseAuthDataSource extends MockAuthDataSource implements AuthRemoteDataSource {
+class FirebaseAuthDataSource implements AuthRemoteDataSource {
+  final firebase_auth.FirebaseAuth _firebaseAuth;
+
   FirebaseAuthDataSource({
-    dynamic firebaseAuth,
-    dynamic firestore,
-  }) : super();
-  
-  // All methods inherited from MockAuthDataSource
-  // Will be replaced with real Firebase implementation when properly configured
+    firebase_auth.FirebaseAuth? firebaseAuth,
+  }) : _firebaseAuth = firebaseAuth ?? firebase_auth.FirebaseAuth.instance;
+
+  @override
+  Stream<String?> get authStateChanges {
+    return _firebaseAuth.authStateChanges().map((user) => user?.uid);
+  }
+
+  @override
+  Future<String> signInWithEmailAndPassword(String email, String password) async {
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return credential.user!.uid;
+  }
+
+  @override
+  Future<String> createUserWithEmailAndPassword(String email, String password) async {
+    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return credential.user!.uid;
+  }
+
+  @override
+  Future<String> signInAnonymously() async {
+    final credential = await _firebaseAuth.signInAnonymously();
+    return credential.user!.uid;
+  }
+
+  @override
+  Future<void> signOut() async {
+    await _firebaseAuth.signOut();
+  }
+
+  @override
+  String? getCurrentUserId() {
+    return _firebaseAuth.currentUser?.uid;
+  }
 }

@@ -31,7 +31,13 @@ class GameRepositoryImpl implements GameRepository {
       'status': GameStatus.lobby.name,
       'inviteCode': _generateInviteCode(),
       'createdAt': DateTime.now().toIso8601String(),
-      'players': [],
+      'players': [
+        {
+          'userId': creatorId,
+          'displayName': 'Creator', // Will be updated with actual name
+          'totalScore': 0,
+        }
+      ],
       'tasks': [],
       // Add missing required fields
       'mode': GameMode.async.name,

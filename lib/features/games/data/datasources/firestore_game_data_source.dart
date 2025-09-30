@@ -51,17 +51,34 @@ class FirestoreGameDataSource implements GameRemoteDataSource {
 
   @override
   Future<String> createGame(Map<String, dynamic> gameData) async {
-    // Remove id if present (Firestore will generate it)
-    final data = Map<String, dynamic>.from(gameData);
-    final id = data.remove('id');
+    try {
+      developer.log('=== CREATE GAME DEBUG ===');
+      developer.log('Input data: ${gameData.toString()}');
 
-    // Use provided ID or let Firestore generate one
-    if (id != null && id.isNotEmpty) {
-      await _firestore.collection(_gamesCollection).doc(id).set(data);
-      return id;
-    } else {
-      final docRef = await _firestore.collection(_gamesCollection).add(data);
-      return docRef.id;
+      // Remove id if present (Firestore will generate it)
+      final data = Map<String, dynamic>.from(gameData);
+      final id = data.remove('id');
+
+      developer.log('Data to write (without id): ${data.toString()}');
+      developer.log('User ID: ${_auth.currentUser?.uid}');
+      developer.log('User isAnonymous: ${_auth.currentUser?.isAnonymous}');
+
+      // Use provided ID or let Firestore generate one
+      if (id != null && id.isNotEmpty) {
+        developer.log('Using provided ID: $id');
+        await _firestore.collection(_gamesCollection).doc(id).set(data);
+        developer.log('Successfully created game with ID: $id');
+        return id;
+      } else {
+        developer.log('Letting Firestore generate ID');
+        final docRef = await _firestore.collection(_gamesCollection).add(data);
+        developer.log('Successfully created game with auto-generated ID: ${docRef.id}');
+        return docRef.id;
+      }
+    } catch (e, stackTrace) {
+      developer.log('ERROR creating game: $e');
+      developer.log('Stack trace: $stackTrace');
+      rethrow;
     }
   }
 
