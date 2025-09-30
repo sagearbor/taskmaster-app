@@ -213,7 +213,28 @@ Ambitious, "moonshot" features that would require significant R&D and likely mov
 
 [ ] A server-side process could then automatically stitch these clips together into a highlight reel.
 
-[ ] 3. 3D Avatar Social System:
+[ ] 3. Task Icons/Images System:
+
+[ ] Add visual icons or images to each task to make them more engaging
+
+**Implementation Options:**
+- **Option A: Icon Mapping** - Use Material Icons or emoji based on keywords
+  - Regex/keyword detection: "cook" → 🍳, "run" → 🏃, "draw" → 🎨
+  - Simple mapping in code: `taskIconMap = {"cooking": Icons.restaurant, ...}`
+
+- **Option B: AI Image Generation** - Use DALL-E/Midjourney API
+  - Generate unique image per task on creation
+  - Store in Firebase Storage
+  - More expensive but unique visuals
+
+- **Option C: Icon Library** - Curated icon set from Noun Project/Flaticon
+  - Download ~500 task-related icons
+  - Store in assets, map by category
+  - One-time cost, good performance
+
+**Recommended:** Option A (keyword → emoji/icon) for MVP, then Option C for polish
+
+[ ] 4. 3D Avatar Social System:
 
 [ ] Create 3D animated avatars with user profile photos as heads that interact on the home screen.
 
