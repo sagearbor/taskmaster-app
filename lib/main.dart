@@ -1,67 +1,30 @@
-import 'package:flutter/foundation.dart';
+/// Main entry point for Taskmaster Party App
+/// Run with: flutter run -d chrome
+
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/di/service_locator.dart';
-import 'core/config/environment.dart';
-import 'core/error/error_handler.dart';
-import 'core/cache/cache_manager.dart';
-import 'core/utils/performance.dart' as perf;
-import 'core/services/ad_service_simple.dart';
-import 'features/app/presentation/app.dart';
+import 'features/auth/domain/repositories/auth_repository.dart';
+import 'features/auth/presentation/bloc/auth_bloc.dart';
+import 'features/auth/presentation/screens/login_screen.dart';
+import 'features/home/presentation/screens/home_screen.dart';
 
 void main() async {
-  await _initializeApp();
-  
-  runApp(
-    ErrorBoundary(
-      child: perf.PerformanceOverlay(
-        enabled: AppConfig.isDevelopment,
-        child: const TaskmasterApp(),
-      ),
-    ),
-  );
-}
-
-Future<void> _initializeApp() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Set environment based on build mode
-  AppConfig.setEnvironment(
-    kDebugMode ? Environment.development : Environment.production,
+
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  
-  // Initialize error handling
-  FlutterError.onError = (details) {
-    ErrorHandler.handleError(
-      details.exception,
-      details.stack,
-      context: 'Flutter Framework',
-    );
-  };
-  
-  // Initialize cache manager
-  await CacheManager.instance;
-  
-  // Set preferred orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  
-  // Initialize service locator
-  await ServiceLocator.init(
-    useMockServices: AppConfig.isDevelopment || BuildConfig.useMockServices,
-  );
-  
-  // Initialize ads service if enabled
-  if (AppConfig.enableAds) {
-    final adService = sl<AdService>();
-    await adService.initialize();
-  }
+
+  // Initialize services with mocks (Firebase data sources not yet implemented)
+  await ServiceLocator.init(useMockServices: true);
+
+  runApp(const TaskmasterApp());
 }
 
 class TaskmasterApp extends StatelessWidget {
@@ -73,8 +36,39 @@ class TaskmasterApp extends StatelessWidget {
       title: 'Taskmaster Party App',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const App(),
       debugShowCheckedModeBanner: false,
+      home: BlocProvider(
+        create: (context) => AuthBloc(
+          authRepository: sl<AuthRepository>(),
+        )..add(AuthCheckRequested()),
+        child: const AuthScreen(),
+      ),
+    );
+  }
+}
+
+class AuthScreen extends StatelessWidget {
+  const AuthScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
+
+        if (state is AuthAuthenticated) {
+          return const HomeScreen();
+        }
+
+        // Default to login screen
+        return const LoginScreen();
+      },
     );
   }
 }

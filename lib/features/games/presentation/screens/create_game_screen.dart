@@ -127,15 +127,20 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
               const SizedBox(height: 32),
               TextFormField(
                 controller: _gameNameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Game Name',
                   hintText: 'Enter a fun name for your game',
-                  prefixIcon: Icon(Icons.sports_esports),
+                  helperText: 'At least 3 characters required',
+                  prefixIcon: const Icon(Icons.sports_esports),
+                  suffixIcon: _gameNameController.text.length >= 3
+                      ? const Icon(Icons.check_circle, color: Colors.green)
+                      : null,
                 ),
                 validator: _validateGameName,
                 enabled: !_isLoading,
                 textInputAction: TextInputAction.next,
                 maxLength: 50,
+                onChanged: (value) => setState(() {}), // Rebuild to show check icon
               ),
               const SizedBox(height: 24),
               Text(

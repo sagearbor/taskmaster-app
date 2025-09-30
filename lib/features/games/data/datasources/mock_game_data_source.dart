@@ -126,8 +126,13 @@ class MockGameDataSource implements GameRemoteDataSource {
   }
 
   @override
-  Stream<List<Map<String, dynamic>>> getGamesStream() {
-    return _gamesController.stream;
+  Stream<List<Map<String, dynamic>>> getGamesStream() async* {
+    // Emit initial data immediately
+    yield List.from(_games);
+    // Then emit all future updates
+    await for (final games in _gamesController.stream) {
+      yield games;
+    }
   }
 
   @override
