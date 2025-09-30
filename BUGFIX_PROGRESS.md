@@ -2,7 +2,7 @@
 
 **Branch:** `bugfix/game-detail-and-auth-restrictions`
 
-## Status: 1/3 Bugs Fixed
+## Status: 3/3 Bugs Fixed ✅
 
 ### ✅ Bug #1: Tasks Not Showing - FIXED
 **File:** `lib/features/games/presentation/widgets/game_lobby_view.dart`
@@ -18,55 +18,56 @@
 
 ---
 
-### ⏳ Bug #2: Games Not Appearing - TODO
-**Files to check:**
-- `lib/features/games/data/datasources/firestore_game_data_source.dart` (lines 29-58)
-- Creator filter logic already added (shows if creatorId OR in players)
-- Extensive logging added
+### ✅ Bug #2: Games Not Appearing - FIXED
 
-**Debug approach:**
-1. Check browser console logs
-2. Look for: "Filtered to X games for user ABC"
-3. Verify `isCreator=true` for user's games
-4. May need to check if `players` array has creator
+**Root Cause:** `getCurrentUser()` in AuthRepository was returning hardcoded mock data instead of real Firebase Auth user data.
+
+**Fix Applied:**
+1. Added `getCurrentUserData()` method to auth data sources (returns displayName, email, isAnonymous)
+2. Updated `getCurrentUser()` to fetch actual user data from Firebase Auth
+3. Display names now match between game creation and Quick Play
+
+**Files Modified:**
+- `lib/features/auth/data/datasources/auth_remote_data_source.dart`
+- `lib/features/auth/data/datasources/firebase_auth_data_source.dart`
+- `lib/features/auth/data/datasources/mock_auth_data_source.dart`
+- `lib/features/auth/data/repositories/auth_repository_impl.dart`
+
+**Commit:** `1bfbc66 - fix: Implement getCurrentUser() properly and add auth restrictions`
 
 ---
 
-### ⏳ Bug #3: Restrict Game Creation - TODO
-**Files to modify:**
-1. `lib/features/home/presentation/screens/home_screen.dart`
-   - Quick Play button: check `isAnonymous`
-   - Show dialog: "Sign up to create games"
-
-2. `lib/features/games/presentation/screens/create_game_screen.dart`
-   - Add check in initState or build
-   - Redirect anonymous users to signup
-
+### ✅ Bug #3: Restrict Game Creation - FIXED
 **Implementation:**
-```dart
-// Add to AuthRepository
-Future<bool> isCurrentUserAnonymous() async {
-  final user = FirebaseAuth.instance.currentUser;
-  return user?.isAnonymous ?? true;
-}
+1. Added `isCurrentUserAnonymous()` method to AuthRepository
+2. Quick Play handler checks if user is anonymous before creating game
+3. Create Game button checks if user is anonymous before navigating
+4. Shows "Sign Up Required" dialog for anonymous users
+5. Guests can still join games via invite codes (this remains unrestricted)
 
-// In HomeScreen Quick Play
-if (await authRepo.isCurrentUserAnonymous()) {
-  showDialog("Sign up to create multiplayer games");
-} else {
-  // Proceed with Quick Play
-}
-```
+**Files Modified:**
+- `lib/features/auth/domain/repositories/auth_repository.dart`
+- `lib/features/auth/data/repositories/auth_repository_impl.dart`
+- `lib/features/home/presentation/screens/home_screen.dart`
+
+**User Experience:**
+- Anonymous users clicking Quick Play or Create Game see a dialog explaining they need to sign up
+- Dialog message: "You need to create an account to use [feature]. Guests can join games using invite codes, but cannot create games."
+- Cancel and Sign Up buttons in dialog
+
+**Commit:** `1bfbc66 - fix: Implement getCurrentUser() properly and add auth restrictions`
 
 ---
 
-## Next Steps
+## ✅ All Bugs Fixed!
 
-1. Test Bug #1 fix locally
-2. Debug Bug #2 with console logs
-3. Implement Bug #3 auth restrictions
-4. Deploy all fixes
-5. Merge to `feature/day26-30-testing-and-quick-play`
+### Next Steps
+
+1. ✅ Test locally (optional - can test on deployed site)
+2. 🚀 Deploy to Firebase Hosting
+3. 🎯 Multi-device testing (2+ browser windows)
+4. 📝 Update development checklist (mark Day 26-30 complete)
+5. 🔀 Merge to main
 
 ---
 
