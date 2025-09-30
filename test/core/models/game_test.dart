@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:taskmaster_app/core/models/game.dart';
+import 'package:taskmaster_app/core/models/game_settings.dart';
 import 'package:taskmaster_app/core/models/player.dart';
 import 'package:taskmaster_app/core/models/task.dart';
 
@@ -43,6 +44,7 @@ void main() {
         createdAt: DateTime.now(),
         players: testPlayers,
         tasks: testTasks,
+        settings: const GameSettings(),
       );
     });
 
@@ -132,6 +134,7 @@ void main() {
         createdAt: testGame.createdAt,
         players: testGame.players,
         tasks: testGame.tasks,
+        settings: testGame.settings,
       );
 
       expect(testGame, equals(identicalGame));

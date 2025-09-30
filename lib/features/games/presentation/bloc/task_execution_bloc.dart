@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../../../../core/models/player_task_status.dart';
+import '../../../../core/models/task.dart';
 import 'task_execution_event.dart';
 import 'task_execution_state.dart';
 

@@ -121,71 +121,71 @@
 
 ---
 
-#### **Day 5-7: Task Execution Screen** ⬜ NOT STARTED
-- [ ] **File:** `lib/features/games/presentation/screens/task_execution_screen.dart` (NEW)
-  - [ ] Accept params: `gameId`, `taskIndex`, `userId`
-  - [ ] Load task from game
-  - [ ] Check if user already submitted → show "Already submitted ✅" state
-  - [ ] Display:
-    - [ ] Task title + description
-    - [ ] Task number (2 of 5)
-    - [ ] Optional: Timer widget (countdown for task duration)
-    - [ ] Optional: Deadline ("Submit by: Tomorrow 6pm")
-    - [ ] Submission progress widget (3/5 players done)
-    - [ ] Input field for video URL (YouTube, Google Photos, etc.)
-    - [ ] "Skip Task" button (if game.settings.allowSkips)
-    - [ ] "Submit" button (disabled until URL entered)
-  - [ ] On submit:
-    - [ ] Validate URL format
-    - [ ] Update playerStatuses[userId] to submitted
-    - [ ] Show success animation
-    - [ ] **🔒 PRIVACY:** Unlock video viewing for this user
-    - [ ] Navigate to video viewing screen OR next task
+#### **Day 5-7: Task Execution Screen** ✅ COMPLETED
+- [x] **File:** `lib/features/games/presentation/screens/task_execution_screen.dart` ✅
+  - [x] Accept params: `gameId`, `taskIndex`, `userId`
+  - [x] Load task from game
+  - [x] Check if user already submitted → show "Already submitted ✅" state
+  - [x] Display:
+    - [x] Task title + description
+    - [x] Task number (2 of 5)
+    - [x] Timer widget (countdown for task duration)
+    - [x] Deadline ("Submit by: Tomorrow 6pm")
+    - [x] Submission progress widget (3/5 players done)
+    - [x] Input field for video URL (YouTube, Google Photos, etc.)
+    - [x] "Skip Task" button (if game.settings.allowSkips)
+    - [x] "Submit" button (disabled until URL entered)
+  - [x] On submit:
+    - [x] Validate URL format
+    - [x] Update playerStatuses[userId] to submitted
+    - [x] Show success animation
+    - [x] **🔒 PRIVACY:** Unlock video viewing for this user
+    - [x] Navigate to video viewing screen OR next task
   - [ ] **💡 IMPROVEMENT:** Add camera integration for direct video recording
   - [ ] **💡 IMPROVEMENT:** Add preview thumbnail from YouTube/Google Photos API
 
-- [ ] **File:** `lib/features/games/presentation/bloc/task_execution_bloc.dart` (NEW)
-  - [ ] Events:
-    - [ ] LoadTask(gameId, taskIndex, userId)
-    - [ ] StartTask(userId) - marks in_progress
-    - [ ] SubmitTask(userId, videoUrl) - marks submitted
-    - [ ] SkipTask(userId) - marks skipped
-  - [ ] States:
-    - [ ] TaskExecutionLoading
-    - [ ] TaskExecutionLoaded(task, userStatus, otherPlayerStatuses)
-    - [ ] TaskExecutionSubmitted
-    - [ ] TaskExecutionError(message)
-  - [ ] **⚠️ TODO:** Handle network errors gracefully
+- [x] **File:** `lib/features/games/presentation/bloc/task_execution_bloc.dart` ✅
+  - [x] Events:
+    - [x] LoadTask(gameId, taskIndex, userId)
+    - [x] StartTask(userId) - marks in_progress
+    - [x] SubmitTask(userId, videoUrl) - marks submitted
+    - [x] SkipTask(userId) - marks skipped
+  - [x] States:
+    - [x] TaskExecutionLoading
+    - [x] TaskExecutionLoaded(task, userStatus, otherPlayerStatuses)
+    - [x] TaskExecutionSubmitted
+    - [x] TaskExecutionError(message)
+  - [x] Handle network errors gracefully
   - [ ] **💡 IMPROVEMENT:** Add offline mode (queue submissions)
 
-- [ ] **File:** `lib/features/games/presentation/widgets/task_timer_widget.dart` (NEW)
-  - [ ] Circular countdown timer
-  - [ ] Shows remaining time (0:42)
-  - [ ] Color changes: green → yellow → red
-  - [ ] Haptic feedback at 10s, 5s, 0s (if mobile)
-  - [ ] Auto-submit warning when time expires
+- [x] **File:** `lib/features/games/presentation/widgets/task_timer_widget.dart` ✅
+  - [x] Circular countdown timer
+  - [x] Shows remaining time (0:42)
+  - [x] Color changes: green → yellow → red
+  - [x] Haptic feedback at 10s, 5s, 0s (if mobile)
+  - [x] Auto-submit warning when time expires
   - [ ] **💡 IMPROVEMENT:** Add pause/resume for timer
 
-- [ ] **File:** `lib/features/games/presentation/widgets/submission_progress_widget.dart` (NEW)
-  - [ ] Shows player list with status icons
-  - [ ] Icons: ✅ submitted, ⏳ in progress, ⬜ not started
-  - [ ] Current user highlighted with border
-  - [ ] Live updates via stream
-  - [ ] **💡 IMPROVEMENT:** Add avatars (first letter of name)
-  - [ ] **💡 IMPROVEMENT:** Show timestamp of submission
+- [x] **File:** `lib/features/games/presentation/widgets/submission_progress_widget.dart` ✅
+  - [x] Shows player list with status icons
+  - [x] Icons: ✅ submitted, ⏳ in progress, ⬜ not started
+  - [x] Current user highlighted with border
+  - [x] Live updates via stream
+  - [x] Add avatars (first letter of name)
+  - [x] Show timestamp of submission
 
-- [ ] **File:** `lib/features/games/presentation/screens/video_viewing_screen.dart` (NEW)
-  - [ ] **🔒 PRIVACY CHECK:** Only show if user has submitted
-  - [ ] Grid of video links (clickable)
-  - [ ] Player name labels
-  - [ ] "Open in browser" button for each video
+- [x] **File:** `lib/features/games/presentation/screens/video_viewing_screen.dart` ✅
+  - [x] **🔒 PRIVACY CHECK:** Only show if user has submitted
+  - [x] Grid of video links (clickable)
+  - [x] Player name labels
+  - [x] "Open in browser" button for each video
   - [ ] **💡 IMPROVEMENT:** Embedded video player (webview_flutter)
   - [ ] **💡 IMPROVEMENT:** Add reactions (😂🔥💀) to videos
 
-- [ ] **Tests:** `test/features/games/presentation/`
-  - [ ] task_execution_bloc_test.dart - test all events/states
-  - [ ] task_execution_screen_test.dart - widget test
-  - [ ] video_viewing_screen_test.dart - test privacy logic
+- [x] **Tests:** `test/features/games/presentation/` ✅
+  - [x] task_execution_bloc_test.dart - test all events/states (9 tests passing)
+  - [ ] task_execution_screen_test.dart - widget test (deferred)
+  - [ ] video_viewing_screen_test.dart - test privacy logic (deferred)
 
 **Comments:**
 - URL validation regex needed for YouTube, Google Photos, Dropbox, etc.

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/game.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../screens/task_execution_screen.dart';
 
 class GameInProgressView extends StatelessWidget {
   final Game game;
@@ -182,12 +185,27 @@ class GameInProgressView extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                trailing: isCompleted 
+                                trailing: isCompleted
                                     ? const Icon(Icons.check_circle, color: Colors.green)
                                     : const Icon(Icons.arrow_forward_ios),
                                 onTap: () {
-                                  // Navigate to task detail screen
-                                  // TODO: Implement task detail navigation
+                                  final authState = context.read<AuthBloc>().state;
+                                  final userId = authState is AuthAuthenticated
+                                      ? authState.user.uid
+                                      : '';
+
+                                  // Check if user has submitted
+                                  final userStatus = task.getPlayerStatus(userId);
+                                  final hasSubmitted = userStatus?.hasSubmitted ?? false;
+
+                                  Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => TaskExecutionScreen(
+                                        gameId: game.id,
+                                        taskIndex: index,
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                             );
