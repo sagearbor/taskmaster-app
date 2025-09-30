@@ -10,6 +10,9 @@ part 'game_detail_state.dart';
 
 class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
   final GameRepository gameRepository;
+  String? _currentGameId;
+
+  String? get gameId => _currentGameId;
 
   GameDetailBloc({required this.gameRepository}) : super(GameDetailInitial()) {
     on<LoadGameDetail>(_onLoadGameDetail);
@@ -23,6 +26,7 @@ class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
 
   void _onLoadGameDetail(LoadGameDetail event, Emitter<GameDetailState> emit) {
     print('[GameDetailBloc] Loading game: ${event.gameId}');
+    _currentGameId = event.gameId;
     emit(GameDetailLoading());
 
     gameRepository.getGameStream(event.gameId).listen(

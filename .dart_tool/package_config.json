@@ -608,6 +608,12 @@
       "languageVersion": "3.5"
     },
     {
+      "name": "shimmer",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/shimmer-3.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
+    },
+    {
       "name": "sky_engine",
       "rootUri": "file:///home/scb2/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
