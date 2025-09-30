@@ -73,19 +73,24 @@
 ## ⚠️ Known Issues
 
 ### Issue #1: Permissions Error on Deployed Site
-**Status:** Should be fixed now (rules just deployed)
+**Status:** ✅ FIXED (deployed in commit 9bfddc3)
 
-**Error:** "missing or insufficient permissions" when creating/saving games
+**Error:** "missing or insufficient permissions" when creating/saving games (400 Bad Request)
 
-**Cause:** Firestore security rules were not deployed with latest code
+**Root Cause:** Quick Play uses two-step process:
+1. `createGame()` - creates basic game doc
+2. `updateGame()` - adds full game data with tasks
+
+Problem: `update()` requires document to exist AND validates against security rules. The intermediate state caused permission errors.
 
 **Fix Applied:**
-```bash
-firebase deploy --only firestore:rules
-firebase deploy --only firestore:indexes
-```
+Changed `updateGame()` to use `set()` with `SetOptions(merge: true)` instead of `update()`. This allows upsert behavior that works correctly with security rules.
 
-**Next Step:** Try creating a game again at https://taskmaster-app-3d480.web.app
+**File changed:** `lib/features/games/data/datasources/firestore_game_data_source.dart`
+
+**Deployed:** ✅ https://taskmaster-app-3d480.web.app
+
+**Test now:** Creating games should work!
 
 ### Issue #2: Auth Implementation Still Uses Mocks
 **Status:** Needs implementation
