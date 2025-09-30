@@ -67,7 +67,12 @@ class FirestoreGameDataSource implements GameRemoteDataSource {
 
   @override
   Future<void> updateGame(String gameId, Map<String, dynamic> updates) async {
-    await _firestore.collection(_gamesCollection).doc(gameId).update(updates);
+    // Use set with merge to handle both create and update cases
+    // This is needed for Quick Play which creates then immediately updates
+    await _firestore.collection(_gamesCollection).doc(gameId).set(
+      updates,
+      SetOptions(merge: true),
+    );
   }
 
   @override
