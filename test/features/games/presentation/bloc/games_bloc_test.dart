@@ -2,6 +2,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:taskmaster_app/core/models/game.dart';
+import 'package:taskmaster_app/core/models/game_settings.dart';
 import 'package:taskmaster_app/core/models/player.dart';
 import 'package:taskmaster_app/features/games/domain/repositories/game_repository.dart';
 import 'package:taskmaster_app/features/games/presentation/bloc/games_bloc.dart';
@@ -31,6 +32,7 @@ void main() {
             const Player(userId: 'user1', displayName: 'Alice', totalScore: 0),
           ],
           tasks: [],
+          settings: const GameSettings(),
         ),
         Game(
           id: 'game2',
@@ -44,6 +46,7 @@ void main() {
             const Player(userId: 'user2', displayName: 'Bob', totalScore: 15),
           ],
           tasks: [],
+          settings: const GameSettings(),
         ),
       ];
     });
