@@ -85,10 +85,9 @@ class _AuthFormState extends State<AuthForm> {
 
         return Form(
           key: _formKey,
-          child: AutofillGroup(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               if (widget.showDisplayNameField) ...[
                 TextFormField(
                   controller: _displayNameController,
@@ -154,7 +153,6 @@ class _AuthFormState extends State<AuthForm> {
                     : Text(widget.buttonText),
               ),
             ],
-            ),
           ),
         );
       },
