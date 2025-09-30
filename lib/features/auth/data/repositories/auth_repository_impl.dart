@@ -43,11 +43,16 @@ class AuthRepositoryImpl implements AuthRepository {
     final userId = getCurrentUserId();
     if (userId == null) return null;
 
-    // In a real implementation, this would fetch user data from Firestore
+    // Get actual user data from data source
+    final userData = remoteDataSource.getCurrentUserData();
+    if (userData == null) return null;
+
     return User(
       id: userId,
-      displayName: 'Current User',
-      email: 'user@example.com',
+      displayName: userData['displayName'] ??
+                   userData['email']?.split('@')[0] ??
+                   (userData['isAnonymous'] == true ? 'Guest' : 'User'),
+      email: userData['email'],
       createdAt: DateTime.now(),
     );
   }
@@ -61,5 +66,11 @@ class AuthRepositoryImpl implements AuthRepository {
       email: null,
       createdAt: DateTime.now(),
     );
+  }
+
+  @override
+  bool isCurrentUserAnonymous() {
+    final userData = remoteDataSource.getCurrentUserData();
+    return userData?['isAnonymous'] == true;
   }
 }

@@ -8,4 +8,5 @@ abstract class AuthRepository {
   Future<void> signOut();
   String? getCurrentUserId();
   Future<User?> getCurrentUser();
+  bool isCurrentUserAnonymous();
 }

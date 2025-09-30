@@ -86,6 +86,17 @@ class MockAuthDataSource implements AuthRemoteDataSource {
     return _currentUserId;
   }
 
+  @override
+  Map<String, dynamic>? getCurrentUserData() {
+    if (_currentUserId == null) return null;
+
+    return {
+      'displayName': 'Mock User',
+      'email': 'mock@example.com',
+      'isAnonymous': _currentUserId!.startsWith('mock_anon_'),
+    };
+  }
+
   void dispose() {
     _authStateController.close();
   }

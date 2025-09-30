@@ -5,4 +5,5 @@ abstract class AuthRemoteDataSource {
   Future<String> signInAnonymously();
   Future<void> signOut();
   String? getCurrentUserId();
+  Map<String, dynamic>? getCurrentUserData(); // Returns displayName, email, isAnonymous
 }

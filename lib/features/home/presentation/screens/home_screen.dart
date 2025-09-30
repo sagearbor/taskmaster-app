@@ -73,7 +73,7 @@ class HomeView extends StatelessWidget {
         elevation: 4,
         child: InkWell(
           onTap: () {
-            context.read<GamesBloc>().add(const QuickPlayGame());
+            _handleQuickPlay(context);
           },
           borderRadius: BorderRadius.circular(12),
           child: Container(
@@ -161,15 +161,7 @@ class HomeView extends StatelessWidget {
           entity: 'games',
           action: 'create your first game',
           onAction: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<AuthBloc>(),
-                  child: const CreateGameScreen(),
-                ),
-              ),
-            );
+            _handleCreateGame(context);
           },
         );
       }
@@ -221,18 +213,65 @@ class HomeView extends StatelessWidget {
         FloatingActionButton(
           heroTag: 'create',
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => BlocProvider.value(
-                  value: context.read<AuthBloc>(),
-                  child: const CreateGameScreen(),
-                ),
-              ),
-            );
+            _handleCreateGame(context);
           },
           child: const Icon(Icons.add),
         ),
       ],
+    );
+  }
+
+  void _handleQuickPlay(BuildContext context) {
+    final authRepository = sl<AuthRepository>();
+
+    if (authRepository.isCurrentUserAnonymous()) {
+      _showSignUpDialog(context, 'Quick Play');
+    } else {
+      context.read<GamesBloc>().add(const QuickPlayGame());
+    }
+  }
+
+  void _handleCreateGame(BuildContext context) {
+    final authRepository = sl<AuthRepository>();
+
+    if (authRepository.isCurrentUserAnonymous()) {
+      _showSignUpDialog(context, 'Create Game');
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider.value(
+            value: context.read<AuthBloc>(),
+            child: const CreateGameScreen(),
+          ),
+        ),
+      );
+    }
+  }
+
+  void _showSignUpDialog(BuildContext context, String feature) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sign Up Required'),
+        content: Text(
+          'You need to create an account to use $feature. '
+          'Guests can join games using invite codes, but cannot create games.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+              // Navigate to sign up screen
+              // TODO: Implement navigation to sign up screen
+            },
+            child: const Text('Sign Up'),
+          ),
+        ],
+      ),
     );
   }
 }

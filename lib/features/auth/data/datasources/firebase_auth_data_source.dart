@@ -47,4 +47,16 @@ class FirebaseAuthDataSource implements AuthRemoteDataSource {
   String? getCurrentUserId() {
     return _firebaseAuth.currentUser?.uid;
   }
+
+  @override
+  Map<String, dynamic>? getCurrentUserData() {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return null;
+
+    return {
+      'displayName': user.displayName,
+      'email': user.email,
+      'isAnonymous': user.isAnonymous,
+    };
+  }
 }
