@@ -217,21 +217,36 @@ class GameLobbyView extends StatelessWidget {
               // Action Buttons
               if (isCreator) ...[
                 ElevatedButton.icon(
-                  onPressed: game.players.length >= 2 
+                  onPressed: game.players.length >= 2 && game.tasks.isNotEmpty
                       ? () {
                           context.read<GameDetailBloc>().add(StartGame(gameId: game.id));
                         }
                       : null,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.all(16),
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                  ),
                   icon: const Icon(Icons.play_arrow),
-                  label: const Text('Start Game'),
+                  label: Text(
+                    'Start Game',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  game.players.length < 2 
+                  game.players.length < 2
                       ? 'Need at least 2 players to start'
-                      : 'Ready to start the game!',
+                      : game.tasks.isEmpty
+                          ? 'Need to add tasks before starting'
+                          : 'Ready to start! (${game.tasks.length} task${game.tasks.length == 1 ? '' : 's'}, ${game.players.length} player${game.players.length == 1 ? '' : 's'})',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: game.players.length >= 2 && game.tasks.isNotEmpty
+                        ? Colors.green[700]
+                        : Colors.grey[600],
                   ),
                   textAlign: TextAlign.center,
                 ),
