@@ -47,3 +47,7 @@ class DeleteGame extends GamesEvent {
   @override
   List<Object> get props => [gameId];
 }
+
+class QuickPlayGame extends GamesEvent {
+  const QuickPlayGame();
+}

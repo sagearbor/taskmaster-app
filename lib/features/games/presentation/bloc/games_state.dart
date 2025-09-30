@@ -28,3 +28,12 @@ class GamesError extends GamesState {
   @override
   List<Object> get props => [message];
 }
+
+class QuickPlaySuccess extends GamesState {
+  final String gameId;
+
+  const QuickPlaySuccess({required this.gameId});
+
+  @override
+  List<Object> get props => [gameId];
+}

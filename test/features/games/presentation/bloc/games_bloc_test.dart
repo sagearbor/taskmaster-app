@@ -4,20 +4,34 @@ import 'package:mocktail/mocktail.dart';
 import 'package:taskmaster_app/core/models/game.dart';
 import 'package:taskmaster_app/core/models/game_settings.dart';
 import 'package:taskmaster_app/core/models/player.dart';
+import 'package:taskmaster_app/core/models/user.dart';
+import 'package:taskmaster_app/features/auth/domain/repositories/auth_repository.dart';
 import 'package:taskmaster_app/features/games/domain/repositories/game_repository.dart';
 import 'package:taskmaster_app/features/games/presentation/bloc/games_bloc.dart';
 
 class MockGameRepository extends Mock implements GameRepository {}
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class FakeGame extends Fake implements Game {}
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(FakeGame());
+  });
+
   group('GamesBloc Tests', () {
     late GamesBloc gamesBloc;
     late MockGameRepository mockGameRepository;
+    late MockAuthRepository mockAuthRepository;
     late List<Game> testGames;
 
     setUp(() {
       mockGameRepository = MockGameRepository();
-      gamesBloc = GamesBloc(gameRepository: mockGameRepository);
+      mockAuthRepository = MockAuthRepository();
+      gamesBloc = GamesBloc(
+        gameRepository: mockGameRepository,
+        authRepository: mockAuthRepository,
+      );
       
       testGames = [
         Game(
@@ -238,6 +252,109 @@ void main() {
           GamesLoading(),
           GamesLoading(),
           GamesLoaded(games: testGames),
+        ],
+      );
+    });
+
+    group('QuickPlayGame', () {
+      final testUser = User(
+        id: 'quick_user_1',
+        displayName: 'Quick Player',
+        email: 'quick@test.com',
+        createdAt: DateTime(2025, 1, 1),
+      );
+
+      blocTest<GamesBloc, GamesState>(
+        'emits [GamesLoading, QuickPlaySuccess] when quick play succeeds',
+        build: () {
+          when(() => mockAuthRepository.getCurrentUser())
+              .thenAnswer((_) async => testUser);
+          when(() => mockGameRepository.createGame(any(), any(), any()))
+              .thenAnswer((_) async => 'quick_game_123');
+          when(() => mockGameRepository.updateGame(any(), any()))
+              .thenAnswer((_) async {});
+          return gamesBloc;
+        },
+        act: (bloc) => bloc.add(const QuickPlayGame()),
+        expect: () => [
+          GamesLoading(),
+          const QuickPlaySuccess(gameId: 'quick_game_123'),
+        ],
+      );
+
+      blocTest<GamesBloc, GamesState>(
+        'creates game with correct properties',
+        build: () {
+          when(() => mockAuthRepository.getCurrentUser())
+              .thenAnswer((_) async => testUser);
+          when(() => mockGameRepository.createGame(any(), any(), any()))
+              .thenAnswer((_) async => 'quick_game_123');
+          when(() => mockGameRepository.updateGame(any(), any()))
+              .thenAnswer((_) async {});
+          return gamesBloc;
+        },
+        act: (bloc) => bloc.add(const QuickPlayGame()),
+        verify: (_) {
+          // Verify createGame was called with user as both creator and judge
+          verify(() => mockGameRepository.createGame(
+            any(), // Game name (randomly generated)
+            testUser.id,
+            testUser.id, // Same user is judge
+          )).called(1);
+
+          // Verify updateGame was called to add tasks
+          verify(() => mockGameRepository.updateGame(
+            'quick_game_123',
+            any(),
+          )).called(1);
+        },
+      );
+
+      blocTest<GamesBloc, GamesState>(
+        'emits [GamesLoading, GamesError] when user is not authenticated',
+        build: () {
+          when(() => mockAuthRepository.getCurrentUser())
+              .thenAnswer((_) async => null);
+          return gamesBloc;
+        },
+        act: (bloc) => bloc.add(const QuickPlayGame()),
+        expect: () => [
+          GamesLoading(),
+          const GamesError(message: 'Exception: Not authenticated'),
+        ],
+      );
+
+      blocTest<GamesBloc, GamesState>(
+        'emits [GamesLoading, GamesError] when game creation fails',
+        build: () {
+          when(() => mockAuthRepository.getCurrentUser())
+              .thenAnswer((_) async => testUser);
+          when(() => mockGameRepository.createGame(any(), any(), any()))
+              .thenThrow(Exception('Firebase error'));
+          return gamesBloc;
+        },
+        act: (bloc) => bloc.add(const QuickPlayGame()),
+        expect: () => [
+          GamesLoading(),
+          const GamesError(message: 'Exception: Firebase error'),
+        ],
+      );
+
+      blocTest<GamesBloc, GamesState>(
+        'emits [GamesLoading, GamesError] when game update fails',
+        build: () {
+          when(() => mockAuthRepository.getCurrentUser())
+              .thenAnswer((_) async => testUser);
+          when(() => mockGameRepository.createGame(any(), any(), any()))
+              .thenAnswer((_) async => 'quick_game_123');
+          when(() => mockGameRepository.updateGame(any(), any()))
+              .thenThrow(Exception('Update failed'));
+          return gamesBloc;
+        },
+        act: (bloc) => bloc.add(const QuickPlayGame()),
+        expect: () => [
+          GamesLoading(),
+          const GamesError(message: 'Exception: Update failed'),
         ],
       );
     });
