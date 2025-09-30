@@ -11,5 +11,5 @@ abstract class GameRepository {
   Future<void> startGame(String gameId);
   Future<void> addTasksToGame(String gameId, List<String> taskIds);
   Future<void> submitTaskAnswer(String gameId, String taskId, Submission submission);
-  Future<void> judgeSubmission(String gameId, String taskId, String submissionId, int score);
+  Future<void> judgeSubmission(String gameId, int taskIndex, String playerId, int score);
 }
