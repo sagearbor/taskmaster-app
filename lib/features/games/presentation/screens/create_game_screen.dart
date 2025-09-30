@@ -20,6 +20,12 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    print('[CreateGameScreen] initState called');
+  }
+
+  @override
   void dispose() {
     _gameNameController.dispose();
     super.dispose();
@@ -39,34 +45,50 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
   }
 
   Future<void> _createGame() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to create a game'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
+    print('[CreateGameScreen] _createGame called');
 
     try {
+      if (!_formKey.currentState!.validate()) {
+        print('[CreateGameScreen] Form validation failed');
+        return;
+      }
+      print('[CreateGameScreen] Form validation passed');
+
+      final authState = context.read<AuthBloc>().state;
+      print('[CreateGameScreen] AuthBloc state: $authState');
+
+      if (authState is! AuthAuthenticated) {
+        print('[CreateGameScreen] User not authenticated');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('You must be logged in to create a game'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+      print('[CreateGameScreen] User authenticated: ${authState.user.id}');
+
+      setState(() {
+        _isLoading = true;
+      });
+      print('[CreateGameScreen] Set loading to true');
+
+      print('[CreateGameScreen] Getting GameRepository from service locator...');
       final gameRepository = sl<GameRepository>();
-      final judgeId = _selectedJudge == 'creator' 
-          ? authState.user.id 
+      print('[CreateGameScreen] Got GameRepository: $gameRepository');
+
+      final judgeId = _selectedJudge == 'creator'
+          ? authState.user.id
           : authState.user.id; // For now, creator is always judge
 
+      print('[CreateGameScreen] Calling createGame with: gameName=${_gameNameController.text.trim()}, creatorId=${authState.user.id}, judgeId=$judgeId');
       await gameRepository.createGame(
         _gameNameController.text.trim(),
         authState.user.id,
         judgeId,
       );
+      print('[CreateGameScreen] Game created successfully!');
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -77,7 +99,9 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
+      print('[CreateGameScreen] ERROR: $e');
+      print('[CreateGameScreen] Stack trace: $stackTrace');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -97,6 +121,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('[CreateGameScreen] Building...');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create New Game'),

@@ -45,7 +45,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                         ),
                         Text(
-                          state.user.email,
+                          state.user.email ?? 'Guest',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
                           ),

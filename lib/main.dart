@@ -32,16 +32,16 @@ class TaskmasterApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Taskmaster Party App',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      debugShowCheckedModeBanner: false,
-      home: BlocProvider(
-        create: (context) => AuthBloc(
-          authRepository: sl<AuthRepository>(),
-        )..add(AuthCheckRequested()),
-        child: const AuthScreen(),
+    return BlocProvider(
+      create: (context) => AuthBloc(
+        authRepository: sl<AuthRepository>(),
+      )..add(AuthCheckRequested()),
+      child: MaterialApp(
+        title: 'Taskmaster Party App',
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        debugShowCheckedModeBanner: false,
+        home: const AuthScreen(),
       ),
     );
   }

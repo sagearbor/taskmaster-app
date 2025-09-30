@@ -15,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
+    on<AnonymousSignInRequested>(_onAnonymousSignInRequested);
   }
 
   Future<void> _onAuthCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
@@ -64,6 +65,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       await authRepository.signOut();
       emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onAnonymousSignInRequested(AnonymousSignInRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final user = await authRepository.signInAnonymously();
+      emit(AuthAuthenticated(user: user));
     } catch (e) {
       emit(AuthError(message: e.toString()));
     }

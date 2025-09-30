@@ -42,12 +42,23 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<User?> getCurrentUser() async {
     final userId = getCurrentUserId();
     if (userId == null) return null;
-    
+
     // In a real implementation, this would fetch user data from Firestore
     return User(
       id: userId,
       displayName: 'Current User',
       email: 'user@example.com',
+      createdAt: DateTime.now(),
+    );
+  }
+
+  @override
+  Future<User> signInAnonymously() async {
+    final userId = await remoteDataSource.signInAnonymously();
+    return User(
+      id: userId,
+      displayName: 'Guest',
+      email: null,
       createdAt: DateTime.now(),
     );
   }

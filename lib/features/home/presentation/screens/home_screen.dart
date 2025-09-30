@@ -107,7 +107,10 @@ class HomeView extends StatelessWidget {
                           onPressed: () {
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                builder: (context) => const CreateGameScreen(),
+                                builder: (_) => BlocProvider.value(
+                                  value: context.read<AuthBloc>(),
+                                  child: const CreateGameScreen(),
+                                ),
                               ),
                             );
                           },
@@ -181,7 +184,10 @@ class HomeView extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const CreateGameScreen(),
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<AuthBloc>(),
+                    child: const CreateGameScreen(),
+                  ),
                 ),
               );
             },

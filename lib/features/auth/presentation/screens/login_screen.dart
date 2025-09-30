@@ -62,6 +62,17 @@ class LoginScreen extends StatelessWidget {
                   },
                   showDisplayNameField: false,
                 ),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: () {
+                    context.read<AuthBloc>().add(AnonymousSignInRequested());
+                  },
+                  icon: const Icon(Icons.person_outline),
+                  label: const Text('Continue as Guest'),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                  ),
+                ),
                 const SizedBox(height: 24),
                 TextButton(
                   onPressed: () {

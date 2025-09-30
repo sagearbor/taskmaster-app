@@ -19,17 +19,21 @@ class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
   }
 
   void _onLoadGameDetail(LoadGameDetail event, Emitter<GameDetailState> emit) {
+    print('[GameDetailBloc] Loading game: ${event.gameId}');
     emit(GameDetailLoading());
-    
+
     gameRepository.getGameStream(event.gameId).listen(
       (game) {
+        print('[GameDetailBloc] Received game from stream: ${game?.gameName}');
         if (game != null) {
           emit(GameDetailLoaded(game: game));
         } else {
+          print('[GameDetailBloc] Game is null, emitting error');
           emit(GameDetailError(message: 'Game not found'));
         }
       },
       onError: (error) {
+        print('[GameDetailBloc] Stream error: $error');
         emit(GameDetailError(message: error.toString()));
       },
     );

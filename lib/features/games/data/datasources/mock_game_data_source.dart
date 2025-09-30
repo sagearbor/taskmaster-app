@@ -177,24 +177,33 @@ class MockGameDataSource implements GameRemoteDataSource {
   }
 
   @override
-  Stream<Map<String, dynamic>?> getGameStream(String gameId) {
+  Stream<Map<String, dynamic>?> getGameStream(String gameId) async* {
+    print('[MockGameDataSource] getGameStream called for gameId: $gameId');
+    print('[MockGameDataSource] Available game IDs: ${_games.map((g) => g['id']).toList()}');
+
+    // Find and emit initial data immediately
+    final game = _games.firstWhere(
+      (game) => game['id'] == gameId,
+      orElse: () => {},
+    );
+
+    print('[MockGameDataSource] Found game: ${game.isNotEmpty ? game['gameName'] : 'null'}');
+
+    if (game.isNotEmpty) {
+      yield game;
+    } else {
+      yield null;
+    }
+
+    // Set up controller for future updates if not exists
     if (!_gameControllers.containsKey(gameId)) {
       _gameControllers[gameId] = StreamController<Map<String, dynamic>?>.broadcast();
-      
-      // Send initial data
-      final game = _games.firstWhere(
-        (game) => game['id'] == gameId,
-        orElse: () => {},
-      );
-      
-      if (game.isNotEmpty) {
-        _gameControllers[gameId]!.add(game);
-      } else {
-        _gameControllers[gameId]!.add(null);
-      }
     }
-    
-    return _gameControllers[gameId]!.stream;
+
+    // Yield all future updates from the controller
+    await for (final updatedGame in _gameControllers[gameId]!.stream) {
+      yield updatedGame;
+    }
   }
 
   @override

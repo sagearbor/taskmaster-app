@@ -61,10 +61,22 @@ class MockAuthDataSource implements AuthRemoteDataSource {
   }
 
   @override
+  Future<String> signInAnonymously() async {
+    // Simulate network delay
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    // Create anonymous user ID
+    _currentUserId = 'mock_anon_${DateTime.now().millisecondsSinceEpoch}';
+    _authStateController.add(_currentUserId);
+
+    return _currentUserId!;
+  }
+
+  @override
   Future<void> signOut() async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 300));
-    
+
     _currentUserId = null;
     _authStateController.add(null);
   }
