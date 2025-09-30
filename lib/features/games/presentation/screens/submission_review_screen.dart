@@ -7,6 +7,8 @@ import '../../domain/repositories/game_repository.dart';
 import '../bloc/judging_bloc.dart';
 import '../bloc/judging_event.dart';
 import '../bloc/judging_state.dart';
+import 'task_scoreboard_screen.dart';
+import '../bloc/game_detail_bloc.dart';
 
 class SubmissionReviewScreen extends StatelessWidget {
   final String gameId;
@@ -98,15 +100,45 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
           }
 
           if (state is JudgingCompleted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Judging completed! 🎉'),
-                backgroundColor: Colors.green,
-              ),
-            );
-            // Navigate back twice (to game detail screen)
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
+            // Get the game from GameDetailBloc to navigate to scoreboard
+            final gameDetailState = context.read<GameDetailBloc>().state;
+            if (gameDetailState is GameDetailLoaded) {
+              final game = gameDetailState.game;
+              final task = game.tasks[state.taskIndex];
+
+              // Calculate task scores from the judging state
+              // We need to get the scores from the previous JudgingLoaded state
+              Map<String, int> taskScores = {};
+              Map<String, int> previousTotals = {};
+
+              // Get scores from the submissions
+              for (var player in game.players) {
+                previousTotals[player.userId] = player.totalScore;
+                // Find the submission for this player
+                final submission = task.submissions.firstWhere(
+                  (sub) => sub.playerId == player.userId,
+                  orElse: () => task.submissions.first,
+                );
+                taskScores[player.userId] = submission.score ?? 0;
+              }
+
+              // Navigate to task scoreboard
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => TaskScoreboardScreen(
+                    game: game,
+                    completedTask: task,
+                    taskIndex: state.taskIndex,
+                    taskScores: taskScores,
+                    previousTotals: previousTotals,
+                  ),
+                ),
+              );
+            } else {
+              // Fallback to original behavior
+              Navigator.of(context).pop();
+              Navigator.of(context).pop();
+            }
           }
         },
         builder: (context, state) {

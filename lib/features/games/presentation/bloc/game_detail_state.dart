@@ -13,11 +13,21 @@ class GameDetailLoading extends GameDetailState {}
 
 class GameDetailLoaded extends GameDetailState {
   final Game game;
+  final bool shouldNavigateToResults;
+  final int? targetTaskIndex;
 
-  const GameDetailLoaded({required this.game});
+  const GameDetailLoaded({
+    required this.game,
+    this.shouldNavigateToResults = false,
+    this.targetTaskIndex,
+  });
 
   @override
-  List<Object> get props => [game];
+  List<Object> get props => [
+    game,
+    shouldNavigateToResults,
+    if (targetTaskIndex != null) targetTaskIndex!,
+  ];
 }
 
 class GameDetailError extends GameDetailState {

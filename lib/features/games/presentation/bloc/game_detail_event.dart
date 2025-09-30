@@ -56,3 +56,35 @@ class JudgeSubmission extends GameDetailEvent {
   @override
   List<Object> get props => [gameId, taskIndex, playerId, score];
 }
+
+class ViewTaskResultsEvent extends GameDetailEvent {
+  final String gameId;
+  final int taskIndex;
+
+  const ViewTaskResultsEvent({
+    required this.gameId,
+    required this.taskIndex,
+  });
+
+  @override
+  List<Object> get props => [gameId, taskIndex];
+}
+
+class CompleteGameEvent extends GameDetailEvent {
+  final String gameId;
+
+  const CompleteGameEvent(this.gameId);
+
+  @override
+  List<Object> get props => [gameId];
+}
+
+class AdvanceToNextTaskEvent extends GameDetailEvent {
+  final String gameId;
+  final int nextTaskIndex;
+
+  const AdvanceToNextTaskEvent(this.gameId, this.nextTaskIndex);
+
+  @override
+  List<Object> get props => [gameId, nextTaskIndex];
+}

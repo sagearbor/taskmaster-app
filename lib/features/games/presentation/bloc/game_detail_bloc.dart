@@ -16,6 +16,9 @@ class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
     on<StartGame>(_onStartGame);
     on<SubmitTaskAnswer>(_onSubmitTaskAnswer);
     on<JudgeSubmission>(_onJudgeSubmission);
+    on<ViewTaskResultsEvent>(_onViewTaskResults);
+    on<CompleteGameEvent>(_onCompleteGame);
+    on<AdvanceToNextTaskEvent>(_onAdvanceToNextTask);
   }
 
   void _onLoadGameDetail(LoadGameDetail event, Emitter<GameDetailState> emit) {
@@ -67,6 +70,45 @@ class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
         event.playerId,
         event.score,
       );
+    } catch (e) {
+      emit(GameDetailError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onViewTaskResults(ViewTaskResultsEvent event, Emitter<GameDetailState> emit) async {
+    // Navigation to task results screen will be handled in the UI layer
+    // This event serves as a trigger for navigation
+    if (state is GameDetailLoaded) {
+      final currentState = state as GameDetailLoaded;
+      emit(GameDetailLoaded(
+        game: currentState.game,
+        shouldNavigateToResults: true,
+        targetTaskIndex: event.taskIndex,
+      ));
+    }
+  }
+
+  Future<void> _onCompleteGame(CompleteGameEvent event, Emitter<GameDetailState> emit) async {
+    try {
+      // Update game status to completed by getting game from current state
+      if (state is GameDetailLoaded) {
+        final currentState = state as GameDetailLoaded;
+        final updatedGame = currentState.game.copyWith(status: GameStatus.completed);
+        await gameRepository.updateGame(event.gameId, updatedGame);
+      }
+    } catch (e) {
+      emit(GameDetailError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onAdvanceToNextTask(AdvanceToNextTaskEvent event, Emitter<GameDetailState> emit) async {
+    try {
+      // Update currentTaskIndex by getting game from current state
+      if (state is GameDetailLoaded) {
+        final currentState = state as GameDetailLoaded;
+        final updatedGame = currentState.game.copyWith(currentTaskIndex: event.nextTaskIndex);
+        await gameRepository.updateGame(event.gameId, updatedGame);
+      }
     } catch (e) {
       emit(GameDetailError(message: e.toString()));
     }
