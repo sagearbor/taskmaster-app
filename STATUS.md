@@ -2,6 +2,7 @@
 
 **Last Updated:** 2025-09-30
 **Deployed URL:** https://taskmaster-app-3d480.web.app
+**Development Progress:** Phase 1 - 67% (14/21 days completed)
 
 ## What's Working ✅
 
@@ -13,7 +14,12 @@
 ### Game Management
 - ✅ **View Sample Games** - 3 mock games display on home screen
 - ✅ **Create New Game** - Users can create games with validation (3+ chars required)
+- ✅ **Browse & Select Tasks** - Task browser with 225+ prebuilt tasks, filtering, search
 - ✅ **View Game Details** - Clicking a game card loads the game detail screen
+- ✅ **Start Game** - Creator can start game with 2+ players and selected tasks
+- ✅ **Task Execution** - Players can view task details, submit video links, see deadlines
+- ✅ **Judging System** - Judge can score submissions (1-5 stars) with swipeable review cards
+- ✅ **Task Scoreboard** - Animated score reveals with confetti, auto-advance to next task
 - ✅ **Game List Updates** - Real-time game list via streams
 
 ### Technical Architecture
@@ -58,40 +64,42 @@ Users can submit their own tasks:
 - Can be added to games
 - Stored in Firestore `community_tasks` collection
 
-### **CRITICAL: Tasks Are NOT Connected to the UI!** ❌
+### **Tasks Are Now Fully Connected!** ✅
 
-Even though 225 tasks exist in the code, **NONE of them are visible or usable in the app**:
+The 225 prebuilt tasks are now **fully integrated** into the game flow:
 
-**What's Missing:**
-- ❌ No timer/duration field in Task model
-- ❌ No way to browse/select tasks when creating a game
-- ❌ Tasks don't show in game lobby (only shows players & invite code)
-- ❌ No task detail view (only title visible, not description/type/puzzleAnswer/submissions/modifiers)
-- ❌ No task execution screen
-- ❌ No submission UI
+**What's Working:**
+- ✅ Task browser with category filters and search
+- ✅ Task selection during game creation (Quick 5, Party 10, or custom)
+- ✅ Tasks display in game detail (current task highlighted)
+- ✅ Task execution screen with timer, deadline, submission progress
+- ✅ Video link submission with URL validation
+- ✅ Judging interface with swipeable submission cards
+- ✅ Animated scoreboard with position changes and celebration
 
-**Right now the game detail screen only shows:**
-- ✅ Game name
-- ✅ Player list with roles (Creator, Judge)
-- ✅ Invite code
-- ✅ "Start Game" button (for creator with 2+ players)
-
-**The 225 tasks exist but are completely disconnected from the UI!**
+**The Complete Game Flow:**
+1. ✅ Create game → Select tasks from 225+ options
+2. ✅ Invite players → Join via invite code
+3. ✅ Start game → Task 1 loads with timer and deadline
+4. ✅ Submit videos → See progress (3/5 submitted)
+5. ✅ Judge scores → Swipe through submissions, tap stars
+6. ✅ View scoreboard → Animated score reveals with confetti
+7. ✅ Auto-advance → Next task loads after countdown
 
 ## Known Issues & Limitations ⚠️
 
 ### Current Limitations
-1. **Mock Services Only** - App uses `MockDataService` instead of real Firebase
-   - Mock game data persists only in memory (resets on page refresh)
-   - No actual Firestore read/write operations
+1. **Real Firebase Enabled** - App now uses real Firebase/Firestore
+   - Game data persists across sessions
+   - Real-time multiplayer synchronization
+   - Security rules configured for guest auth
 
-2. **Incomplete Features**
-   - ⏱️ **NO TIMER SYSTEM** - Tasks don't have start/stop timer or duration tracking
-   - Game creator can't browse/select from 225 prebuilt tasks
-   - Task submission UI not implemented
-   - Judge scoring not implemented
-   - Invite code joining partially implemented
-   - Community task browsing/upvoting not connected
+2. **Remaining Features**
+   - ⏳ Notifications system (push/email alerts)
+   - ⏳ UI polish and error states (skeleton screens)
+   - ⏳ Full async flow testing (multi-device)
+   - ⏳ Performance optimization
+   - ⏳ Community task browsing/upvoting
 
 3. **Debug Logging Active** - Console logs are verbose for debugging
 
@@ -124,68 +132,61 @@ Even though 225 tasks exist in the code, **NONE of them are visible or usable in
 - **Database:** Firestore in us-east4
 - **Hosting:** https://taskmaster-app-3d480.web.app
 
-## Recent Bug Fixes 🔧
+## Recent Milestones 🎉
 
-### Fixed Stream Issues
+### Day 13-14: Task Scoreboard & Advancement (Completed)
+**What was built:**
+- Animated score reveal screen with staggered animations
+- Confetti celebration for task winners
+- Position change indicators (↑↗↓)
+- Auto-advance countdown (10 seconds)
+- Integration with judging flow
+
+**Files created:**
+- `lib/features/games/presentation/screens/task_scoreboard_screen.dart`
+- `lib/features/games/presentation/widgets/animated_score_reveal.dart`
+
+**Deployed:** https://taskmaster-app-3d480.web.app
+
+### Previous Bug Fixes
+
+#### Fixed Stream Issues
 **Problem:** Infinite loading spinner when clicking games
-**Root Cause:** Broadcast streams don't replay to new subscribers
 **Solution:** Changed to async generator pattern (`async*` + `yield`)
 
-```dart
-// Before (broken)
-Stream<Game?> getGameStream(String id) {
-  controller.add(game);
-  return controller.stream; // New listeners miss initial data
-}
-
-// After (working)
-Stream<Game?> getGameStream(String id) async* {
-  yield game; // Immediately emit to new listener
-  await for (final update in controller.stream) {
-    yield update; // Then emit future updates
-  }
-}
-```
-
-### Fixed BLoC Provider Issues
+#### Fixed BLoC Provider Issues
 **Problem:** "Provider<AuthBloc> not found" errors on navigation
 **Solution:** Moved AuthBloc provider to wrap MaterialApp globally in main.dart
 
+#### Fixed Firestore Security Rules
+**Problem:** Guest users couldn't read/write game data
+**Solution:** Added security rules to allow authenticated users (including anonymous)
+
 ## Next Steps / TODO 📋
 
-### High Priority
-1. **Add Timer System to Tasks** ⏱️
-   - Add `duration: int?` (seconds) to Task model
-   - Add `startTime: DateTime?` to Task model
-   - Create timer UI widget in task view
-   - Add "Start Task" button to begin countdown
-   - Show elapsed/remaining time during task execution
-   - Auto-submit or warn when time expires
+### High Priority (Days 15-21)
+1. **UI States & Error Handling** (Days 15-17)
+   - Replace spinners with skeleton screens (shimmer package)
+   - Add error states with retry buttons
+   - State-specific banners (waiting, judging, completed)
+   - Handle edge cases (no submissions, judge skips all)
+   - Proper back button handling
 
-2. **Task Library Browser**
-   - Create task browsing screen showing 225 prebuilt tasks
-   - Filter by category (Classic, Creative, Physical, etc.)
-   - Search tasks by keywords
-   - Preview task details before adding
-   - Multi-select tasks to add to game
-   - Let game creator pick tasks when creating game
+2. **Async Flow Testing** (Days 18-19)
+   - End-to-end game flow testing
+   - Multi-player testing (different browsers/devices)
+   - Out-of-order submission testing
+   - Partial judging testing
+   - Privacy feature validation
+   - Performance testing (10 players, 20 tasks)
+   - Bug fixes from testing
 
-3. **Switch to Real Firebase Services**
-   - Implement `FirebaseGameDataSource` (currently just stubs)
-   - Implement `FirebaseTaskDataSource` (currently just stubs)
-   - Change `ServiceLocator.init(useMockServices: false)` in main.dart
-
-4. **Complete Game Lifecycle**
-   - Implement "Start Game" functionality
-   - Add task assignment/display in game detail
-   - Build task submission UI with video link
-   - Build judge scoring interface
-   - Show leaderboard after each task
-
-5. **Testing**
-   - Add unit tests for business logic
-   - Add widget tests for screens
-   - Test real Firebase integration
+3. **Mock Data Enhancements** (Days 20-21)
+   - Update mock games with new field support
+   - Realistic sample data in different states
+   - Simulate async delays for realism
+   - Support all state transitions
+   - Mock notification service
 
 ### Medium Priority
 4. **Invite Code System**
