@@ -21,8 +21,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Initialize services with mocks (Firebase data sources not yet implemented)
-  await ServiceLocator.init(useMockServices: true);
+  // Initialize services with Firebase (Firestore)
+  await ServiceLocator.init(useMockServices: false);
 
   runApp(const TaskmasterApp());
 }
