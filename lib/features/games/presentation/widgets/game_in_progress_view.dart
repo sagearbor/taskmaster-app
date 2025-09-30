@@ -191,7 +191,7 @@ class GameInProgressView extends StatelessWidget {
                                 onTap: () {
                                   final authState = context.read<AuthBloc>().state;
                                   final userId = authState is AuthAuthenticated
-                                      ? authState.user.uid
+                                      ? authState.user.id
                                       : '';
 
                                   // Check if user has submitted

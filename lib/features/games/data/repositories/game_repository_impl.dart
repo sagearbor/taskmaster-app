@@ -67,26 +67,29 @@ class GameRepositoryImpl implements GameRepository {
   @override
   Future<void> startGame(String gameId) async {
     // Load the current game state
-    final game = await remoteDataSource.getGame(gameId);
+    final game = await remoteDataSource.getGameStream(gameId).first;
 
     if (game == null) {
       throw Exception('Game not found');
     }
 
+    // Convert from map to Game object
+    final gameObj = Game.fromMap({...game, 'id': gameId});
+
     // Validate game can be started
-    if (game.players.length < 2) {
+    if (gameObj.players.length < 2) {
       throw Exception('Need at least 2 players to start');
     }
 
-    if (game.tasks.isEmpty) {
+    if (gameObj.tasks.isEmpty) {
       throw Exception('Need at least 1 task to start');
     }
 
     // Initialize playerStatuses for all tasks
-    final updatedTasks = game.tasks.map((task) {
+    final updatedTasks = gameObj.tasks.map((task) {
       final playerStatuses = <String, PlayerTaskStatus>{};
 
-      for (final player in game.players) {
+      for (final player in gameObj.players) {
         playerStatuses[player.userId] = PlayerTaskStatus(
           playerId: player.userId,
           state: TaskPlayerState.not_started,
@@ -101,10 +104,8 @@ class GameRepositoryImpl implements GameRepository {
 
     // Calculate deadline for first task (if settings specify)
     DateTime? firstTaskDeadline;
-    if (game.settings.taskDeadlineHours != null) {
-      firstTaskDeadline = DateTime.now().add(
-        Duration(hours: game.settings.taskDeadlineHours!),
-      );
+    if (gameObj.settings.taskDeadline != null) {
+      firstTaskDeadline = DateTime.now().add(gameObj.settings.taskDeadline!);
     }
 
     // Update first task with deadline
@@ -113,7 +114,7 @@ class GameRepositoryImpl implements GameRepository {
     }
 
     // Update game to in-progress with initialized tasks
-    final updatedGame = game.copyWith(
+    final updatedGame = gameObj.copyWith(
       status: GameStatus.inProgress,
       tasks: updatedTasks,
       currentTaskIndex: 0,
@@ -135,9 +136,58 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
-  Future<void> judgeSubmission(String gameId, String taskId, String submissionId, int score) async {
-    // This would update the submission with the judge's score
-    // Complex update operation for nested data
+  Future<void> judgeSubmission(String gameId, int taskIndex, String playerId, int score) async {
+    // Load current game
+    final game = await remoteDataSource.getGameStream(gameId).first;
+    if (game == null) {
+      throw Exception('Game not found');
+    }
+
+    final gameObj = Game.fromMap({...game, 'id': gameId});
+
+    if (taskIndex >= gameObj.tasks.length) {
+      throw Exception('Task not found');
+    }
+
+    // Update the task's player status with the score
+    final updatedTasks = List<Task>.from(gameObj.tasks);
+    final task = updatedTasks[taskIndex];
+
+    final updatedPlayerStatuses = Map<String, PlayerTaskStatus>.from(task.playerStatuses);
+    final playerStatus = updatedPlayerStatuses[playerId];
+
+    if (playerStatus == null) {
+      throw Exception('Player status not found for player: $playerId');
+    }
+
+    // Update player status with score
+    updatedPlayerStatuses[playerId] = playerStatus.copyWith(
+      score: score,
+      state: TaskPlayerState.judged,
+    );
+
+    // Update task with new player statuses
+    updatedTasks[taskIndex] = task.copyWith(
+      playerStatuses: updatedPlayerStatuses,
+    );
+
+    // Update player's total score
+    final updatedPlayers = gameObj.players.map((player) {
+      if (player.userId == playerId) {
+        return player.copyWith(
+          totalScore: player.totalScore + score,
+        );
+      }
+      return player;
+    }).toList();
+
+    // Update game with new tasks and players
+    final updatedGame = gameObj.copyWith(
+      tasks: updatedTasks,
+      players: updatedPlayers,
+    );
+
+    await updateGame(gameId, updatedGame);
   }
 
   String _generateInviteCode() {

@@ -194,7 +194,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
       ),
       body: Form(
         key: _formKey,
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -433,7 +433,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                   ],
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _createGame,
                 child: _isLoading
@@ -444,6 +444,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                       )
                     : const Text('Create Game'),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
