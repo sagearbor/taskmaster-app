@@ -6,6 +6,24 @@
 
 ---
 
+## 🤖 Note for AI Coding
+
+**"Multi-device testing" = Multiple browser windows**, not physical devices!
+
+When instructions say "device A" and "device B", this means:
+- Open the app in 2+ browser windows (Chrome + Firefox, or Chrome + incognito)
+- Each browser window represents a different user/device
+- Test that changes in one browser window appear instantly in the other
+
+**Example:**
+```bash
+flutter run -d chrome
+# Then open http://localhost:PORT in Firefox or Chrome incognito
+# Now you have "2 devices" for testing
+```
+
+---
+
 ## 🎉 What's Complete
 
 **Phase 1 (Days 1-21):** ✅ Complete
@@ -44,10 +62,27 @@ await ServiceLocator.init(useMockServices: false);
 If not, change from `true` to `false`.
 
 #### 2. Multi-Device Testing Setup
-**Equipment needed:**
-- 2+ devices (phones, tablets, or browsers)
-- OR use Chrome + Firefox on same computer
-- OR use Chrome normal + incognito mode
+
+**IMPORTANT FOR AI CODING:**
+You don't need physical devices! Testing with multiple browser windows is the easiest approach:
+
+**Recommended Setup (easiest):**
+```bash
+# Option 1: Chrome + Firefox (both open at same time)
+flutter run -d chrome          # Terminal 1
+flutter run -d edge            # Terminal 2 (or manually open in Firefox)
+
+# Option 2: Chrome normal + Chrome incognito
+# Run app, then open http://localhost:PORT in incognito window
+
+# Option 3: Multiple Chrome windows (sign in as different users)
+# Open app in multiple Chrome windows with different guest profiles
+```
+
+**What "device A" and "device B" mean:**
+- "Device A" = Browser window #1
+- "Device B" = Browser window #2 (different browser or incognito)
+- "Device C" = Browser window #3 (if testing 3+ players)
 
 **Test Scenarios:**
 - [ ] **Test 1:** Create game on device A → Join via invite code on device B
@@ -398,10 +433,21 @@ flutter run -d chrome
 ```
 
 **3. Start with Day 26-27 testing:**
-- Open app in 2 browsers
-- Create game in Browser A
-- Join in Browser B via invite code
-- Verify real-time sync works
+```bash
+# Open app in Chrome
+flutter run -d chrome
+
+# Then manually open in Firefox or Chrome incognito:
+# http://localhost:XXXXX (port shown in flutter output)
+```
+
+**Test flow:**
+- Browser A: Sign in as guest → Create game → Note invite code
+- Browser B: Sign in as different guest → Join game with invite code
+- Verify both browsers show the same game with both players
+- Browser A: Submit task → Browser B should see submission count update instantly
+- Browser B (judge): Score submissions → Browser A should see scores appear
+- Verify real-time sync works across all actions
 
 **4. Then implement Quick Play (Days 29-30):**
 - Add button to home screen
