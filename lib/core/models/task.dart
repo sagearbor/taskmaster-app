@@ -1,8 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'submission.dart';
 import 'task_modifier.dart';
+import 'player_task_status.dart';
 
 enum TaskType { video, puzzle }
+
+enum TaskStatus {
+  waiting_for_submissions,
+  ready_to_judge,
+  judging,
+  completed,
+}
 
 class Task extends Equatable {
   final String id;
@@ -13,6 +21,12 @@ class Task extends Equatable {
   final List<Submission> submissions;
   final List<TaskModifier> modifiers;
 
+  // NEW: Async game fields
+  final TaskStatus status;
+  final DateTime? deadline; // Deadline for submissions
+  final int? durationSeconds; // Time limit to DO the task (e.g., 60s countdown)
+  final Map<String, PlayerTaskStatus> playerStatuses; // Track each player's status
+
   const Task({
     required this.id,
     required this.title,
@@ -21,6 +35,10 @@ class Task extends Equatable {
     this.puzzleAnswer,
     required this.submissions,
     this.modifiers = const [],
+    this.status = TaskStatus.waiting_for_submissions,
+    this.deadline,
+    this.durationSeconds,
+    this.playerStatuses = const {},
   });
 
   factory Task.fromMap(Map<String, dynamic> map) {
@@ -39,6 +57,21 @@ class Task extends Equatable {
       modifiers: (map['modifiers'] as List<dynamic>?)
           ?.map((e) => TaskModifier.fromMap(e as Map<String, dynamic>))
           .toList() ?? [],
+      status: TaskStatus.values.firstWhere(
+        (e) => e.name == map['status'],
+        orElse: () => TaskStatus.waiting_for_submissions,
+      ),
+      deadline: map['deadline'] != null
+          ? DateTime.parse(map['deadline'] as String)
+          : null,
+      durationSeconds: map['durationSeconds'] as int?,
+      playerStatuses: (map['playerStatuses'] as Map<String, dynamic>?)?.map(
+            (key, value) => MapEntry(
+              key,
+              PlayerTaskStatus.fromMap(value as Map<String, dynamic>),
+            ),
+          ) ??
+          {},
     );
   }
 
@@ -51,6 +84,12 @@ class Task extends Equatable {
       'puzzleAnswer': puzzleAnswer,
       'submissions': submissions.map((e) => e.toMap()).toList(),
       'modifiers': modifiers.map((e) => e.toMap()).toList(),
+      'status': status.name,
+      'deadline': deadline?.toIso8601String(),
+      'durationSeconds': durationSeconds,
+      'playerStatuses': playerStatuses.map(
+        (key, value) => MapEntry(key, value.toMap()),
+      ),
     };
   }
 
@@ -62,6 +101,10 @@ class Task extends Equatable {
     String? puzzleAnswer,
     List<Submission>? submissions,
     List<TaskModifier>? modifiers,
+    TaskStatus? status,
+    DateTime? deadline,
+    int? durationSeconds,
+    Map<String, PlayerTaskStatus>? playerStatuses,
   }) {
     return Task(
       id: id ?? this.id,
@@ -71,6 +114,10 @@ class Task extends Equatable {
       puzzleAnswer: puzzleAnswer ?? this.puzzleAnswer,
       submissions: submissions ?? this.submissions,
       modifiers: modifiers ?? this.modifiers,
+      status: status ?? this.status,
+      deadline: deadline ?? this.deadline,
+      durationSeconds: durationSeconds ?? this.durationSeconds,
+      playerStatuses: playerStatuses ?? this.playerStatuses,
     );
   }
 
@@ -108,6 +155,46 @@ class Task extends Equatable {
 
   List<TaskModifier> get activeModifiers => modifiers.where((modifier) => modifier.isActive).toList();
 
+  // NEW: Async game computed properties
+  int get totalPlayers => playerStatuses.length;
+
+  int get submittedCount =>
+      playerStatuses.values.where((status) => status.hasSubmitted).length;
+
+  int get judgedCount =>
+      playerStatuses.values.where((status) => status.isJudged).length;
+
+  bool get allPlayersSubmitted =>
+      playerStatuses.isNotEmpty &&
+      playerStatuses.values.every((status) => status.hasSubmitted);
+
+  bool get allPlayersJudged =>
+      playerStatuses.isNotEmpty &&
+      playerStatuses.values.every((status) => status.isJudged);
+
+  bool get isReadyToJudge =>
+      status == TaskStatus.ready_to_judge || allPlayersSubmitted;
+
+  bool get isCompleted => status == TaskStatus.completed;
+
+  bool get hasDeadlinePassed =>
+      deadline != null && DateTime.now().isAfter(deadline!);
+
+  // Get player status for a specific user
+  PlayerTaskStatus? getPlayerStatus(String playerId) {
+    return playerStatuses[playerId];
+  }
+
+  // Check if a specific player has submitted
+  bool hasPlayerSubmitted(String playerId) {
+    return playerStatuses[playerId]?.hasSubmitted ?? false;
+  }
+
+  // Check if a specific player can view videos (privacy feature)
+  bool canPlayerViewVideos(String playerId) {
+    return playerStatuses[playerId]?.canViewVideos ?? false;
+  }
+
   @override
   List<Object?> get props => [
         id,
@@ -117,5 +204,9 @@ class Task extends Equatable {
         puzzleAnswer,
         submissions,
         modifiers,
+        status,
+        deadline,
+        durationSeconds,
+        playerStatuses,
       ];
 }

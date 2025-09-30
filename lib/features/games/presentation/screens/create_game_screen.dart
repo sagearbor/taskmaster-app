@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/models/task.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../tasks/presentation/screens/task_browser_screen.dart';
+import '../../../tasks/data/datasources/prebuilt_tasks_data.dart';
 import '../../domain/repositories/game_repository.dart';
-import '../bloc/games_bloc.dart';
 
 class CreateGameScreen extends StatefulWidget {
   const CreateGameScreen({super.key});
@@ -18,6 +20,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
   final _gameNameController = TextEditingController();
   String _selectedJudge = 'creator';
   bool _isLoading = false;
+  List<Task> _selectedTasks = [];
 
   @override
   void initState() {
@@ -44,6 +47,49 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
     return null;
   }
 
+  Future<void> _selectTasks() async {
+    print('[CreateGameScreen] _selectTasks called');
+
+    final selectedTasks = await Navigator.of(context).push<List<Task>>(
+      MaterialPageRoute(
+        builder: (context) => TaskBrowserScreen(
+          initiallySelectedTasks: _selectedTasks,
+          maxTasks: 10,
+        ),
+      ),
+    );
+
+    if (selectedTasks != null) {
+      setState(() {
+        _selectedTasks = selectedTasks;
+      });
+      print('[CreateGameScreen] Selected ${_selectedTasks.length} tasks');
+    }
+  }
+
+  Future<void> _selectRandomTasks(int count) async {
+    print('[CreateGameScreen] _selectRandomTasks called with count: $count');
+
+    // Import tasks data temporarily to get random tasks
+    final allTasks = await Navigator.of(context).push<List<Task>>(
+      MaterialPageRoute(
+        builder: (context) {
+          // Return immediately with random tasks
+          final tasks = PrebuiltTasksData.getAllTasks()..shuffle();
+          Navigator.of(context).pop(tasks.take(count).toList());
+          return const Scaffold(); // Placeholder
+        },
+      ),
+    );
+
+    if (allTasks != null) {
+      setState(() {
+        _selectedTasks = allTasks;
+      });
+      print('[CreateGameScreen] Selected ${_selectedTasks.length} random tasks');
+    }
+  }
+
   Future<void> _createGame() async {
     print('[CreateGameScreen] _createGame called');
 
@@ -52,6 +98,18 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
         print('[CreateGameScreen] Form validation failed');
         return;
       }
+
+      if (_selectedTasks.isEmpty) {
+        print('[CreateGameScreen] No tasks selected');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select at least one task'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+        return;
+      }
+
       print('[CreateGameScreen] Form validation passed');
 
       final authState = context.read<AuthBloc>().state;
@@ -83,18 +141,26 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
           : authState.user.id; // For now, creator is always judge
 
       print('[CreateGameScreen] Calling createGame with: gameName=${_gameNameController.text.trim()}, creatorId=${authState.user.id}, judgeId=$judgeId');
-      await gameRepository.createGame(
+      final gameId = await gameRepository.createGame(
         _gameNameController.text.trim(),
         authState.user.id,
         judgeId,
       );
-      print('[CreateGameScreen] Game created successfully!');
+      print('[CreateGameScreen] Game created successfully with ID: $gameId');
+
+      // Add tasks to game
+      print('[CreateGameScreen] Adding ${_selectedTasks.length} tasks to game');
+      await gameRepository.addTasksToGame(
+        gameId,
+        _selectedTasks.map((t) => t.id).toList(),
+      );
+      print('[CreateGameScreen] Tasks added successfully');
 
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Game created successfully!'),
+          SnackBar(
+            content: Text('Game created with ${_selectedTasks.length} tasks!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -186,6 +252,137 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                   });
                 },
               ),
+              const SizedBox(height: 24),
+
+              // Task Selection Section
+              Text(
+                'Select Tasks',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (_selectedTasks.isEmpty)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.playlist_add,
+                          size: 48,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'No tasks selected yet',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                color: Colors.grey[600],
+                              ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _isLoading ? null : () => _selectRandomTasks(5),
+                                icon: const Icon(Icons.shuffle),
+                                label: const Text('Random 5'),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: ElevatedButton.icon(
+                                onPressed: _isLoading ? null : _selectTasks,
+                                icon: const Icon(Icons.search),
+                                label: const Text('Browse'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle,
+                              color: Colors.green[700],
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${_selectedTasks.length} task${_selectedTasks.length == 1 ? '' : 's'} selected',
+                              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          height: 100,
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: _selectedTasks.length,
+                            itemBuilder: (context, index) {
+                              final task = _selectedTasks[index];
+                              return Container(
+                                width: 200,
+                                margin: const EdgeInsets.only(right: 8),
+                                child: Card(
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          task.title,
+                                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          task.description,
+                                          style: Theme.of(context).textTheme.bodySmall,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _isLoading ? null : _selectTasks,
+                                icon: const Icon(Icons.edit),
+                                label: const Text('Change Tasks'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               const SizedBox(height: 16),
               Container(
                 padding: const EdgeInsets.all(16),
