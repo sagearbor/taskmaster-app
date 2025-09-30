@@ -33,6 +33,15 @@ class GameRepositoryImpl implements GameRepository {
       'createdAt': DateTime.now().toIso8601String(),
       'players': [],
       'tasks': [],
+      // Add missing required fields
+      'mode': GameMode.async.name,
+      'settings': {
+        'taskDeadlineHours': null,
+        'autoAdvanceEnabled': true,
+        'allowLateSubmissions': false,
+        'taskDeadline': null,
+      },
+      'currentTaskIndex': 0,
     };
 
     return await remoteDataSource.createGame(gameData);
