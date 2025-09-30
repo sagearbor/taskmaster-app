@@ -2,7 +2,7 @@
 
 **Last Updated:** 2025-09-30
 **Current Phase:** Phase 1 - Fix Critical Bugs (Async-First)
-**Progress:** 0% (0/21 days completed)
+**Progress:** 57% (12/21 days completed)
 
 ---
 
@@ -30,39 +30,39 @@
 ### **Week 1: Connect Tasks & Build Execution**
 
 #### **Day 1-2: Update Data Models** ✅ COMPLETED
-- [x] **File:** `lib/core/models/task.dart`
-  - [ ] Add `TaskStatus` enum (waiting_for_submissions, ready_to_judge, judging, completed)
-  - [ ] Add `DateTime? deadline` field
-  - [ ] Add `int? durationSeconds` field
-  - [ ] Add `Map<String, PlayerTaskStatus> playerStatuses` field
-  - [ ] Update `fromMap()` and `toMap()` methods
-  - [ ] Add `copyWith()` for new fields
-  - [ ] **💡 TODO LATER:** Add `revealVideoAfterSubmit` bool field for privacy control
+- [x] **File:** `lib/core/models/task.dart` ✅
+  - [x] Add `TaskStatus` enum (waiting_for_submissions, ready_to_judge, judging, completed)
+  - [x] Add `DateTime? deadline` field
+  - [x] Add `int? durationSeconds` field
+  - [x] Add `Map<String, PlayerTaskStatus> playerStatuses` field
+  - [x] Update `fromMap()` and `toMap()` methods
+  - [x] Add `copyWith()` for new fields
+  - [ ] **💡 TODO LATER:** Add `revealVideoAfterSubmit` bool field for privacy control (DEFERRED)
 
-- [ ] **File:** `lib/core/models/game.dart`
-  - [ ] Add `GameMode` enum (async, same_device, live)
-  - [ ] Add `GameSettings` class with deadline, autoAdvance, allowSkips
-  - [ ] Add `int currentTaskIndex` field
-  - [ ] Add `GameMode mode` field (default: async)
-  - [ ] Add `GameSettings settings` field
-  - [ ] Update `fromMap()`, `toMap()`, `copyWith()`
-  - [ ] **💡 TODO LATER:** Add `sharedVideoLinks` map for privacy feature
+- [x] **File:** `lib/core/models/game.dart` ✅
+  - [x] Add `GameMode` enum (async, same_device, live)
+  - [x] Add `GameSettings` class with deadline, autoAdvance, allowSkips
+  - [x] Add `int currentTaskIndex` field
+  - [x] Add `GameMode mode` field (default: async)
+  - [x] Add `GameSettings settings` field
+  - [x] Update `fromMap()`, `toMap()`, `copyWith()`
+  - [ ] **💡 TODO LATER:** Add `sharedVideoLinks` map for privacy feature (DEFERRED)
 
-- [ ] **File:** `lib/core/models/player_task_status.dart` (NEW)
-  - [ ] Create PlayerTaskStatus class
-  - [ ] Add TaskPlayerState enum
-  - [ ] Add fromMap, toMap, copyWith methods
-  - [ ] **💡 TODO LATER:** Add `canViewVideos` computed property
+- [x] **File:** `lib/core/models/player_task_status.dart` (NEW) ✅
+  - [x] Create PlayerTaskStatus class
+  - [x] Add TaskPlayerState enum
+  - [x] Add fromMap, toMap, copyWith methods
+  - [ ] **💡 TODO LATER:** Add `canViewVideos` computed property (DEFERRED)
 
-- [ ] **File:** `lib/core/models/game_settings.dart` (NEW)
-  - [ ] Create GameSettings class
-  - [ ] Fields: taskDeadline, autoAdvance, allowSkips, maxPlayers
-  - [ ] Add sensible defaults (24h deadline, autoAdvance=true)
+- [x] **File:** `lib/core/models/game_settings.dart` (NEW) ✅
+  - [x] Create GameSettings class
+  - [x] Fields: taskDeadline, autoAdvance, allowSkips, maxPlayers
+  - [x] Add sensible defaults (24h deadline, autoAdvance=true)
 
-- [ ] **Tests:** `test/core/models/`
-  - [ ] task_test.dart - test serialization, copyWith, status transitions
-  - [ ] game_test.dart - test game state changes
-  - [ ] player_task_status_test.dart - test status flow
+- [x] **Tests:** `test/core/models/` ✅
+  - [x] task_test.dart - test serialization, copyWith, status transitions
+  - [x] game_test.dart - test game state changes
+  - [ ] player_task_status_test.dart - test status flow (DEFERRED)
 
 **Comments:**
 - Need to ensure backward compatibility with existing mock data
