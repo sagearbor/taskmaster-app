@@ -3,12 +3,17 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/game.dart';
+import '../../../../core/models/task.dart';
+import '../../../../core/models/player_task_status.dart';
+import '../../../../core/widgets/skeleton_loaders.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../bloc/game_detail_bloc.dart';
 import '../widgets/game_lobby_view.dart';
 import '../widgets/game_in_progress_view.dart';
 import '../widgets/game_completed_view.dart';
+import '../widgets/game_status_banner.dart';
 
 class GameDetailScreen extends StatelessWidget {
   final String gameId;
@@ -87,61 +92,100 @@ class GameDetailView extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is GameDetailLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return SkeletonLoaders.gameDetailSkeleton(context);
           }
 
           if (state is GameDetailError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Something went wrong',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Go Back'),
-                  ),
-                ],
-              ),
+            return ErrorView(
+              message: 'Failed to load game',
+              details: state.message,
+              onRetry: () {
+                final gameId = context.read<GameDetailBloc>().gameId;
+                if (gameId != null) {
+                  context.read<GameDetailBloc>().add(LoadGameDetail(gameId: gameId));
+                }
+              },
             );
           }
 
           if (state is GameDetailLoaded) {
-            switch (state.game.status) {
-              case GameStatus.lobby:
-                return GameLobbyView(game: state.game);
-              case GameStatus.inProgress:
-                return GameInProgressView(game: state.game);
-              case GameStatus.completed:
-                return GameCompletedView(game: state.game);
-            }
+            final authState = context.read<AuthBloc>().state;
+            final currentUserId = authState is AuthAuthenticated ? authState.user.id : '';
+            final isJudge = state.game.judgeId == currentUserId;
+
+            return Column(
+              children: [
+                // Add status banner at the top
+                GameStatusBanner(
+                  game: state.game,
+                  currentUserId: currentUserId,
+                  isJudge: isJudge,
+                  onAction: () {
+                    // Handle banner action based on game state
+                    _handleBannerAction(context, state.game, currentUserId);
+                  },
+                ),
+                Expanded(
+                  child: switch (state.game.status) {
+                    GameStatus.lobby => GameLobbyView(game: state.game),
+                    GameStatus.inProgress => GameInProgressView(game: state.game),
+                    GameStatus.completed => GameCompletedView(game: state.game),
+                  },
+                ),
+              ],
+            );
           }
 
           return const SizedBox.shrink();
         },
       ),
     );
+  }
+
+  void _handleBannerAction(BuildContext context, Game game, String currentUserId) {
+    // Handle different banner actions based on game state
+    if (game.status == GameStatus.lobby && game.creatorId == currentUserId && game.players.length >= 2) {
+      // Start game action
+      context.read<GameDetailBloc>().add(StartGame(gameId: game.id!));
+    } else if (game.status == GameStatus.inProgress && game.tasks.isNotEmpty) {
+      final currentTask = game.tasks[game.currentTaskIndex];
+      final playerStatus = currentTask.playerStatuses[currentUserId];
+
+      if (playerStatus?.state == TaskPlayerState.not_started ||
+          playerStatus?.state == TaskPlayerState.in_progress) {
+        // Navigate to task execution
+        Navigator.pushNamed(
+          context,
+          '/task-execution',
+          arguments: {
+            'gameId': game.id!,
+            'taskIndex': game.currentTaskIndex,
+            'userId': currentUserId,
+          },
+        );
+      } else if (game.judgeId == currentUserId && currentTask.status == TaskStatus.ready_to_judge) {
+        // Navigate to judging
+        Navigator.pushNamed(
+          context,
+          '/judging',
+          arguments: {
+            'gameId': game.id!,
+            'taskIndex': game.currentTaskIndex,
+          },
+        );
+      } else if (currentTask.status == TaskStatus.completed) {
+        // Navigate to scoreboard
+        context.read<GameDetailBloc>().add(
+          ViewTaskResultsEvent(
+            gameId: game.id!,
+            taskIndex: game.currentTaskIndex,
+          ),
+        );
+      }
+    } else if (game.status == GameStatus.lobby && game.players.length < 2) {
+      // Share invite code
+      _showShareDialog(context, game);
+    }
   }
 
   void _showShareDialog(BuildContext context, Game game) {

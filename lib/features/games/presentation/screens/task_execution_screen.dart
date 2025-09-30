@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/player_task_status.dart';
+import '../../../../core/widgets/skeleton_loaders.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../bloc/task_execution_bloc.dart';
@@ -103,8 +105,38 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: () async {
+        // Check if user has entered text but not submitted
+        if (_videoUrlController.text.isNotEmpty) {
+          final shouldPop = await showDialog<bool>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: const Text('Discard submission?'),
+              content: const Text(
+                'You have entered a video URL. Are you sure you want to leave without submitting?',
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(false),
+                  child: const Text('Stay'),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(true),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.red,
+                  ),
+                  child: const Text('Leave'),
+                ),
+              ],
+            ),
+          );
+          return shouldPop ?? false;
+        }
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
         title: BlocBuilder<TaskExecutionBloc, TaskExecutionState>(
           builder: (context, state) {
             if (state is TaskExecutionLoaded) {
@@ -150,39 +182,20 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
         },
         builder: (context, state) {
           if (state is TaskExecutionLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return SkeletonLoaders.taskExecutionSkeleton(context);
           }
 
           if (state is TaskExecutionError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Go Back'),
-                  ),
-                ],
-              ),
+            return ErrorView(
+              message: 'Failed to load task',
+              details: state.message,
+              onRetry: () {
+                context.read<TaskExecutionBloc>().add(LoadTask(
+                  gameId: widget.gameId,
+                  taskIndex: widget.taskIndex,
+                  userId: widget.userId,
+                ));
+              },
             );
           }
 
@@ -198,6 +211,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           return const SizedBox.shrink();
         },
       ),
+    ),
     );
   }
 
@@ -237,23 +251,69 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
             ),
             if (state.userStatus?.submissionUrl != null) ...[
               const SizedBox(height: 24),
-              Text(
-                'Your submission:',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
-                    ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  state.userStatus!.submissionUrl!,
-                  style: Theme.of(context).textTheme.bodySmall,
-                  textAlign: TextAlign.center,
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.videocam, color: Theme.of(context).colorScheme.primary),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Your submission',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              state.userStatus!.submissionUrl!,
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
+                            if (state.userStatus!.submittedAt != null) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                'Submitted ${_formatTimeAgo(state.userStatus!.submittedAt!)}',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                      if (state.task.deadline != null &&
+                          state.userStatus!.submittedAt != null &&
+                          state.userStatus!.submittedAt!.isBefore(state.task.deadline!)) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.timer, size: 16, color: Colors.green[600]),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Submitted on time',
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.green[600],
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
               ),
             ],
@@ -533,6 +593,28 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
         ],
       ),
     );
+  }
+
+  String _formatTimeAgo(DateTime time) {
+    final now = DateTime.now();
+    final difference = now.difference(time);
+
+    if (difference.inSeconds < 60) {
+      return 'just now';
+    }
+
+    if (difference.inMinutes < 60) {
+      final minutes = difference.inMinutes;
+      return '$minutes minute${minutes > 1 ? 's' : ''} ago';
+    }
+
+    if (difference.inHours < 24) {
+      final hours = difference.inHours;
+      return '$hours hour${hours > 1 ? 's' : ''} ago';
+    }
+
+    final days = difference.inDays;
+    return '$days day${days > 1 ? 's' : ''} ago';
   }
 
   String _formatDeadline(DateTime deadline) {

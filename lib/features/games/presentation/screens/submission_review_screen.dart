@@ -529,12 +529,40 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
   void _showFinishConfirmation(BuildContext context) {
     final state = context.read<JudgingBloc>().state as JudgingLoaded;
 
+    // Edge case: Judge hasn't scored any submissions
+    if (state.scoredCount == 0) {
+      showDialog(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: const Text('No Scores Given'),
+          icon: const Icon(Icons.warning, color: Colors.orange, size: 48),
+          content: const Text(
+            'You haven\'t scored any submissions yet. '
+            'Please score at least one submission before finishing.',
+          ),
+          actions: [
+            ElevatedButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Go Back'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    // Edge case: Judge hasn't scored all submissions (warning)
+    final unscored = state.submissions.where((s) => s.status.hasSubmitted && s.score == null).length;
+    final warningMessage = unscored > 0
+        ? 'You have scored ${state.scoredCount} submissions but $unscored are still unscored. '
+        : 'You have scored ${state.scoredCount} submissions. ';
+
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
         title: const Text('Finish Judging?'),
         content: Text(
-          'You have scored ${state.scoredCount} submissions. '
+          '$warningMessage'
           'This will finalize the scores and update player totals.',
         ),
         actions: [
@@ -542,6 +570,11 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
             onPressed: () => Navigator.of(dialogContext).pop(),
             child: const Text('Cancel'),
           ),
+          if (unscored > 0)
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text('Review Unscored ($unscored)'),
+            ),
           ElevatedButton(
             onPressed: () {
               Navigator.of(dialogContext).pop();

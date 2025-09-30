@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/widgets/skeleton_loaders.dart';
+import '../../../../core/widgets/error_view.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../bloc/judging_bloc.dart';
 import '../bloc/judging_event.dart';
@@ -64,43 +66,32 @@ class JudgingView extends StatelessWidget {
         },
         builder: (context, state) {
           if (state is JudgingLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return SkeletonLoaders.judgingSkeleton(context);
           }
 
           if (state is JudgingError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 64,
-                    color: Colors.red,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    state.message,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Go Back'),
-                  ),
-                ],
-              ),
+            return ErrorView(
+              message: 'Failed to load submissions',
+              details: state.message,
+              onRetry: () {
+                context.read<JudgingBloc>().add(LoadSubmissions(
+                  gameId: gameId,
+                  taskIndex: taskIndex,
+                ));
+              },
             );
           }
 
           if (state is JudgingLoaded) {
+            // Handle edge case: no submissions
+            if (state.submissions.isEmpty) {
+              return ErrorView.empty(
+                entity: 'submissions',
+                action: 'wait for players to submit',
+                onAction: () => Navigator.of(context).pop(),
+              );
+            }
+
             return _buildJudgingContent(context, state);
           }
 
