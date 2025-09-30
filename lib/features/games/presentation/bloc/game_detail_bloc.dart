@@ -63,8 +63,8 @@ class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
     try {
       await gameRepository.judgeSubmission(
         event.gameId,
-        event.taskId,
-        event.submissionId,
+        event.taskIndex,
+        event.playerId,
         event.score,
       );
     } catch (e) {

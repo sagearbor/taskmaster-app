@@ -42,17 +42,17 @@ class SubmitTaskAnswer extends GameDetailEvent {
 
 class JudgeSubmission extends GameDetailEvent {
   final String gameId;
-  final String taskId;
-  final String submissionId;
+  final int taskIndex;
+  final String playerId;
   final int score;
 
   const JudgeSubmission({
     required this.gameId,
-    required this.taskId,
-    required this.submissionId,
+    required this.taskIndex,
+    required this.playerId,
     required this.score,
   });
 
   @override
-  List<Object> get props => [gameId, taskId, submissionId, score];
+  List<Object> get props => [gameId, taskIndex, playerId, score];
 }

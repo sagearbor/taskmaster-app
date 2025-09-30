@@ -42,14 +42,15 @@ class _SubmissionCardState extends State<SubmissionCard> {
     });
 
     try {
-      context.read<GameDetailBloc>().add(
-        JudgeSubmission(
-          gameId: widget.gameId,
-          taskId: widget.task.id,
-          submissionId: widget.submission.id,
-          score: _selectedScore,
-        ),
-      );
+      // TODO: This old judging code is deprecated - use new JudgingBloc instead
+      // context.read<GameDetailBloc>().add(
+      //   JudgeSubmission(
+      //     gameId: widget.gameId,
+      //     taskIndex: 0, // Need task index
+      //     playerId: '', // Need player ID
+      //     score: _selectedScore,
+      //   ),
+      // );
 
       widget.onScored();
       
