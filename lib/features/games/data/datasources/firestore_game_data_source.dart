@@ -31,20 +31,29 @@ class FirestoreGameDataSource implements GameRemoteDataSource {
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
+      developer.log('Total games in Firestore: ${snapshot.docs.length}');
+
       final games = snapshot.docs
           .map((doc) {
             final data = doc.data();
             data['id'] = doc.id;
+            developer.log('Game ${doc.id}: creatorId=${data['creatorId']}, players=${data['players']}');
             return data;
           })
           .where((game) {
-            // Filter client-side for games where user is a player
+            // Filter for games where user is creator OR in players array
+            final creatorId = game['creatorId'];
             final players = List.from(game['players'] ?? []);
-            return players.any((p) => p['userId'] == userId);
+            final isCreator = creatorId == userId;
+            final isPlayer = players.any((p) => p['userId'] == userId);
+            final shouldShow = isCreator || isPlayer;
+
+            developer.log('Game ${game['id']}: isCreator=$isCreator, isPlayer=$isPlayer, shouldShow=$shouldShow');
+            return shouldShow;
           })
           .toList();
 
-      developer.log('Fetched ${games.length} games');
+      developer.log('Filtered to ${games.length} games for user $userId');
       return games;
     });
   }
