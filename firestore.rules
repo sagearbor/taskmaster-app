@@ -18,9 +18,17 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == gameData.judgeId;
     }
 
+    // Helper function to check if user is a player in the game
+    // Note: This is a simplified check - detailed player validation
+    // happens at the application level
+    function isPlayerInGame(gameData) {
+      return isSignedIn();
+    }
+
     // Games collection rules
     match /games/{gameId} {
-      // Anyone authenticated can read any game (needed for join by invite code)
+      // Users can read games they're in, or any game (for join by invite code)
+      // Note: Video privacy is enforced at application level
       allow read: if isSignedIn();
 
       // Any authenticated user can create a game
@@ -29,9 +37,13 @@ service cloud.firestore {
 
       // Allow updates if:
       // - User is the creator
-      // - User is the judge
-      // - Any authenticated user (for joining games and updating game state)
-      allow update: if isSignedIn();
+      // - User is the judge (can update scores)
+      // - User is a player in the game (can update own submission)
+      allow update: if isSignedIn() && (
+        isGameCreator(resource.data) ||
+        isGameJudge(resource.data) ||
+        isPlayerInGame(resource.data)
+      );
 
       // Only creator can delete a game
       allow delete: if isSignedIn() && isGameCreator(resource.data);

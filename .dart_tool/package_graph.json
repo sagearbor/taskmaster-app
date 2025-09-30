@@ -31,6 +31,8 @@
       ],
       "devDependencies": [
         "bloc_test",
+        "fake_cloud_firestore",
+        "firebase_auth_mocks",
         "flutter_lints",
         "flutter_test",
         "mocktail"
@@ -211,9 +213,12 @@
     },
     {
       "name": "uuid",
-      "version": "3.0.7",
+      "version": "4.5.1",
       "dependencies": [
-        "crypto"
+        "crypto",
+        "fixnum",
+        "meta",
+        "sprintf"
       ]
     },
     {
@@ -679,15 +684,6 @@
       ]
     },
     {
-      "name": "geolocator_android",
-      "version": "4.3.1",
-      "dependencies": [
-        "flutter",
-        "geolocator_platform_interface",
-        "uuid"
-      ]
-    },
-    {
       "name": "geolocator_platform_interface",
       "version": "4.2.6",
       "dependencies": [
@@ -777,6 +773,11 @@
         "flutter",
         "shared_preferences_platform_interface"
       ]
+    },
+    {
+      "name": "sprintf",
+      "version": "7.0.0",
+      "dependencies": []
     },
     {
       "name": "crypto",
@@ -1263,6 +1264,168 @@
       "dependencies": [
         "collection",
         "meta"
+      ]
+    },
+    {
+      "name": "firebase_auth_mocks",
+      "version": "0.14.2",
+      "dependencies": [
+        "dart_jsonwebtoken",
+        "equatable",
+        "firebase_auth",
+        "firebase_auth_platform_interface",
+        "firebase_core",
+        "flutter",
+        "meta",
+        "mock_exceptions",
+        "uuid"
+      ]
+    },
+    {
+      "name": "mock_exceptions",
+      "version": "0.8.2",
+      "dependencies": [
+        "matcher"
+      ]
+    },
+    {
+      "name": "dart_jsonwebtoken",
+      "version": "3.2.0",
+      "dependencies": [
+        "clock",
+        "convert",
+        "ed25519_edwards",
+        "pointycastle"
+      ]
+    },
+    {
+      "name": "pointycastle",
+      "version": "4.0.0",
+      "dependencies": [
+        "collection",
+        "convert"
+      ]
+    },
+    {
+      "name": "ed25519_edwards",
+      "version": "0.3.1",
+      "dependencies": [
+        "adaptive_number",
+        "collection",
+        "convert",
+        "crypto"
+      ]
+    },
+    {
+      "name": "adaptive_number",
+      "version": "1.0.0",
+      "dependencies": [
+        "fixnum"
+      ]
+    },
+    {
+      "name": "fake_cloud_firestore",
+      "version": "3.1.0",
+      "dependencies": [
+        "clock",
+        "cloud_firestore",
+        "cloud_firestore_platform_interface",
+        "collection",
+        "equatable",
+        "fake_firebase_security_rules",
+        "flutter",
+        "mock_exceptions",
+        "plugin_platform_interface",
+        "quiver",
+        "rx",
+        "rxdart"
+      ]
+    },
+    {
+      "name": "rxdart",
+      "version": "0.28.0",
+      "dependencies": []
+    },
+    {
+      "name": "rx",
+      "version": "0.4.0",
+      "dependencies": [
+        "collection",
+        "matcher",
+        "meta",
+        "more"
+      ]
+    },
+    {
+      "name": "fixnum",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "fake_firebase_security_rules",
+      "version": "0.5.3",
+      "dependencies": [
+        "antlr4",
+        "cel",
+        "equatable",
+        "logger",
+        "tuple"
+      ]
+    },
+    {
+      "name": "tuple",
+      "version": "2.0.2",
+      "dependencies": []
+    },
+    {
+      "name": "cel",
+      "version": "0.5.3",
+      "dependencies": [
+        "antlr4",
+        "collection",
+        "equatable"
+      ]
+    },
+    {
+      "name": "antlr4",
+      "version": "4.13.2",
+      "dependencies": [
+        "collection",
+        "logging"
+      ]
+    },
+    {
+      "name": "quiver",
+      "version": "3.2.2",
+      "dependencies": [
+        "matcher"
+      ]
+    },
+    {
+      "name": "more",
+      "version": "4.6.1",
+      "dependencies": [
+        "characters",
+        "clock",
+        "collection",
+        "meta"
+      ]
+    },
+    {
+      "name": "logger",
+      "version": "2.6.1",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
+      "name": "geolocator_android",
+      "version": "4.6.2",
+      "dependencies": [
+        "flutter",
+        "geolocator_platform_interface",
+        "meta",
+        "uuid"
       ]
     }
   ],
