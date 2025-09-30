@@ -287,15 +287,27 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                               child: OutlinedButton.icon(
                                 onPressed: _isLoading ? null : () => _selectRandomTasks(5),
                                 icon: const Icon(Icons.shuffle),
-                                label: const Text('Random 5'),
+                                label: const Text('Quick (5)'),
                               ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: _isLoading ? null : () => _selectRandomTasks(10),
+                                icon: const Icon(Icons.celebration),
+                                label: const Text('Party (10)'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Expanded(
                               child: ElevatedButton.icon(
                                 onPressed: _isLoading ? null : _selectTasks,
                                 icon: const Icon(Icons.search),
-                                label: const Text('Browse'),
+                                label: const Text('Browse Tasks'),
                               ),
                             ),
                           ],

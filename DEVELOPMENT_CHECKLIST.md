@@ -70,47 +70,50 @@
 
 ---
 
-#### **Day 3-4: Task Selection in Game Creation** ⬜ NOT STARTED
-- [ ] **File:** `lib/features/games/presentation/screens/create_game_screen.dart`
-  - [ ] Add "Select Tasks" step after game name
-  - [ ] Add `selectedTasks` list to state
-  - [ ] Add "Quick Presets" buttons:
-    - [ ] "Quick Play (5 tasks)" - random selection
-    - [ ] "Party Mode (10 tasks)" - more tasks
-    - [ ] "Custom" - manual selection
-  - [ ] Navigate to TaskBrowserScreen
-  - [ ] Show selected task count badge
-  - [ ] **💡 IMPROVEMENT:** Add drag-to-reorder selected tasks
+#### **Day 3-4: Task Selection in Game Creation** ✅ FULLY COMPLETED
+- [x] **File:** `lib/features/games/presentation/screens/create_game_screen.dart`
+  - [x] Add "Select Tasks" step after game name
+  - [x] Add `selectedTasks` list to state
+  - [x] Add "Quick Presets" buttons:
+    - [x] "Quick (5 tasks)" - random selection
+    - [x] "Party (10 tasks)" - more tasks
+    - [x] "Browse" (Custom) - manual selection
+  - [x] Navigate to TaskBrowserScreen
+  - [x] Show selected task count badge
+  - [x] Show horizontal scrolling preview of selected tasks
+  - [x] "Change Tasks" button to modify selection
+  - [ ] **💡 IMPROVEMENT:** Add drag-to-reorder selected tasks (DEFERRED)
 
-- [ ] **File:** `lib/features/tasks/presentation/screens/task_browser_screen.dart` (NEW)
-  - [ ] Build grid view of tasks from `PrebuiltTasksData.getAllTasks()`
-  - [ ] Add category filter tabs (Classic, Creative, Physical, Mental, Food, Social, Household, Bonus)
-  - [ ] Add search bar with debounce
-  - [ ] Task cards show: icon, title, type badge (video/puzzle), estimated duration
-  - [ ] Tap to preview full description modal
-  - [ ] Multi-select with checkboxes
-  - [ ] Bottom bar: "X tasks selected" + "Done" button
-  - [ ] Return selected tasks to CreateGameScreen
-  - [ ] **💡 IMPROVEMENT:** Add "Random 5" shuffle button
-  - [ ] **💡 IMPROVEMENT:** Save favorite tasks to SharedPreferences
+- [x] **File:** `lib/features/tasks/presentation/screens/task_browser_screen.dart` (NEW)
+  - [x] Build grid view of tasks from `PrebuiltTasksData.getAllTasks()`
+  - [x] Add category filter tabs (Classic, Creative, Physical, Mental, Food, Social, Household, Bonus, All)
+  - [x] Add search bar with live filtering
+  - [x] Task cards show: icon, title, type badge (video/puzzle), estimated duration
+  - [x] Tap to preview full description modal (inline implementation)
+  - [x] Multi-select with checkboxes
+  - [x] Bottom bar: "X tasks selected" + "Done" button
+  - [x] Return selected tasks to CreateGameScreen
+  - [x] **💡 IMPROVEMENT:** Add "Random 5" and "Random 10" shuffle buttons
+  - [ ] **💡 IMPROVEMENT:** Save favorite tasks to SharedPreferences (DEFERRED)
 
-- [ ] **File:** `lib/features/tasks/presentation/widgets/task_card.dart` (NEW)
-  - [ ] Icon based on task type
-  - [ ] Title (max 2 lines, ellipsis)
-  - [ ] Short description (max 3 lines)
-  - [ ] Video/Puzzle badge
-  - [ ] Checkbox for selection
-  - [ ] **💡 IMPROVEMENT:** Add difficulty indicator (1-5 stars)
+- [x] **File:** `lib/features/tasks/presentation/widgets/task_card.dart` (NEW)
+  - [x] Icon based on task type
+  - [x] Title (max 2 lines, ellipsis)
+  - [x] Short description (max 3 lines)
+  - [x] Video/Puzzle badge
+  - [x] Visual checkbox indicator for selection
+  - [x] Duration display (if available)
+  - [ ] **💡 IMPROVEMENT:** Add difficulty indicator (1-5 stars) (DEFERRED)
 
-- [ ] **File:** `lib/features/tasks/presentation/widgets/task_preview_modal.dart` (NEW)
-  - [ ] Full task description
-  - [ ] Example submission ideas
-  - [ ] Estimated time
-  - [ ] "Add to Game" button
+- [x] **File:** Task preview modal (inline in task_browser_screen.dart)
+  - [x] Full task description
+  - [x] Task type icon and title
+  - [x] "Add to Game" / "Remove from Game" button
+  - [x] Draggable scrollable sheet
 
-- [ ] **Tests:** `test/features/tasks/`
-  - [ ] task_browser_screen_test.dart - widget test for filtering/search
-  - [ ] task_card_test.dart - widget test for selection
+- [x] **Tests:** `test/features/tasks/` ✅ COMPLETED
+  - [x] task_browser_screen_test.dart - widget test for filtering/search (16 tests)
+  - [x] task_card_test.dart - widget test for selection (20 tests)
 
 **Comments:**
 - PrebuiltTasksData has 225 tasks - may need pagination or lazy loading
