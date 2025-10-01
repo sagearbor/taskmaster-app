@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/game.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../avatars/presentation/widgets/avatar_game_overlay.dart';
 import '../bloc/game_detail_bloc.dart';
 
 class GameLobbyView extends StatelessWidget {
@@ -25,7 +26,9 @@ class GameLobbyView extends StatelessWidget {
         final isCreator = game.isUserCreator(currentUser.id);
         final isJudge = game.isUserJudge(currentUser.id);
 
-        return Padding(
+        return AvatarGameOverlay(
+          game: game,
+          child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -304,7 +307,7 @@ class GameLobbyView extends StatelessWidget {
               // Action Buttons
               if (isCreator) ...[
                 ElevatedButton.icon(
-                  onPressed: game.players.length >= 2 && game.tasks.isNotEmpty
+                  onPressed: game.players.isNotEmpty && game.tasks.isNotEmpty
                       ? () {
                           context.read<GameDetailBloc>().add(StartGame(gameId: game.id));
                         }
@@ -325,13 +328,13 @@ class GameLobbyView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  game.players.length < 2
-                      ? 'Need at least 2 players to start'
+                  game.players.isEmpty
+                      ? 'Need at least 1 player to start'
                       : game.tasks.isEmpty
                           ? 'Need to add tasks before starting'
                           : 'Ready to start! (${game.tasks.length} task${game.tasks.length == 1 ? '' : 's'}, ${game.players.length} player${game.players.length == 1 ? '' : 's'})',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: game.players.length >= 2 && game.tasks.isNotEmpty
+                    color: game.players.isNotEmpty && game.tasks.isNotEmpty
                         ? Colors.green[700]
                         : Colors.grey[600],
                   ),
@@ -361,6 +364,7 @@ class GameLobbyView extends StatelessWidget {
                 ),
               ],
             ],
+          ),
           ),
         );
       },
