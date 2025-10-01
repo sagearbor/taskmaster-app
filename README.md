@@ -1,9 +1,13 @@
 # Taskmaster Party App
 An unofficial, fan-made mobile and web application for playing Taskmaster-style party games with friends, whether you're in the same room or across the globe.
 
-🚀 Project Status
-**Current Version**: MVP Complete with 200+ Tasks and Advanced Features
-**Mode**: Mock Services (No Firebase Required for Testing)
+## 🚀 Project Status
+**Live App:** https://taskmaster-app-3d480.web.app
+**Current:** MVP Complete - Phase 5 (Quick Play + Bug Fixes) ✅
+**Next:** Phase 3 remainder (Day 31+) or Phase 4 (Mobile deployment)
+
+### For Next Development Session
+Tell AI: *"Read DEVELOPMENT_CHECKLIST.md and implement the next incomplete section"*
 
 ## ✨ Features Implemented
 
