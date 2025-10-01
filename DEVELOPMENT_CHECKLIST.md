@@ -1125,7 +1125,29 @@ dependencies:
 [x] Visual: Color-coded player bodies
 [x] Toggle visibility button in overlay
 [x] Game pauses when overlay hidden
+[x] Solo play enabled (removed 2-player requirement)
 [ ] Fallback for low-end devices (future enhancement)
+
+**Known Issues to Fix (Session 2025-10-01):**
+1. **Black rectangle still visible on right side** - User needs to zoom out to 25% to see avatars
+   - World size reduced to 400x600 but may need further scaling
+   - Walls made invisible but still rendering as black?
+   - Need to investigate canvas rendering or add more aggressive scaling
+
+2. **Avatar design needs rework** - Current implementation not intuitive
+   - Avatars climbing generic platforms isn't meaningful
+   - **PROPOSAL:** Make each task a platform that avatars climb
+   - Would show progress through the game visually
+   - Each completed task = platform the avatar reached
+
+3. **Mobile responsiveness** - Needs testing on actual mobile devices
+   - Currently positioned on right side (desktop) or full-width (mobile)
+   - Need to verify sizing and performance on phones
+
+4. **Canvas rendering optimization** - May be causing black rectangles
+   - Check if Flame rendering is conflicting with Flutter overlay
+   - Consider using IgnorePointer more effectively
+   - May need to adjust z-index or rendering order
 
 ### Data Model Updates
 
