@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/game.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../avatars/presentation/widgets/avatar_game_overlay.dart';
 import '../bloc/game_detail_bloc.dart';
 
 class GameLobbyView extends StatelessWidget {
@@ -25,7 +26,9 @@ class GameLobbyView extends StatelessWidget {
         final isCreator = game.isUserCreator(currentUser.id);
         final isJudge = game.isUserJudge(currentUser.id);
 
-        return Padding(
+        return AvatarGameOverlay(
+          game: game,
+          child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -361,6 +364,7 @@ class GameLobbyView extends StatelessWidget {
                 ),
               ],
             ],
+          ),
           ),
         );
       },

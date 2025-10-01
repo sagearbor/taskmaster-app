@@ -14,6 +14,8 @@
         "equatable",
         "firebase_auth",
         "firebase_core",
+        "flame",
+        "flame_forge2d",
         "flutter",
         "flutter_bloc",
         "geolocator",
@@ -1427,6 +1429,39 @@
         "collection",
         "meta"
       ]
+    },
+    {
+      "name": "flame_forge2d",
+      "version": "0.16.0+5",
+      "dependencies": [
+        "flame",
+        "flutter",
+        "forge2d"
+      ]
+    },
+    {
+      "name": "forge2d",
+      "version": "0.12.2",
+      "dependencies": [
+        "meta",
+        "vector_math"
+      ]
+    },
+    {
+      "name": "flame",
+      "version": "1.32.0",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "meta",
+        "ordered_set",
+        "vector_math"
+      ]
+    },
+    {
+      "name": "ordered_set",
+      "version": "8.0.0",
+      "dependencies": []
     }
   ],
   "configVersion": 1

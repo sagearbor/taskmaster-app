@@ -2,6 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Repository Hygiene Rules
+
+### IMPORTANT: Keep the Repository Clean
+- **DO NOT create temporary instruction files** (e.g., IMPLEMENTATION.md, TODO.md, NOTES.md)
+- **DO NOT create session-specific files** that won't be used long-term
+- **ALWAYS use existing files** for documentation:
+  - `DEVELOPMENT_CHECKLIST.md` - for implementation plans and tasks
+  - `CLAUDE.md` - for AI instructions and guidelines
+  - `README.md` - for project overview and setup
+- **ALWAYS work in feature branches** for new development:
+  - Create branch: `git checkout -b feature/feature-name`
+  - Example: `git checkout -b feature/avatar-system`
+- **Clean up before ending session**: Delete any temporary files created during work
+
 ## Project Overview
 
 This is a cross-platform Flutter application for hosting Taskmaster-style party games. The app uses Firebase as the backend and targets iOS, Android, and Web platforms simultaneously.

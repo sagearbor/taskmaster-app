@@ -260,6 +260,18 @@
       "languageVersion": "3.1"
     },
     {
+      "name": "flame",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/flame-1.32.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.8"
+    },
+    {
+      "name": "flame_forge2d",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/flame_forge2d-0.16.0+5",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///home/scb2/flutter/packages/flutter",
       "packageUri": "lib/",
@@ -288,6 +300,12 @@
       "rootUri": "file:///home/scb2/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.8"
+    },
+    {
+      "name": "forge2d",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/forge2d-0.12.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
     },
     {
       "name": "frontend_server_client",
@@ -480,6 +498,12 @@
       "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/node_preamble-2.0.2",
       "packageUri": "lib/",
       "languageVersion": "2.12"
+    },
+    {
+      "name": "ordered_set",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/ordered_set-8.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
     },
     {
       "name": "package_config",
