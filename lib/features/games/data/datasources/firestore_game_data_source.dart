@@ -196,8 +196,8 @@ class FirestoreGameDataSource implements GameRemoteDataSource {
       final players = List.from(gameData['players'] ?? []);
       final tasks = List.from(gameData['tasks'] ?? []);
 
-      if (players.length < 2) {
-        throw Exception('Need at least 2 players to start');
+      if (players.isEmpty) {
+        throw Exception('Need at least 1 player to start');
       }
       if (tasks.isEmpty) {
         throw Exception('Need at least 1 task to start');

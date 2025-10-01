@@ -92,8 +92,8 @@ class GameRepositoryImpl implements GameRepository {
     final gameObj = Game.fromMap({...game, 'id': gameId});
 
     // Validate game can be started
-    if (gameObj.players.length < 2) {
-      throw Exception('Need at least 2 players to start');
+    if (gameObj.players.isEmpty) {
+      throw Exception('Need at least 1 player to start');
     }
 
     if (gameObj.tasks.isEmpty) {

@@ -11,8 +11,8 @@ import 'components/npc_avatar.dart';
 /// Avatars autonomously try to reach the top platform while pushing each other
 class KingOfMountainGame extends Forge2DGame {
   final List<Player> players;
-  final double worldWidth = 800;
-  final double worldHeight = 1200;
+  final double worldWidth = 400;
+  final double worldHeight = 600;
 
   final List<PlayerAvatar> _avatars = [];
   final List<PlatformComponent> _platforms = [];
@@ -27,8 +27,8 @@ class KingOfMountainGame extends Forge2DGame {
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // Set camera bounds
-    camera.viewport = FixedResolutionViewport(Vector2(worldWidth, worldHeight));
+    // Set camera bounds (newer Flame API)
+    camera.viewfinder.visibleGameSize = Vector2(worldWidth, worldHeight);
 
     // Create platforms at different heights
     await _createPlatforms();
@@ -131,26 +131,29 @@ class KingOfMountainGame extends Forge2DGame {
   }
 
   Future<void> _createBoundaries() async {
-    // Left wall
+    // Left wall (invisible)
     final leftWall = WallComponent(
       position: Vector2(10, worldHeight / 2),
       height: worldHeight,
+      isVisible: false,
     );
     await add(leftWall);
 
-    // Right wall
+    // Right wall (invisible)
     final rightWall = WallComponent(
       position: Vector2(worldWidth - 10, worldHeight / 2),
       height: worldHeight,
+      isVisible: false,
     );
     await add(rightWall);
 
-    // Ceiling
+    // Ceiling (invisible)
     final ceiling = WallComponent(
       position: Vector2(worldWidth / 2, 10),
       height: 20,
       isHorizontal: true,
       width: worldWidth,
+      isVisible: false,
     );
     await add(ceiling);
   }
@@ -194,12 +197,14 @@ class WallComponent extends BodyComponent {
   final double height;
   final double width;
   final bool isHorizontal;
+  final bool isVisible;
 
   WallComponent({
     required this.position,
     required this.height,
     this.width = 20,
     this.isHorizontal = false,
+    this.isVisible = true,
   });
 
   @override
@@ -222,5 +227,13 @@ class WallComponent extends BodyComponent {
       ..restitution = 0.1;
 
     return world.createBody(bodyDef)..createFixture(fixtureDef);
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // Only render if visible
+    if (isVisible) {
+      super.render(canvas);
+    }
   }
 }

@@ -37,19 +37,20 @@ class _AvatarGameOverlayState extends State<AvatarGameOverlay> {
         widget.child,
 
         // Avatar game overlay (only show in lobby status)
-        if (_showAvatars && widget.game.status == 'lobby')
-          Positioned.fill(
-            child: IgnorePointer(
-              ignoring: false,
-              child: Container(
-                color: Colors.black.withOpacity(0.05), // Slight tint
-                child: GameWidget(
-                  game: _avatarGame,
-                  overlayBuilderMap: {
-                    'controls': (context, game) => _buildControls(context),
-                  },
-                  initialActiveOverlays: const ['controls'],
-                ),
+        if (_showAvatars && widget.game.isInLobby)
+          Positioned(
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: MediaQuery.of(context).size.width > 600 ? 400 : MediaQuery.of(context).size.width,
+            child: Container(
+              color: Colors.transparent,
+              child: GameWidget(
+                game: _avatarGame,
+                overlayBuilderMap: {
+                  'controls': (context, game) => _buildControls(context),
+                },
+                initialActiveOverlays: const ['controls'],
               ),
             ),
           ),

@@ -357,10 +357,10 @@ packages:
     dependency: "direct main"
     description:
       name: flame_forge2d
-      sha256: "3d0d694c79a6cea624db4a995cb8189509b06ac9d4366584d07dfd99aecbb30f"
+      sha256: "861161681cfceb285fc91e436a591129c900611c2111820b20e5f6240d0d0dd6"
       url: "https://pub.dev"
     source: hosted
-    version: "0.16.0+5"
+    version: "0.19.2"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -396,10 +396,10 @@ packages:
     dependency: transitive
     description:
       name: forge2d
-      sha256: a16bee7a5bdf3538ef4a51ae9b6befb39872d3518b653fc7b8756ef49f7fcf96
+      sha256: "747eab7e492975907d17ca1ed565eeb6342c421f26cfb2b2d6f5598dd57d6d7c"
       url: "https://pub.dev"
     source: hosted
-    version: "0.12.2"
+    version: "0.14.2"
   frontend_server_client:
     dependency: transitive
     description:

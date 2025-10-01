@@ -119,6 +119,17 @@
       ]
     },
     {
+      "name": "flame",
+      "version": "1.32.0",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "meta",
+        "ordered_set",
+        "vector_math"
+      ]
+    },
+    {
       "name": "path_provider",
       "version": "2.1.5",
       "dependencies": [
@@ -549,6 +560,11 @@
     {
       "name": "path",
       "version": "1.9.1",
+      "dependencies": []
+    },
+    {
+      "name": "ordered_set",
+      "version": "8.0.0",
       "dependencies": []
     },
     {
@@ -1432,7 +1448,7 @@
     },
     {
       "name": "flame_forge2d",
-      "version": "0.16.0+5",
+      "version": "0.19.2",
       "dependencies": [
         "flame",
         "flutter",
@@ -1441,27 +1457,12 @@
     },
     {
       "name": "forge2d",
-      "version": "0.12.2",
+      "version": "0.14.2",
       "dependencies": [
         "meta",
-        "vector_math"
+        "vector_math",
+        "web"
       ]
-    },
-    {
-      "name": "flame",
-      "version": "1.32.0",
-      "dependencies": [
-        "collection",
-        "flutter",
-        "meta",
-        "ordered_set",
-        "vector_math"
-      ]
-    },
-    {
-      "name": "ordered_set",
-      "version": "8.0.0",
-      "dependencies": []
     }
   ],
   "configVersion": 1

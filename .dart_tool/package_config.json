@@ -267,9 +267,9 @@
     },
     {
       "name": "flame_forge2d",
-      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/flame_forge2d-0.16.0+5",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/flame_forge2d-0.19.2",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.8"
     },
     {
       "name": "flutter",
@@ -303,9 +303,9 @@
     },
     {
       "name": "forge2d",
-      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/forge2d-0.12.2",
+      "rootUri": "file:///home/scb2/.pub-cache/hosted/pub.dev/forge2d-0.14.2",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.8"
     },
     {
       "name": "frontend_server_client",
