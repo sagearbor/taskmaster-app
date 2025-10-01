@@ -16,6 +16,37 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Example: `git checkout -b feature/avatar-system`
 - **Clean up before ending session**: Delete any temporary files created during work
 
+## Session Continuity Pattern
+
+When pausing work mid-task, use empty commits for context preservation:
+
+```bash
+# Create descriptive branch
+git checkout -b <type>/<brief-description>
+
+# Empty commit with session context
+git commit --allow-empty -m "<Subject line>
+
+BUGS/FEATURES:
+- <What needs to be done>
+
+CONTEXT:
+- <Key details from investigation>
+
+NEXT SESSION:
+- <First steps to take>
+
+STATUS: <Not started|In progress>
+Session: <YYYY-MM-DD>"
+
+# Push to preserve across machines
+git push -u origin <branch-name>
+
+# Stay on branch (DO NOT return to main)
+```
+
+**Next session:** Branch will be active, `git log -1` shows full context.
+
 ## Project Overview
 
 This is a cross-platform Flutter application for hosting Taskmaster-style party games. The app uses Firebase as the backend and targets iOS, Android, and Web platforms simultaneously.
