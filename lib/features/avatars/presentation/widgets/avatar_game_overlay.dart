@@ -9,6 +9,10 @@ class AvatarGameOverlay extends StatefulWidget {
   final app_game.Game game;
   final Widget child;
 
+  /// Feature flag to enable/disable avatar system
+  /// Set to false to completely disable avatars (for performance or fixing issues)
+  static const bool enableAvatars = false; // TODO: Set to true when ready
+
   const AvatarGameOverlay({
     super.key,
     required this.game,
@@ -31,6 +35,11 @@ class _AvatarGameOverlayState extends State<AvatarGameOverlay> {
 
   @override
   Widget build(BuildContext context) {
+    // If avatars are disabled via feature flag, just return the child
+    if (!AvatarGameOverlay.enableAvatars) {
+      return widget.child;
+    }
+
     return Stack(
       children: [
         // Main lobby UI
