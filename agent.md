@@ -10,13 +10,17 @@ Cross-platform Flutter app for Taskmaster-style party games. Firebase backend, t
 - Codemagic (CI/CD)
 
 ## Status (last commits)
-- **Phase 5 COMPLETE** — MVP done (21/21 days)
-- Quick Play feature live
-- Firebase Auth + Firestore connected and working
-- 225+ prebuilt tasks across 9 categories
-- Real-time multi-device sync verified
-- 3 critical bugs fixed (tasks display, game list, auth restrictions)
-- **Next:** Phase 3 remainder (Async-Optimized features) or mobile deployment
+- Web MVP. App compiles clean (was 111 analyzer errors — all fixed) and the
+  full test suite is green (161 tests, incl. a headless game-loop integration
+  test under `test/integration/`).
+- Core loop implemented end-to-end: create → join → add tasks → start →
+  submit → judge → scoreboard. (joinGame/addTasksToGame/submitTaskAnswer were
+  previously no-op stubs — now implemented.)
+- Quick Play live; Firebase Auth + Firestore on web; 225+ prebuilt tasks.
+- Firestore rules hardened (no game hijacking / arbitrary community-task edits).
+- **Known gaps:** no android/ios platforms yet (web-only); ads + IAP are
+  demo/mock only. See README "Known Gaps".
+- **Next:** mobile platform setup + store deployment; notifications (FCM).
 
 ## How to Run
 ```bash
