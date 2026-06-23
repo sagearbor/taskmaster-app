@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:taskmaster_app/core/di/service_locator.dart';
 import 'package:taskmaster_app/core/models/game.dart';
 import 'package:taskmaster_app/core/models/player.dart';
+import 'package:taskmaster_app/core/models/submission.dart';
 import 'package:taskmaster_app/core/models/task.dart';
 import 'package:taskmaster_app/features/games/domain/repositories/game_repository.dart';
 
@@ -40,26 +41,24 @@ void main() {
       expect(created!.status, GameStatus.lobby);
       expect(created.players, hasLength(1));
 
-      // 2. Set up a startable game: add a second player and one task.
-      //    (joinGame / addTasksToGame are stubs in the repository, so we wire
-      //    the state in directly via updateGame — the path the data layer uses.)
-      final readyGame = created.copyWith(
-        players: [
-          ...created.players,
-          const Player(
-              userId: challengerId, displayName: 'Bob', totalScore: 0),
-        ],
-        tasks: [
-          const Task(
-            id: 'task-1',
-            title: 'Make the best paper airplane',
-            description: 'Most aerodynamic wins',
-            taskType: TaskType.video,
-            submissions: [],
-          ),
-        ],
-      );
-      await repo.updateGame(gameId, readyGame);
+      // 2a. A second player joins via the invite code.
+      await repo.joinGame(created.inviteCode, challengerId, 'Bob');
+      final joined = await repo.getGameStream(gameId).first;
+      expect(joined!.players.map((p) => p.userId),
+          containsAll([creatorId, challengerId]));
+
+      // 2b. Add a task to the game.
+      await repo.addTasksToGame(gameId, [
+        const Task(
+          id: 'task-1',
+          title: 'Make the best paper airplane',
+          description: 'Most aerodynamic wins',
+          taskType: TaskType.video,
+          submissions: [],
+        ),
+      ]);
+      final withTask = await repo.getGameStream(gameId).first;
+      expect(withTask!.tasks.single.id, 'task-1');
 
       // 3. Start the game — initializes per-player task statuses.
       await repo.startGame(gameId);
@@ -68,7 +67,23 @@ void main() {
       expect(started.tasks.single.playerStatuses.keys,
           containsAll([creatorId, challengerId]));
 
-      // 4. Judge: award points on task 0.
+      // 4a. The challenger submits a video answer for task 0.
+      await repo.submitTaskAnswer(
+        gameId,
+        'task-1',
+        Submission(
+          id: 'sub-1',
+          userId: challengerId,
+          videoUrl: 'https://youtu.be/example',
+          score: 0,
+          isJudged: false,
+          submittedAt: DateTime.now(),
+        ),
+      );
+      final submitted = await repo.getGameStream(gameId).first;
+      expect(submitted!.tasks.single.submissions, hasLength(1));
+
+      // 4b. Judge: award points on task 0.
       await repo.judgeSubmission(gameId, 0, challengerId, 5);
       await repo.judgeSubmission(gameId, 0, creatorId, 3);
 

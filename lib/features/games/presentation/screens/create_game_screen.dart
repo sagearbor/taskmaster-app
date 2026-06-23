@@ -147,10 +147,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
       );
 
       // Add tasks to game
-      await gameRepository.addTasksToGame(
-        gameId,
-        _selectedTasks.map((t) => t.id).toList(),
-      );
+      await gameRepository.addTasksToGame(gameId, _selectedTasks);
 
       if (mounted) {
         Navigator.of(context).pop();

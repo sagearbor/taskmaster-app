@@ -204,36 +204,18 @@ class MockGameDataSource implements GameRemoteDataSource {
   @override
   Future<String> joinGame(String inviteCode, String userId) async {
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     final game = _games.firstWhere(
       (game) => game['inviteCode'] == inviteCode,
       orElse: () => {},
     );
-    
+
     if (game.isEmpty) {
       throw Exception('Game not found with invite code: $inviteCode');
     }
-    
-    // Check if user is already in the game
-    final players = List<Map<String, dynamic>>.from(game['players']);
-    final isAlreadyInGame = players.any((player) => player['userId'] == userId);
-    
-    if (!isAlreadyInGame) {
-      players.add({
-        'userId': userId,
-        'displayName': 'Player ${userId.substring(0, 8)}',
-        'totalScore': 0,
-      });
-      
-      game['players'] = players;
-      _gamesController.add(List.from(_games));
-      
-      // Update individual game stream if it exists
-      if (_gameControllers.containsKey(game['id'])) {
-        _gameControllers[game['id']]!.add(game);
-      }
-    }
-    
+
+    // Adding the player (with their real display name) is handled by
+    // GameRepositoryImpl.joinGame; here we just resolve the invite code.
     return game['id'] as String;
   }
 
