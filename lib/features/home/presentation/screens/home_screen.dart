@@ -6,6 +6,7 @@ import '../../../../core/widgets/skeleton_loaders.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/screens/register_screen.dart';
 import '../../../games/domain/repositories/game_repository.dart';
 import '../../../games/presentation/bloc/games_bloc.dart';
 import '../../../games/presentation/screens/create_game_screen.dart';
@@ -265,8 +266,9 @@ class HomeView extends StatelessWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // Navigate to sign up screen
-              // TODO: Implement navigation to sign up screen
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const RegisterScreen()),
+              );
             },
             child: const Text('Sign Up'),
           ),

@@ -134,7 +134,6 @@ void main() {
         )),
         expect: () => [
           GamesLoading(),
-          GamesLoading(), // From LoadGames call
           GamesLoaded(games: testGames),
         ],
       );
@@ -249,7 +248,6 @@ void main() {
         expect: () => [
           GamesLoading(),
           GamesLoaded(games: testGames),
-          GamesLoading(),
           GamesLoading(),
           GamesLoaded(games: testGames),
         ],

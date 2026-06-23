@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/models/game.dart';
 
@@ -195,14 +196,7 @@ class GameCompletedView extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Implement share results functionality
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Share feature coming soon!'),
-                      ),
-                    );
-                  },
+                  onPressed: () => _shareResults(sortedPlayers),
                   icon: const Icon(Icons.share),
                   label: const Text('Share Results'),
                 ),
@@ -222,6 +216,18 @@ class GameCompletedView extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  void _shareResults(List<dynamic> sortedPlayers) {
+    final standings = sortedPlayers
+        .asMap()
+        .entries
+        .map((e) => '${e.key + 1}. ${e.value.displayName} — ${e.value.totalScore} pts')
+        .join('\n');
+    final text = '🏆 ${game.gameName} — Final Results\n\n'
+        '$standings\n\n'
+        'Played on Taskmaster Party!';
+    Share.share(text, subject: '${game.gameName} — Results');
   }
 }
 

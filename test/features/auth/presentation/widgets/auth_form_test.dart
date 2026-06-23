@@ -14,6 +14,9 @@ void main() {
     setUp(() {
       mockAuthBloc = MockAuthBloc();
       when(() => mockAuthBloc.state).thenReturn(AuthInitial());
+      // BlocBuilder subscribes to .stream; mocktail returns null unless stubbed.
+      when(() => mockAuthBloc.stream)
+          .thenAnswer((_) => const Stream<AuthState>.empty());
     });
 
     Widget createTestWidget({

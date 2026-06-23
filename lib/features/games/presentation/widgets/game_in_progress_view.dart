@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/game.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../screens/scoreboard_screen.dart';
 import '../screens/task_execution_screen.dart';
 
 class GameInProgressView extends StatelessWidget {
@@ -237,8 +238,11 @@ class GameInProgressView extends StatelessWidget {
                       const Spacer(),
                       TextButton(
                         onPressed: () {
-                          // Navigate to full scoreboard
-                          // TODO: Implement scoreboard navigation
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => ScoreboardScreen(game: game),
+                            ),
+                          );
                         },
                         child: const Text('View All'),
                       ),
