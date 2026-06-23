@@ -53,6 +53,7 @@ dependencies:
   share_plus: ^7.2.1
   url_launcher: ^6.2.1
   path_provider: ^2.1.1
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
