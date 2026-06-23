@@ -8,6 +8,7 @@ import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
 import 'core/di/service_locator.dart';
+import 'core/services/notification_service.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
@@ -23,6 +24,13 @@ void main() async {
 
   // Initialize services with Firebase (Firestore)
   await ServiceLocator.init(useMockServices: false);
+
+  // Initialize push notifications (best-effort; never blocks startup).
+  try {
+    await sl<NotificationService>().initialize();
+  } catch (_) {
+    // Messaging is optional; ignore failures (e.g. web without VAPID setup).
+  }
 
   runApp(const TaskmasterApp());
 }

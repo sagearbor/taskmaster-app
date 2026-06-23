@@ -54,6 +54,7 @@ dependencies:
   url_launcher: ^6.2.1
   path_provider: ^2.1.1
   qr_flutter: ^4.1.0
+  firebase_messaging: ^15.2.10
 
 dev_dependencies:
   flutter_test:
