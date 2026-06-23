@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../di/service_locator.dart';
-import '../services/ad_service_simple.dart';
 
 // Simplified ad banner for development
 class AdBannerWidget extends StatelessWidget {

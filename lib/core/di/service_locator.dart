@@ -10,7 +10,6 @@ import '../../features/games/data/repositories/game_repository_impl.dart';
 import '../../features/games/domain/repositories/game_repository.dart';
 import '../../features/games/data/datasources/game_remote_data_source.dart';
 import '../../features/games/data/datasources/mock_game_data_source.dart';
-import '../../features/games/data/datasources/firebase_game_data_source.dart';
 import '../../features/games/data/datasources/firestore_game_data_source.dart';
 
 import '../../features/tasks/data/repositories/task_repository_impl.dart';
@@ -22,6 +21,7 @@ import '../../features/tasks/data/datasources/firebase_task_data_source.dart';
 import '../services/ad_service_simple.dart';
 import '../services/purchase_service_simple.dart';
 import '../services/ai_task_service.dart';
+import '../services/notification_service.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -67,10 +67,14 @@ class ServiceLocator {
       sl.registerLazySingleton<AdService>(() => MockAdService());
       sl.registerLazySingleton<PurchaseService>(() => MockPurchaseService());
       sl.registerLazySingleton<AITaskService>(() => MockAITaskService());
+      sl.registerLazySingleton<NotificationService>(
+          () => MockNotificationService());
     } else {
       sl.registerLazySingleton<AdService>(() => AdServiceImpl());
       sl.registerLazySingleton<PurchaseService>(() => PurchaseServiceImpl());
       sl.registerLazySingleton<AITaskService>(() => AITaskServiceImpl());
+      sl.registerLazySingleton<NotificationService>(
+          () => FcmNotificationService());
     }
   }
 }

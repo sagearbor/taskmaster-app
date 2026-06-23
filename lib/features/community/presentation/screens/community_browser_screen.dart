@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/models/community_task.dart';
 import '../../../../core/models/task.dart';
+import '../../../games/domain/repositories/game_repository.dart';
 import '../../../tasks/domain/repositories/task_repository.dart';
 import '../bloc/community_bloc.dart';
 import '../widgets/community_task_card.dart';
 import 'submit_task_screen.dart';
 
 class CommunityBrowserScreen extends StatelessWidget {
-  const CommunityBrowserScreen({super.key});
+  /// When set, the "Use" action adds the chosen community task to this game.
+  /// When null, the browser is in read-only/global mode.
+  final String? targetGameId;
+
+  const CommunityBrowserScreen({super.key, this.targetGameId});
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +23,15 @@ class CommunityBrowserScreen extends StatelessWidget {
       create: (context) => CommunityBloc(
         taskRepository: sl<TaskRepository>(),
       )..add(LoadCommunityTasks()),
-      child: const CommunityBrowserView(),
+      child: CommunityBrowserView(targetGameId: targetGameId),
     );
   }
 }
 
 class CommunityBrowserView extends StatefulWidget {
-  const CommunityBrowserView({super.key});
+  final String? targetGameId;
+
+  const CommunityBrowserView({super.key, this.targetGameId});
 
   @override
   State<CommunityBrowserView> createState() => _CommunityBrowserViewState();
@@ -52,6 +60,40 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
       _selectedFilter = taskType;
     });
     context.read<CommunityBloc>().add(FilterTasksByType(taskType: taskType));
+  }
+
+  Future<void> _addTaskToGame(CommunityTask communityTask) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final gameId = widget.targetGameId;
+
+    if (gameId == null) {
+      messenger.showSnackBar(const SnackBar(
+        content: Text('Open this browser from a game lobby to add tasks.'),
+      ));
+      return;
+    }
+
+    try {
+      await sl<GameRepository>().addTasksToGame(gameId, [
+        Task(
+          id: communityTask.id,
+          title: communityTask.title,
+          description: communityTask.description,
+          taskType: communityTask.taskType,
+          puzzleAnswer: communityTask.puzzleAnswer,
+          submissions: const [],
+        ),
+      ]);
+      messenger.showSnackBar(SnackBar(
+        content: Text('Added "${communityTask.title}" to your game'),
+        backgroundColor: Colors.green,
+      ));
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(
+        content: Text('Could not add task: $e'),
+        backgroundColor: Colors.red,
+      ));
+    }
   }
 
   @override
@@ -240,14 +282,7 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
                               UpvoteTask(taskId: task.id),
                             );
                           },
-                          onUse: () {
-                            // TODO: Implement adding task to current game
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Task added to game! (Feature coming soon)'),
-                              ),
-                            );
-                          },
+                          onUse: () => _addTaskToGame(task),
                         );
                       },
                     ),

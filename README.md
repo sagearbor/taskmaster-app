@@ -10,10 +10,9 @@ and integration-tested against mock services.
 then store deployment. See "Known Gaps" below.
 
 ### Known Gaps
-- **Mobile not wired:** only the `web` platform + `linux` exist; there are no
-  `android/`/`ios/` directories and Firebase is configured for web only.
-  Run `flutter create --platforms=android,ios .` + `flutterfire configure`
-  before any mobile build.
+- **Mobile partially wired:** `android/`/`ios/` directories now exist, but
+  Firebase is still configured for web only — `flutterfire configure` is
+  required before mobile will launch. See `docs/MOBILE_SETUP.md`.
 - **Monetization is demo-only:** ads and in-app purchases run as no-op/mock
   services (the `*_simple` implementations); `google_mobile_ads` and
   `in_app_purchase` are intentionally not in `pubspec.yaml`.
@@ -115,8 +114,8 @@ flutter run -d linux -t lib/main_mock.dart
 ## 📱 Platform Support
 - **Web**: ✅ Fully functional, Firebase-configured, live (recommended)
 - **Linux Desktop**: ✅ Platform files present (Firebase not configured)
-- **Android / iOS**: ⚠️ NOT set up yet — platform directories don't exist.
-  Run `flutter create --platforms=android,ios .` then `flutterfire configure`.
+- **Android / iOS**: ⚠️ Platform dirs scaffolded; needs `flutterfire configure`
+  to generate mobile Firebase config before it runs. See `docs/MOBILE_SETUP.md`.
 - **Windows / macOS**: ⚠️ Requires additional setup
 
 This is an independent project created by a fan and is not affiliated with the official Taskmaster show or its creators.

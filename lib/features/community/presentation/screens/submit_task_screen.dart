@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/community_task.dart';
 import '../../../../core/models/task.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../tasks/domain/repositories/task_repository.dart';
 import '../bloc/community_bloc.dart';
 
 class SubmitTaskScreen extends StatefulWidget {

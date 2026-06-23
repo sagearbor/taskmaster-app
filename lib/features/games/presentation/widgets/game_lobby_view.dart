@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/models/game.dart';
 import '../../../../core/utils/link_utils.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../community/presentation/screens/community_browser_screen.dart';
 import '../bloc/game_detail_bloc.dart';
 
 class GameLobbyView extends StatelessWidget {
@@ -318,6 +319,19 @@ class GameLobbyView extends StatelessWidget {
 
               // Action Buttons
               if (isCreator) ...[
+                OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            CommunityBrowserScreen(targetGameId: game.id),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.public),
+                  label: const Text('Add Community Tasks'),
+                ),
+                const SizedBox(height: 8),
                 ElevatedButton.icon(
                   onPressed: game.players.length >= 2 && game.tasks.isNotEmpty
                       ? () {

@@ -17,7 +17,6 @@ import 'core/config/environment.dart';
 import 'core/error/error_handler.dart';
 import 'core/cache/cache_manager.dart';
 import 'core/utils/performance.dart' as perf;
-import 'core/services/ad_service_simple.dart';
 import 'features/app/presentation/app.dart';
 
 void main() async {
