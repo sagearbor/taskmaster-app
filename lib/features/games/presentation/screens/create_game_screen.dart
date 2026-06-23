@@ -22,10 +22,28 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
   bool _isLoading = false;
   List<Task> _selectedTasks = [];
 
+  // Smart default: pre-fill a fun game name so the user can create with
+  // zero typing (they can still edit it).
+  static const _nameAdjectives = [
+    'Epic', 'Wild', 'Chaotic', 'Legendary', 'Silly',
+    'Mighty', 'Cosmic', 'Sneaky', 'Glorious', 'Absurd',
+  ];
+  static const _nameNouns = [
+    'Showdown', 'Challenge', 'Party', 'Games', 'Tournament',
+    'Mayhem', 'Quest', 'Bash', 'Face-Off', 'Spectacular',
+  ];
+
   @override
   void initState() {
     super.initState();
-    print('[CreateGameScreen] initState called');
+    _gameNameController.text = _suggestGameName();
+  }
+
+  String _suggestGameName() {
+    final now = DateTime.now();
+    final adjective = _nameAdjectives[now.microsecond % _nameAdjectives.length];
+    final noun = _nameNouns[now.millisecond % _nameNouns.length];
+    return '$adjective $noun';
   }
 
   @override
@@ -48,8 +66,6 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
   }
 
   Future<void> _selectTasks() async {
-    print('[CreateGameScreen] _selectTasks called');
-
     final selectedTasks = await Navigator.of(context).push<List<Task>>(
       MaterialPageRoute(
         builder: (context) => TaskBrowserScreen(
@@ -63,13 +79,10 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
       setState(() {
         _selectedTasks = selectedTasks;
       });
-      print('[CreateGameScreen] Selected ${_selectedTasks.length} tasks');
     }
   }
 
   Future<void> _selectRandomTasks(int count) async {
-    print('[CreateGameScreen] _selectRandomTasks called with count: $count');
-
     // Import tasks data temporarily to get random tasks
     final allTasks = await Navigator.of(context).push<List<Task>>(
       MaterialPageRoute(
@@ -86,21 +99,16 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
       setState(() {
         _selectedTasks = allTasks;
       });
-      print('[CreateGameScreen] Selected ${_selectedTasks.length} random tasks');
     }
   }
 
   Future<void> _createGame() async {
-    print('[CreateGameScreen] _createGame called');
-
     try {
       if (!_formKey.currentState!.validate()) {
-        print('[CreateGameScreen] Form validation failed');
         return;
       }
 
       if (_selectedTasks.isEmpty) {
-        print('[CreateGameScreen] No tasks selected');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please select at least one task'),
@@ -110,13 +118,9 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
         return;
       }
 
-      print('[CreateGameScreen] Form validation passed');
-
       final authState = context.read<AuthBloc>().state;
-      print('[CreateGameScreen] AuthBloc state: $authState');
 
       if (authState is! AuthAuthenticated) {
-        print('[CreateGameScreen] User not authenticated');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('You must be logged in to create a game'),
@@ -125,36 +129,28 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
         );
         return;
       }
-      print('[CreateGameScreen] User authenticated: ${authState.user.id}');
 
       setState(() {
         _isLoading = true;
       });
-      print('[CreateGameScreen] Set loading to true');
 
-      print('[CreateGameScreen] Getting GameRepository from service locator...');
       final gameRepository = sl<GameRepository>();
-      print('[CreateGameScreen] Got GameRepository: $gameRepository');
 
       final judgeId = _selectedJudge == 'creator'
           ? authState.user.id
           : authState.user.id; // For now, creator is always judge
 
-      print('[CreateGameScreen] Calling createGame with: gameName=${_gameNameController.text.trim()}, creatorId=${authState.user.id}, judgeId=$judgeId');
       final gameId = await gameRepository.createGame(
         _gameNameController.text.trim(),
         authState.user.id,
         judgeId,
       );
-      print('[CreateGameScreen] Game created successfully with ID: $gameId');
 
       // Add tasks to game
-      print('[CreateGameScreen] Adding ${_selectedTasks.length} tasks to game');
       await gameRepository.addTasksToGame(
         gameId,
         _selectedTasks.map((t) => t.id).toList(),
       );
-      print('[CreateGameScreen] Tasks added successfully');
 
       if (mounted) {
         Navigator.of(context).pop();
@@ -165,9 +161,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
           ),
         );
       }
-    } catch (e, stackTrace) {
-      print('[CreateGameScreen] ERROR: $e');
-      print('[CreateGameScreen] Stack trace: $stackTrace');
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -187,7 +181,6 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('[CreateGameScreen] Building...');
     return Scaffold(
       appBar: AppBar(
         title: const Text('Create New Game'),

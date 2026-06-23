@@ -178,16 +178,11 @@ class MockGameDataSource implements GameRemoteDataSource {
 
   @override
   Stream<Map<String, dynamic>?> getGameStream(String gameId) async* {
-    print('[MockGameDataSource] getGameStream called for gameId: $gameId');
-    print('[MockGameDataSource] Available game IDs: ${_games.map((g) => g['id']).toList()}');
-
     // Find and emit initial data immediately
     final game = _games.firstWhere(
       (game) => game['id'] == gameId,
       orElse: () => {},
     );
-
-    print('[MockGameDataSource] Found game: ${game.isNotEmpty ? game['gameName'] : 'null'}');
 
     if (game.isNotEmpty) {
       yield game;
