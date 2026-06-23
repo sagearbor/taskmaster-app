@@ -135,11 +135,13 @@ void main() {
         showDisplayNameField: false,
       ));
 
-      final passwordField = find.byType(TextFormField).last;
-      final passwordWidget = tester.widget<TextFormField>(passwordField);
-      
+      // The password field is the last text input; inspect the rendered
+      // EditableText to verify obscuring (TextFormField doesn't expose it).
+      final passwordEditable =
+          tester.widget<EditableText>(find.byType(EditableText).last);
+
       // Initially password should be obscured
-      expect(passwordWidget.obscureText, true);
+      expect(passwordEditable.obscureText, true);
 
       // Tap visibility toggle
       final visibilityToggle = find.byIcon(Icons.visibility_off);

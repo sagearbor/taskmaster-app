@@ -23,7 +23,7 @@ class VideoViewingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authState = context.read<AuthBloc>().state;
-    final userId = authState is AuthAuthenticated ? authState.user.uid : '';
+    final userId = authState is AuthAuthenticated ? authState.user.id : '';
 
     return BlocProvider(
       create: (context) => TaskExecutionBloc(

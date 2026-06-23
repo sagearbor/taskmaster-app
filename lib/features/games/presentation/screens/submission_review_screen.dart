@@ -116,7 +116,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
                 previousTotals[player.userId] = player.totalScore;
                 // Find the submission for this player
                 final submission = task.submissions.firstWhere(
-                  (sub) => sub.playerId == player.userId,
+                  (sub) => sub.userId == player.userId,
                   orElse: () => task.submissions.first,
                 );
                 taskScores[player.userId] = submission.score ?? 0;
