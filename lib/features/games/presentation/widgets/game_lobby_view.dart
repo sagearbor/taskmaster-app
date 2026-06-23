@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/game.dart';
+import '../../../../core/utils/link_utils.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../bloc/game_detail_bloc.dart';
 
@@ -72,31 +73,45 @@ class GameLobbyView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                      InkWell(
+                        onTap: () => LinkUtils.copyToClipboard(
+                          context,
+                          game.inviteCode,
+                          label: 'Invite code copied',
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Invite Code: ',
-                              style: Theme.of(context).textTheme.bodyMedium,
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.primary,
                             ),
-                            Text(
-                              game.inviteCode,
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 2,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Invite Code: ',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                              Text(
+                                game.inviteCode,
+                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 2,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.copy,
+                                size: 18,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
                     ],

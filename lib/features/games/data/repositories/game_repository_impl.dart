@@ -73,9 +73,23 @@ class GameRepositoryImpl implements GameRepository {
   @override
   Future<String> joinGame(String inviteCode, String userId, String displayName) async {
     final gameId = await remoteDataSource.joinGame(inviteCode, userId);
-    
-    // Add player to the game (this would be handled in the data source in real implementation)
-    // For now, return the game ID
+
+    // Add the player to the roster if not already present. Idempotent: if the
+    // data source (e.g. Firestore) already added the player, this is a no-op,
+    // which avoids double-adding across the mock and real implementations.
+    final data = await remoteDataSource.getGameStream(gameId).first;
+    if (data != null) {
+      final game = Game.fromMap({...data, 'id': gameId});
+      final alreadyJoined = game.players.any((p) => p.userId == userId);
+      if (!alreadyJoined) {
+        final updated = game.copyWith(players: [
+          ...game.players,
+          Player(userId: userId, displayName: displayName, totalScore: 0),
+        ]);
+        await updateGame(gameId, updated);
+      }
+    }
+
     return gameId;
   }
 
@@ -139,15 +153,61 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
-  Future<void> addTasksToGame(String gameId, List<String> taskIds) async {
-    // This would fetch tasks from task repository and add them to the game
-    // Implementation depends on task management system
+  Future<void> addTasksToGame(String gameId, List<Task> tasks) async {
+    if (tasks.isEmpty) return;
+
+    final data = await remoteDataSource.getGameStream(gameId).first;
+    if (data == null) {
+      throw Exception('Game not found');
+    }
+    final game = Game.fromMap({...data, 'id': gameId});
+
+    // Skip tasks already on the game (by id) so this is safe to call twice.
+    final existingIds = game.tasks.map((t) => t.id).toSet();
+    final newTasks = tasks.where((t) => !existingIds.contains(t.id)).toList();
+    if (newTasks.isEmpty) return;
+
+    await updateGame(
+      gameId,
+      game.copyWith(tasks: [...game.tasks, ...newTasks]),
+    );
   }
 
   @override
-  Future<void> submitTaskAnswer(String gameId, String taskId, Submission submission) async {
-    // This would add the submission to the specific task in the game
-    // Complex update operation for nested data
+  Future<void> submitTaskAnswer(
+      String gameId, String taskId, Submission submission) async {
+    final data = await remoteDataSource.getGameStream(gameId).first;
+    if (data == null) {
+      throw Exception('Game not found');
+    }
+    final game = Game.fromMap({...data, 'id': gameId});
+
+    final taskIndex = game.tasks.indexWhere((t) => t.id == taskId);
+    if (taskIndex == -1) {
+      throw Exception('Task not found');
+    }
+    final task = game.tasks[taskIndex];
+
+    // Record the submission and mark the submitting player's status.
+    final statuses = Map<String, PlayerTaskStatus>.from(task.playerStatuses);
+    final existing = statuses[submission.userId] ??
+        PlayerTaskStatus(
+          playerId: submission.userId,
+          state: TaskPlayerState.not_started,
+        );
+    statuses[submission.userId] = existing.copyWith(
+      state: TaskPlayerState.submitted,
+      submittedAt: DateTime.now(),
+      submissionUrl: submission.videoUrl,
+    );
+
+    final updatedTasks = List<Task>.from(game.tasks);
+    updatedTasks[taskIndex] = task.copyWith(
+      submissions: [...task.submissions, submission],
+      playerStatuses: statuses,
+    );
+
+    await updateGame(gameId, game.copyWith(tasks: updatedTasks));
   }
 
   @override

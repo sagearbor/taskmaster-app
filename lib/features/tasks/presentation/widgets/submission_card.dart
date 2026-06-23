@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/models/task.dart';
 import '../../../../core/models/submission.dart';
+import '../../../../core/utils/link_utils.dart';
 import '../../../games/presentation/bloc/game_detail_bloc.dart';
 
 class SubmissionCard extends StatefulWidget {
@@ -281,20 +282,11 @@ class _SubmissionCardState extends State<SubmissionCard> {
                   
                   if (widget.submission.hasVideoUrl) ...[
                     InkWell(
-                      onTap: () {
-                        // TODO: Implement video player or external link
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Open: ${widget.submission.videoUrl}'),
-                            action: SnackBarAction(
-                              label: 'Copy',
-                              onPressed: () {
-                                // TODO: Copy to clipboard
-                              },
-                            ),
-                          ),
-                        );
-                      },
+                      onTap: () => LinkUtils.openExternal(
+                          context, widget.submission.videoUrl),
+                      onLongPress: () => LinkUtils.copyToClipboard(
+                          context, widget.submission.videoUrl ?? '',
+                          label: 'Link copied'),
                       child: Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(

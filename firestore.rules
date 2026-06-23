@@ -3,64 +3,66 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper function to check if user is authenticated (including anonymous)
+    // ---- Helpers ----
     function isSignedIn() {
       return request.auth != null;
     }
 
-    // Helper function to check if user is the game creator
-    function isGameCreator(gameData) {
-      return isSignedIn() && request.auth.uid == gameData.creatorId;
+    // True if the named top-level field is identical before and after the write.
+    function unchanged(field) {
+      return request.resource.data[field] == resource.data[field];
     }
 
-    // Helper function to check if user is the game judge
-    function isGameJudge(gameData) {
-      return isSignedIn() && request.auth.uid == gameData.judgeId;
-    }
-
-    // Helper function to check if user is a player in the game
-    // Note: This is a simplified check - detailed player validation
-    // happens at the application level
-    function isPlayerInGame(gameData) {
-      return isSignedIn();
-    }
-
-    // Games collection rules
+    // ---- Games ----
+    // Read: any signed-in user (needed for join-by-invite-code lookups).
+    // Privacy of individual video submissions is enforced at the app level.
     match /games/{gameId} {
-      // Users can read games they're in, or any game (for join by invite code)
-      // Note: Video privacy is enforced at application level
       allow read: if isSignedIn();
 
-      // Any authenticated user can create a game
+      // A user may only create a game they own.
       allow create: if isSignedIn() &&
                        request.resource.data.creatorId == request.auth.uid;
 
-      // Allow updates if:
-      // - User is the creator
-      // - User is the judge (can update scores)
-      // - User is a player in the game (can update own submission)
+      // The creator and judge have full update rights (scores, status, tasks).
+      // Other signed-in users (players submitting answers) may update the game
+      // but must NOT be able to seize ownership, swap the judge, or rewrite the
+      // invite code. This blocks game hijacking by arbitrary authenticated users.
+      // NOTE: tightening this further to "only actual participants" requires a
+      // dedicated playerIds array on the document (deferred — see DEVELOPMENT_CHECKLIST).
       allow update: if isSignedIn() && (
-        isGameCreator(resource.data) ||
-        isGameJudge(resource.data) ||
-        isPlayerInGame(resource.data)
+        request.auth.uid == resource.data.creatorId ||
+        request.auth.uid == resource.data.judgeId ||
+        (unchanged('creatorId') && unchanged('judgeId') && unchanged('inviteCode'))
       );
 
-      // Only creator can delete a game
-      allow delete: if isSignedIn() && isGameCreator(resource.data);
+      // Only the creator can delete a game.
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.creatorId;
     }
 
-    // Users collection rules (if needed)
+    // ---- Users ----
     match /users/{userId} {
       allow read: if isSignedIn();
       allow write: if isSignedIn() && request.auth.uid == userId;
     }
 
-    // Community tasks collection rules
+    // ---- Community tasks ----
     match /community_tasks/{taskId} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn();
+
+      // A user may only submit a task under their own UID.
+      allow create: if isSignedIn() &&
+                       request.resource.data.submittedBy == request.auth.uid;
+
+      // The author can edit their own task fully. Any other signed-in user may
+      // change ONLY the upvote count (so upvoting works without granting the
+      // ability to rewrite or vandalise someone else's submission).
+      allow update: if isSignedIn() && (
+        request.auth.uid == resource.data.submittedBy ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['upvotes'])
+      );
+
+      // Only the author can delete their task.
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.submittedBy;
     }
   }
 }

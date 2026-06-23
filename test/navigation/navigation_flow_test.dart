@@ -11,8 +11,12 @@ void main() {
         MaterialApp(
           home: Builder(
             builder: (context) {
-              return WillPopScope(
-                onWillPop: () async {
+              return PopScope(
+                // Block the automatic pop so we can show a confirmation
+                // dialog and decide what to do based on the user's choice.
+                canPop: false,
+                onPopInvoked: (didPop) async {
+                  if (didPop) return;
                   if (controller.text.isNotEmpty) {
                     confirmationShown = true;
                     final shouldPop = await showDialog<bool>(
@@ -31,9 +35,10 @@ void main() {
                         ],
                       ),
                     );
-                    return shouldPop ?? false;
+                    if ((shouldPop ?? false) && context.mounted) {
+                      Navigator.of(context).pop();
+                    }
                   }
-                  return true;
                 },
                 child: Scaffold(
                   appBar: AppBar(title: const Text('Test Screen')),
@@ -58,9 +63,10 @@ void main() {
       await tester.enterText(find.byType(TextField), 'test data');
       await tester.pump();
 
-      // Try to go back
-      final NavigatorState navigator = tester.state(find.byType(Navigator));
-      navigator.pop();
+      // Try to go back via the system back button. This routes through
+      // Navigator.maybePop, which is what PopScope observes (a direct
+      // navigator.pop() bypasses the pop-disposition callbacks).
+      await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
 
       // Verify confirmation was requested
@@ -82,26 +88,45 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: WillPopScope(
-            onWillPop: () async {
-              if (controller.text.isEmpty) {
-                backAllowed = true;
-                return true;
-              }
-              return false;
-            },
-            child: Scaffold(
-              appBar: AppBar(title: const Text('Test Screen')),
-              body: TextField(controller: controller),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (context) => PopScope(
+                          // When there is no data, allow the pop to proceed.
+                          canPop: controller.text.isEmpty,
+                          onPopInvoked: (didPop) {
+                            if (controller.text.isEmpty) {
+                              backAllowed = true;
+                            }
+                          },
+                          child: Scaffold(
+                            appBar: AppBar(title: const Text('Test Screen')),
+                            body: TextField(controller: controller),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('Open'),
+                ),
+              ),
             ),
           ),
         ),
       );
 
-      // Don't enter any text, just try to go back
-      final NavigatorState navigator = tester.state(find.byType(Navigator));
-      navigator.pop();
-      await tester.pump();
+      // Navigate to the screen that guards back navigation.
+      await tester.tap(find.text('Open'));
+      await tester.pumpAndSettle();
+
+      // Don't enter any text, just try to go back via the system back button.
+      // This routes through Navigator.maybePop, which PopScope observes.
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
 
       // Should allow back navigation
       expect(backAllowed, true);

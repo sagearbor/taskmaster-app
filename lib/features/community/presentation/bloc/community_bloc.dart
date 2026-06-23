@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/models/community_task.dart';
+import '../../../../core/models/task.dart';
 import '../../../tasks/domain/repositories/task_repository.dart';
 
 part 'community_event.dart';

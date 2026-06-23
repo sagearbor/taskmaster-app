@@ -8,8 +8,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SkeletonLoaders.gameCardSkeleton(
-              tester.element(find.byType(Scaffold)),
+            body: Builder(
+              builder: (context) =>
+                  SkeletonLoaders.gameCardSkeleton(context),
             ),
           ),
         ),
@@ -23,8 +24,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SkeletonLoaders.gameDetailSkeleton(
-              tester.element(find.byType(Scaffold)),
+            body: Builder(
+              builder: (context) =>
+                  SkeletonLoaders.gameDetailSkeleton(context),
             ),
           ),
         ),
@@ -38,8 +40,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SkeletonLoaders.taskExecutionSkeleton(
-              tester.element(find.byType(Scaffold)),
+            body: Builder(
+              builder: (context) =>
+                  SkeletonLoaders.taskExecutionSkeleton(context),
             ),
           ),
         ),
@@ -53,8 +56,9 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: SkeletonLoaders.judgingSkeleton(
-              tester.element(find.byType(Scaffold)),
+            body: Builder(
+              builder: (context) =>
+                  SkeletonLoaders.judgingSkeleton(context),
             ),
           ),
         ),

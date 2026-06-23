@@ -3,8 +3,21 @@ An unofficial, fan-made mobile and web application for playing Taskmaster-style 
 
 ## 🚀 Project Status
 **Live App:** https://taskmaster-app-3d480.web.app
-**Current:** MVP Complete - Phase 5 (Quick Play + Bug Fixes) ✅
-**Next:** Phase 3 remainder (Day 31+) or Phase 4 (Mobile deployment)
+**Current:** Web MVP — compiles clean, full test suite green (161 tests). Core
+game loop (create → join → start → submit → judge → scoreboard) implemented
+and integration-tested against mock services.
+**Next:** Mobile platform setup (android/ios dirs + `flutterfire configure`),
+then store deployment. See "Known Gaps" below.
+
+### Known Gaps
+- **Mobile not wired:** only the `web` platform + `linux` exist; there are no
+  `android/`/`ios/` directories and Firebase is configured for web only.
+  Run `flutter create --platforms=android,ios .` + `flutterfire configure`
+  before any mobile build.
+- **Monetization is demo-only:** ads and in-app purchases run as no-op/mock
+  services (the `*_simple` implementations); `google_mobile_ads` and
+  `in_app_purchase` are intentionally not in `pubspec.yaml`.
+- **Toolchain:** built against Flutter 3.22.2 / Dart 3.4.3.
 
 ### For Next Development Session
 Tell AI: *"Read DEVELOPMENT_CHECKLIST.md and implement the next incomplete section"*
@@ -100,11 +113,10 @@ flutter run -d linux -t lib/main_mock.dart
 4. **Deploy**: Build for production with `flutter build web/ios/android`
 
 ## 📱 Platform Support
-- **Web**: ✅ Fully functional (recommended for testing)
-- **Android**: ✅ Ready (requires Android SDK)
-- **iOS**: ✅ Ready (requires macOS and Xcode)
-- **Linux Desktop**: ✅ Supported
-- **Windows**: ⚠️ Requires additional setup
-- **macOS**: ⚠️ Requires additional setup
+- **Web**: ✅ Fully functional, Firebase-configured, live (recommended)
+- **Linux Desktop**: ✅ Platform files present (Firebase not configured)
+- **Android / iOS**: ⚠️ NOT set up yet — platform directories don't exist.
+  Run `flutter create --platforms=android,ios .` then `flutterfire configure`.
+- **Windows / macOS**: ⚠️ Requires additional setup
 
 This is an independent project created by a fan and is not affiliated with the official Taskmaster show or its creators.

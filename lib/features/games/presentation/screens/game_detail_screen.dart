@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/game.dart';
+import '../../../../core/utils/link_utils.dart';
 import '../../../../core/models/task.dart';
 import '../../../../core/models/player_task_status.dart';
 import '../../../../core/widgets/skeleton_loaders.dart';
@@ -236,8 +238,28 @@ class GameDetailView extends StatelessWidget {
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Close'),
           ),
+          TextButton.icon(
+            onPressed: () => LinkUtils.copyToClipboard(
+              context,
+              game.inviteCode,
+              label: 'Invite code copied',
+            ),
+            icon: const Icon(Icons.copy),
+            label: const Text('Copy Code'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () => _shareInvite(game),
+            icon: const Icon(Icons.share),
+            label: const Text('Share'),
+          ),
         ],
       ),
     );
+  }
+
+  void _shareInvite(Game game) {
+    final text = 'Join my Taskmaster game "${game.gameName}"!\n\n'
+        'Open the app and enter invite code: ${game.inviteCode}';
+    Share.share(text, subject: 'Taskmaster game invite');
   }
 }

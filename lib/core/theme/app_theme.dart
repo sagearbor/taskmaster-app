@@ -39,7 +39,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: const CardTheme(
         elevation: 4,
         // Note: shape is set via Card widget directly to avoid compilation issues
       ),
@@ -81,7 +81,7 @@ class AppTheme {
           ),
         ),
       ),
-      cardTheme: const CardThemeData(
+      cardTheme: const CardTheme(
         elevation: 4,
         // Note: shape is set via Card widget directly to avoid compilation issues
       ),

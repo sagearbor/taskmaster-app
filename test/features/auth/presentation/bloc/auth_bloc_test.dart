@@ -153,6 +153,7 @@ void main() {
         },
         act: (bloc) => bloc.add(AuthCheckRequested()),
         expect: () => [
+          AuthLoading(),
           AuthAuthenticated(user: testUser),
         ],
       );
@@ -166,6 +167,7 @@ void main() {
         },
         act: (bloc) => bloc.add(AuthCheckRequested()),
         expect: () => [
+          AuthLoading(),
           AuthUnauthenticated(),
         ],
       );

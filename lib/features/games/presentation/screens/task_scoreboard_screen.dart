@@ -59,7 +59,7 @@ class _TaskScoreboardScreenState extends State<TaskScoreboardScreen>
     );
 
     // Start countdown if auto-advance is enabled
-    if (widget.game.settings?.autoAdvance ?? true) {
+    if (widget.game.settings?.autoAdvanceTasks ?? true) {
       _startCountdown();
     }
 
@@ -219,7 +219,7 @@ class _TaskScoreboardScreenState extends State<TaskScoreboardScreen>
             child: Column(
               children: [
                 // Auto-advance countdown or manual button
-                if (widget.game.settings?.autoAdvance ?? true) ...[
+                if (widget.game.settings?.autoAdvanceTasks ?? true) ...[
                   AnimatedBuilder(
                     animation: _countdownAnimation,
                     builder: (context, child) {

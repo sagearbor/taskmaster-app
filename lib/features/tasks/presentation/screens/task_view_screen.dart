@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/task.dart';
 import '../../../../core/models/submission.dart';
+import '../../../../core/utils/link_utils.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/video_task_submission.dart';
 import '../widgets/puzzle_task_submission.dart';
@@ -253,14 +254,8 @@ class TaskViewScreen extends StatelessWidget {
                                       )
                                     : const Text('Pending'),
                                 onTap: submission.hasVideoUrl
-                                    ? () {
-                                        // TODO: Open video player or external link
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(
-                                            content: Text('Open: ${submission.videoUrl}'),
-                                          ),
-                                        );
-                                      }
+                                    ? () => LinkUtils.openExternal(
+                                          context, submission.videoUrl)
                                     : null,
                               ),
                             );
