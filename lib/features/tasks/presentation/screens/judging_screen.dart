@@ -3,9 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/game.dart';
 import '../../../../core/models/task.dart';
-import '../../../../core/models/submission.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../games/presentation/bloc/game_detail_bloc.dart';
 import '../widgets/submission_card.dart';
 
 class JudgingScreen extends StatefulWidget {

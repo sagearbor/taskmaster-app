@@ -148,7 +148,7 @@ class GameDetailView extends StatelessWidget {
     // Handle different banner actions based on game state
     if (game.status == GameStatus.lobby && game.creatorId == currentUserId && game.players.length >= 2) {
       // Start game action
-      context.read<GameDetailBloc>().add(StartGame(gameId: game.id!));
+      context.read<GameDetailBloc>().add(StartGame(gameId: game.id));
     } else if (game.status == GameStatus.inProgress && game.tasks.isNotEmpty) {
       final currentTask = game.tasks[game.currentTaskIndex];
       final playerStatus = currentTask.playerStatuses[currentUserId];
@@ -160,7 +160,7 @@ class GameDetailView extends StatelessWidget {
           context,
           '/task-execution',
           arguments: {
-            'gameId': game.id!,
+            'gameId': game.id,
             'taskIndex': game.currentTaskIndex,
             'userId': currentUserId,
           },
@@ -171,7 +171,7 @@ class GameDetailView extends StatelessWidget {
           context,
           '/judging',
           arguments: {
-            'gameId': game.id!,
+            'gameId': game.id,
             'taskIndex': game.currentTaskIndex,
           },
         );
@@ -179,7 +179,7 @@ class GameDetailView extends StatelessWidget {
         // Navigate to scoreboard
         context.read<GameDetailBloc>().add(
           ViewTaskResultsEvent(
-            gameId: game.id!,
+            gameId: game.id,
             taskIndex: game.currentTaskIndex,
           ),
         );

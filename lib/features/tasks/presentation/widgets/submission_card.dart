@@ -5,7 +5,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/models/task.dart';
 import '../../../../core/models/submission.dart';
 import '../../../../core/utils/link_utils.dart';
-import '../../../games/presentation/bloc/game_detail_bloc.dart';
 
 class SubmissionCard extends StatefulWidget {
   final Submission submission;

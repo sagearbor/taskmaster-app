@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/models/task.dart';
-import '../../../../core/models/submission.dart';
 import '../../../../core/utils/link_utils.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../widgets/video_task_submission.dart';
