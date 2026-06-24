@@ -59,6 +59,26 @@ class FirestoreGameDataSource implements GameRemoteDataSource {
   }
 
   @override
+  Stream<List<Map<String, dynamic>>> getPublicGamesStream() {
+    // Single-field equality filter + client-side sort avoids needing a
+    // composite Firestore index.
+    return _firestore
+        .collection(_gamesCollection)
+        .where('isPublic', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      final games = snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        return data;
+      }).toList()
+        ..sort((a, b) => (b['createdAt'] as String? ?? '')
+            .compareTo(a['createdAt'] as String? ?? ''));
+      return games;
+    });
+  }
+
+  @override
   Future<String> createGame(Map<String, dynamic> gameData) async {
     try {
       developer.log('=== CREATE GAME DEBUG ===');

@@ -43,6 +43,19 @@ class FirebaseGameDataSource implements GameRemoteDataSource {
   }
 
   @override
+  Stream<List<Map<String, dynamic>>> getPublicGamesStream() {
+    return _firestore
+        .collection('games')
+        .where('isPublic', isEqualTo: true)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList()
+        ..sort((a, b) => (b['createdAt'] as String? ?? '')
+            .compareTo(a['createdAt'] as String? ?? ''));
+    });
+  }
+
+  @override
   Stream<Map<String, dynamic>?> getGameStream(String gameId) {
     developer.log('Getting game stream for gameId: $gameId');
 

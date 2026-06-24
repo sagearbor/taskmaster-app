@@ -27,6 +27,10 @@ class Game extends Equatable {
   final GameSettings settings;
   final int currentTaskIndex; // Which task is currently active
 
+  /// When true, the game is discoverable in the public gallery and can be
+  /// cloned as a template by other users.
+  final bool isPublic;
+
   const Game({
     required this.id,
     required this.gameName,
@@ -40,6 +44,7 @@ class Game extends Equatable {
     this.mode = GameMode.async,
     required this.settings,
     this.currentTaskIndex = 0,
+    this.isPublic = false,
   });
 
   factory Game.fromMap(Map<String, dynamic> map) {
@@ -68,6 +73,7 @@ class Game extends Equatable {
           ? GameSettings.fromMap(map['settings'] as Map<String, dynamic>)
           : GameSettings.quickPlay(),
       currentTaskIndex: map['currentTaskIndex'] as int? ?? 0,
+      isPublic: map['isPublic'] as bool? ?? false,
     );
   }
 
@@ -85,6 +91,7 @@ class Game extends Equatable {
       'mode': mode.name,
       'settings': settings.toMap(),
       'currentTaskIndex': currentTaskIndex,
+      'isPublic': isPublic,
     };
   }
 
@@ -101,6 +108,7 @@ class Game extends Equatable {
     GameMode? mode,
     GameSettings? settings,
     int? currentTaskIndex,
+    bool? isPublic,
   }) {
     return Game(
       id: id ?? this.id,
@@ -115,6 +123,7 @@ class Game extends Equatable {
       mode: mode ?? this.mode,
       settings: settings ?? this.settings,
       currentTaskIndex: currentTaskIndex ?? this.currentTaskIndex,
+      isPublic: isPublic ?? this.isPublic,
     );
   }
 
@@ -189,5 +198,6 @@ class Game extends Equatable {
         mode,
         settings,
         currentTaskIndex,
+        isPublic,
       ];
 }

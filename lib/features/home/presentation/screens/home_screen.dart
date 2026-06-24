@@ -12,6 +12,7 @@ import '../../../games/presentation/bloc/games_bloc.dart';
 import '../../../games/presentation/screens/create_game_screen.dart';
 import '../../../games/presentation/screens/join_game_screen.dart';
 import '../../../games/presentation/screens/game_detail_screen.dart';
+import '../../../games/presentation/screens/discover_games_screen.dart';
 import '../widgets/game_card.dart';
 import '../widgets/home_app_bar.dart';
 
@@ -198,6 +199,19 @@ class HomeView extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        FloatingActionButton(
+          heroTag: 'discover',
+          onPressed: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const DiscoverGamesScreen(),
+              ),
+            );
+          },
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
+          child: const Icon(Icons.public),
+        ),
+        const SizedBox(height: 16),
         FloatingActionButton(
           heroTag: 'join',
           onPressed: () {
