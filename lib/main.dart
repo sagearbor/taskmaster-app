@@ -17,19 +17,30 @@ import 'features/home/presentation/screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // Initialize services with Firebase (Firestore)
-  await ServiceLocator.init(useMockServices: false);
-
-  // Initialize push notifications (best-effort; never blocks startup).
+  // Try to bring up Firebase. If it isn't configured for this platform yet
+  // (e.g. Android before `flutterfire configure`, see docs/MOBILE_SETUP.md),
+  // fall back to mock services so the app still launches and is fully playable
+  // instead of crashing on startup.
+  var useMock = false;
   try {
-    await sl<NotificationService>().initialize();
-  } catch (_) {
-    // Messaging is optional; ignore failures (e.g. web without VAPID setup).
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint('Firebase unavailable — starting in offline/demo mode: $e');
+    useMock = true;
+  }
+
+  await ServiceLocator.init(useMockServices: useMock);
+
+  // Initialize push notifications (best-effort; never blocks startup). Only
+  // meaningful with real services.
+  if (!useMock) {
+    try {
+      await sl<NotificationService>().initialize();
+    } catch (_) {
+      // Messaging is optional; ignore failures (e.g. web without VAPID setup).
+    }
   }
 
   runApp(const TaskmasterApp());
