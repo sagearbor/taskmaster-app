@@ -42,22 +42,59 @@ class DiscoverGamesScreen extends StatelessWidget {
 
   Widget _buildEmpty(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.public_off, size: 56, color: Colors.grey[400]),
-          const SizedBox(height: 12),
-          Text('No public games yet',
-              style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 4),
-          Text('Make one of your games public to share it here',
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.public_off, size: 56, color: Colors.grey[400]),
+            const SizedBox(height: 12),
+            Text('No public games yet',
+                style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 4),
+            Text(
+              'Add a few ready-made games to get the community started, '
+              'or make one of your own games public.',
+              textAlign: TextAlign.center,
               style: Theme.of(context)
                   .textTheme
                   .bodySmall
-                  ?.copyWith(color: Colors.grey[600])),
-        ],
+                  ?.copyWith(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () => _seedStarter(context),
+              icon: const Icon(Icons.auto_awesome),
+              label: const Text('Load starter games'),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Future<void> _seedStarter(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthAuthenticated) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Sign in to add starter games')),
+      );
+      return;
+    }
+    messenger.showSnackBar(
+      const SnackBar(content: Text('Adding starter games…')),
+    );
+    try {
+      await sl<GameRepository>().seedStarterPublicGames(
+        authState.user.id,
+        authState.user.displayName,
+      );
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not add starter games: $e')),
+      );
+    }
   }
 }
 
@@ -104,11 +141,28 @@ class _PublicGameCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(game.gameName,
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Expanded(
+                  child: Text(game.gameName,
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(fontWeight: FontWeight.bold)),
+                ),
+                if (game.cloneCount >= 3)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text('🔥 Popular',
+                        style: TextStyle(fontSize: 12)),
+                  ),
+              ],
+            ),
             const SizedBox(height: 6),
             Row(
               children: [
@@ -121,6 +175,13 @@ class _PublicGameCard extends StatelessWidget {
                 const SizedBox(width: 4),
                 Text('${game.players.length}',
                     style: Theme.of(context).textTheme.bodySmall),
+                if (game.cloneCount > 0) ...[
+                  const SizedBox(width: 12),
+                  Icon(Icons.copy, size: 16, color: Colors.grey[600]),
+                  const SizedBox(width: 4),
+                  Text('played ${game.cloneCount}×',
+                      style: Theme.of(context).textTheme.bodySmall),
+                ],
               ],
             ),
             const SizedBox(height: 12),

@@ -8,6 +8,10 @@ abstract class GameRepository {
   /// Games marked public — the discoverable community gallery.
   Stream<List<Game>> getPublicGamesStream();
 
+  /// Create a few ready-made public template games owned by [ownerId] so the
+  /// gallery has real content to discover. Used to bootstrap an empty gallery.
+  Future<void> seedStarterPublicGames(String ownerId, String displayName);
+
   /// Create a new private game owned by [creatorId] that copies [template]'s
   /// tasks (as fresh, unsubmitted tasks). Returns the new game id.
   Future<String> cloneGame(Game template, String creatorId, String displayName);
