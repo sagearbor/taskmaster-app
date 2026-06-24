@@ -36,6 +36,8 @@ Tell AI: *"Read DEVELOPMENT_CHECKLIST.md and implement the next incomplete secti
 - **Secret Missions**: 17 hidden individual tasks
 - **Task Modifiers**: 18 random challenges that multiply points
 - **Community Tasks**: Submit and browse user-generated tasks
+- **Public Games Gallery**: Mark a game public and let others discover it and
+  clone its task list into their own game ("Play these tasks")
 - **Geo-Located Tasks**: 12 location-based challenge types
 - **AR Tasks**: 7 augmented reality task types (UI ready)
 - **AI Task Generation**: Smart task creation system

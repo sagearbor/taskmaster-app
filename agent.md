@@ -18,6 +18,7 @@ Cross-platform Flutter app for Taskmaster-style party games. Firebase backend, t
   previously no-op stubs — now implemented.)
 - Quick Play live; Firebase Auth + Firestore on web; 225+ prebuilt tasks.
 - Firestore rules hardened (no game hijacking / arbitrary community-task edits).
+- Public games gallery: mark a game public, discover others' games, clone as template.
 - **Known gaps:** no android/ios platforms yet (web-only); ads + IAP are
   demo/mock only. See README "Known Gaps".
 - **Next:** mobile platform setup + store deployment; notifications (FCM).
