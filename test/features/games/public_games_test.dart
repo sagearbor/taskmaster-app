@@ -57,6 +57,50 @@ void main() {
       expect(stillPublic.any((g) => g.creatorId == 'bob'), isFalse);
     });
 
+    test('cloneGame increments the template clone counter', () async {
+      final template = (await repo.getPublicGamesStream().first)
+          .firstWhere((g) => g.gameName == 'Weekend Warriors');
+      final before = template.cloneCount;
+
+      await repo.cloneGame(template, 'alice', 'Alice');
+
+      final after = (await repo.getPublicGamesStream().first)
+          .firstWhere((g) => g.id == template.id);
+      expect(after.cloneCount, before + 1);
+    });
+
+    test('public gallery is sorted most-cloned first', () async {
+      // Clone "Epic Adventure" a few times so it overtakes the others.
+      final epic = (await repo.getPublicGamesStream().first)
+          .firstWhere((g) => g.gameName == 'Epic Adventure');
+      for (var i = 0; i < 3; i++) {
+        final fresh = (await repo.getPublicGamesStream().first)
+            .firstWhere((g) => g.id == epic.id);
+        await repo.cloneGame(fresh, 'p$i', 'P$i');
+      }
+
+      final games = await repo.getPublicGamesStream().first;
+      expect(games.first.gameName, 'Epic Adventure');
+      // Sorted descending by cloneCount.
+      for (var i = 0; i < games.length - 1; i++) {
+        expect(games[i].cloneCount,
+            greaterThanOrEqualTo(games[i + 1].cloneCount));
+      }
+    });
+
+    test('seedStarterPublicGames creates public games owned by the caller',
+        () async {
+      // Use a fresh repo with no seeded mock games to isolate.
+      final r = GameRepositoryImpl(MockGameDataSource());
+      await r.seedStarterPublicGames('alice', 'Alice');
+
+      final games = await r.getPublicGamesStream().first;
+      final mine = games.where((g) => g.creatorId == 'alice').toList();
+      expect(mine.length, greaterThanOrEqualTo(3));
+      expect(mine.every((g) => g.isPublic), isTrue);
+      expect(mine.every((g) => g.tasks.isNotEmpty), isTrue);
+    });
+
     test('Game.isPublic round-trips through toMap/fromMap', () {
       final game = Game(
         id: 'g1',

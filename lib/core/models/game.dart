@@ -31,6 +31,10 @@ class Game extends Equatable {
   /// cloned as a template by other users.
   final bool isPublic;
 
+  /// How many times this game has been cloned as a template (drives the
+  /// "most popular" sort in the public gallery).
+  final int cloneCount;
+
   const Game({
     required this.id,
     required this.gameName,
@@ -45,6 +49,7 @@ class Game extends Equatable {
     required this.settings,
     this.currentTaskIndex = 0,
     this.isPublic = false,
+    this.cloneCount = 0,
   });
 
   factory Game.fromMap(Map<String, dynamic> map) {
@@ -74,6 +79,7 @@ class Game extends Equatable {
           : GameSettings.quickPlay(),
       currentTaskIndex: map['currentTaskIndex'] as int? ?? 0,
       isPublic: map['isPublic'] as bool? ?? false,
+      cloneCount: map['cloneCount'] as int? ?? 0,
     );
   }
 
@@ -92,6 +98,7 @@ class Game extends Equatable {
       'settings': settings.toMap(),
       'currentTaskIndex': currentTaskIndex,
       'isPublic': isPublic,
+      'cloneCount': cloneCount,
     };
   }
 
@@ -109,6 +116,7 @@ class Game extends Equatable {
     GameSettings? settings,
     int? currentTaskIndex,
     bool? isPublic,
+    int? cloneCount,
   }) {
     return Game(
       id: id ?? this.id,
@@ -124,6 +132,7 @@ class Game extends Equatable {
       settings: settings ?? this.settings,
       currentTaskIndex: currentTaskIndex ?? this.currentTaskIndex,
       isPublic: isPublic ?? this.isPublic,
+      cloneCount: cloneCount ?? this.cloneCount,
     );
   }
 
@@ -199,5 +208,6 @@ class Game extends Equatable {
         settings,
         currentTaskIndex,
         isPublic,
+        cloneCount,
       ];
 }

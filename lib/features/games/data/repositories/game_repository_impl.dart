@@ -23,9 +23,16 @@ class GameRepositoryImpl implements GameRepository {
 
   @override
   Stream<List<Game>> getPublicGamesStream() {
-    return remoteDataSource.getPublicGamesStream().map(
-          (list) => list.map((data) => Game.fromMap(data)).toList(),
-        );
+    return remoteDataSource.getPublicGamesStream().map((list) {
+      final games = list.map((data) => Game.fromMap(data)).toList();
+      // Most-cloned ("popular") first, then newest.
+      games.sort((a, b) {
+        final byPopularity = b.cloneCount.compareTo(a.cloneCount);
+        if (byPopularity != 0) return byPopularity;
+        return b.createdAt.compareTo(a.createdAt);
+      });
+      return games;
+    });
   }
 
   @override
@@ -47,7 +54,68 @@ class GameRepositoryImpl implements GameRepository {
         .toList();
     await addTasksToGame(gameId, freshTasks);
 
+    // Bump the template's clone counter (popularity signal). Best-effort:
+    // never fail a clone if the counter update is rejected.
+    try {
+      final data = await remoteDataSource.getGameStream(template.id).first;
+      if (data != null) {
+        final current = Game.fromMap({...data, 'id': template.id});
+        await updateGame(
+          template.id,
+          current.copyWith(cloneCount: current.cloneCount + 1),
+        );
+      }
+    } catch (_) {}
+
     return gameId;
+  }
+
+  Task _starterTask(String title, String description) => Task(
+        id: _uuid.v4(),
+        title: title,
+        description: description,
+        taskType: TaskType.video,
+        submissions: const [],
+      );
+
+  @override
+  Future<void> seedStarterPublicGames(String ownerId, String displayName) async {
+    final templates = <MapEntry<String, List<Task>>>[
+      MapEntry('Kitchen Chaos', [
+        _starterTask('Make the most magnificent sandwich',
+            'Use only what is in your kitchen right now. Points for creativity, presentation, and explaining your choices.'),
+        _starterTask('The fastest egg',
+            'Eat a hard-boiled egg as quickly as possible. Time starts the moment you touch it.'),
+        _starterTask('Drink of the gods',
+            'Invent and name a new drink using at least three ingredients. Sell it to us.'),
+      ]),
+      MapEntry('Living Room Olympics', [
+        _starterTask('Tallest free-standing tower',
+            'Build the tallest tower you can from anything in the room. It must stand on its own for 10 seconds.'),
+        _starterTask('Most dramatic slow-motion entrance',
+            'Film the most cinematic entrance into a room you can manage.'),
+        _starterTask('Invent a sport in 60 seconds',
+            'Make up the rules to a brand-new sport and demonstrate one round of play.'),
+      ]),
+      MapEntry('Creative Genius', [
+        _starterTask('Self-portrait from junk',
+            'Create a recognizable self-portrait using only random objects you can find.'),
+        _starterTask('Four-line poem about a household item',
+            'Write it, then perform it with maximum emotion.'),
+        _starterTask('The most convincing fake phone call',
+            'Hold a one-sided conversation so believable we forget no one is on the line.'),
+      ]),
+    ];
+
+    for (final entry in templates) {
+      final gameId = await createGame(entry.key, ownerId, ownerId);
+      await addTasksToGame(gameId, entry.value);
+      final data = await remoteDataSource.getGameStream(gameId).first;
+      if (data != null) {
+        final game = Game.fromMap({...data, 'id': gameId});
+        await updateGame(gameId, game.copyWith(isPublic: true));
+      }
+    }
   }
 
   @override
