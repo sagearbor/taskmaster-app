@@ -118,6 +118,78 @@ class MockGameDataSource implements GameRemoteDataSource {
             'submissions': []
           }
         ]
+      },
+      // --- Public template games (discoverable in the gallery) ---
+      {
+        'id': 'game_public_warriors',
+        'gameName': 'Weekend Warriors',
+        'creatorId': 'taskmaster_official',
+        'judgeId': 'taskmaster_official',
+        'status': 'inProgress',
+        'inviteCode': 'WARRIOR',
+        'isPublic': true,
+        'createdAt': DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
+        'players': [
+          {'userId': 'taskmaster_official', 'displayName': 'Taskmaster', 'totalScore': 0},
+          {'userId': 'demo_player_1', 'displayName': 'Sam', 'totalScore': 0},
+        ],
+        'tasks': [
+          {
+            'id': 'task_pw_1',
+            'title': 'Build the tallest free-standing structure',
+            'description': 'Use anything in the room. It must stand on its own for 10 seconds.',
+            'taskType': 'video',
+            'puzzleAnswer': null,
+            'submissions': []
+          },
+          {
+            'id': 'task_pw_2',
+            'title': 'Most dramatic slow-motion entrance',
+            'description': 'Film the most cinematic entrance into a room you can manage.',
+            'taskType': 'video',
+            'puzzleAnswer': null,
+            'submissions': []
+          }
+        ]
+      },
+      {
+        'id': 'game_public_epic',
+        'gameName': 'Epic Adventure',
+        'creatorId': 'taskmaster_official',
+        'judgeId': 'taskmaster_official',
+        'status': 'lobby',
+        'inviteCode': 'EPIC',
+        'isPublic': true,
+        'createdAt': DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
+        'players': [
+          {'userId': 'taskmaster_official', 'displayName': 'Taskmaster', 'totalScore': 0},
+        ],
+        'tasks': [
+          {
+            'id': 'task_pe_1',
+            'title': 'Create a treasure map to a hidden object',
+            'description': 'Hide something, then draw a map that leads a friend to it.',
+            'taskType': 'video',
+            'puzzleAnswer': null,
+            'submissions': []
+          },
+          {
+            'id': 'task_pe_2',
+            'title': 'Invent a new sport in 60 seconds',
+            'description': 'Make up the rules and demonstrate one round of play.',
+            'taskType': 'video',
+            'puzzleAnswer': null,
+            'submissions': []
+          },
+          {
+            'id': 'task_pe_3',
+            'title': 'The most convincing fake phone call',
+            'description': 'Have a one-sided conversation so believable we forget no one is there.',
+            'taskType': 'video',
+            'puzzleAnswer': null,
+            'submissions': []
+          }
+        ]
       }
     ];
 
@@ -132,6 +204,17 @@ class MockGameDataSource implements GameRemoteDataSource {
     // Then emit all future updates
     await for (final games in _gamesController.stream) {
       yield games;
+    }
+  }
+
+  @override
+  Stream<List<Map<String, dynamic>>> getPublicGamesStream() async* {
+    List<Map<String, dynamic>> publicOnly(List<Map<String, dynamic>> all) =>
+        all.where((g) => g['isPublic'] == true).toList();
+
+    yield publicOnly(_games);
+    await for (final games in _gamesController.stream) {
+      yield publicOnly(games);
     }
   }
 

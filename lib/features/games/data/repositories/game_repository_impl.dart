@@ -22,6 +22,35 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
+  Stream<List<Game>> getPublicGamesStream() {
+    return remoteDataSource.getPublicGamesStream().map(
+          (list) => list.map((data) => Game.fromMap(data)).toList(),
+        );
+  }
+
+  @override
+  Future<String> cloneGame(
+      Game template, String creatorId, String displayName) async {
+    // New game is private and owned by the cloner; creator is judge by default.
+    final gameId = await createGame(template.gameName, creatorId, creatorId);
+
+    // Copy tasks as fresh, unsubmitted tasks (new ids, no submissions/statuses).
+    final freshTasks = template.tasks
+        .map((t) => Task(
+              id: _uuid.v4(),
+              title: t.title,
+              description: t.description,
+              taskType: t.taskType,
+              puzzleAnswer: t.puzzleAnswer,
+              submissions: const [],
+            ))
+        .toList();
+    await addTasksToGame(gameId, freshTasks);
+
+    return gameId;
+  }
+
+  @override
   Future<String> createGame(String gameName, String creatorId, String judgeId) async {
     final gameData = {
       'id': _uuid.v4(),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/game.dart';
 import '../../../../core/utils/link_utils.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../community/presentation/screens/community_browser_screen.dart';
+import '../../domain/repositories/game_repository.dart';
 import '../bloc/game_detail_bloc.dart';
 
 class GameLobbyView extends StatelessWidget {
@@ -319,6 +321,22 @@ class GameLobbyView extends StatelessWidget {
 
               // Action Buttons
               if (isCreator) ...[
+                Card(
+                  child: SwitchListTile(
+                    secondary: const Icon(Icons.public),
+                    title: const Text('Make game public'),
+                    subtitle: const Text(
+                        'Discoverable in the gallery so others can play your tasks'),
+                    value: game.isPublic,
+                    onChanged: (value) {
+                      sl<GameRepository>().updateGame(
+                        game.id,
+                        game.copyWith(isPublic: value),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
                 OutlinedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -328,7 +346,7 @@ class GameLobbyView extends StatelessWidget {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.public),
+                  icon: const Icon(Icons.playlist_add),
                   label: const Text('Add Community Tasks'),
                 ),
                 const SizedBox(height: 8),

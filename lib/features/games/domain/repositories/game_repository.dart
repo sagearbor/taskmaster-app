@@ -4,6 +4,14 @@ import '../../../../core/models/task.dart';
 
 abstract class GameRepository {
   Stream<List<Game>> getGamesStream();
+
+  /// Games marked public — the discoverable community gallery.
+  Stream<List<Game>> getPublicGamesStream();
+
+  /// Create a new private game owned by [creatorId] that copies [template]'s
+  /// tasks (as fresh, unsubmitted tasks). Returns the new game id.
+  Future<String> cloneGame(Game template, String creatorId, String displayName);
+
   Future<String> createGame(String gameName, String creatorId, String judgeId);
   Future<void> updateGame(String gameId, Game game);
   Future<void> deleteGame(String gameId);
