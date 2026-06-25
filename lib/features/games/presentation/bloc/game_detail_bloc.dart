@@ -24,21 +24,20 @@ class GameDetailBloc extends Bloc<GameDetailEvent, GameDetailState> {
     on<AdvanceToNextTaskEvent>(_onAdvanceToNextTask);
   }
 
-  void _onLoadGameDetail(LoadGameDetail event, Emitter<GameDetailState> emit) {
+  Future<void> _onLoadGameDetail(
+      LoadGameDetail event, Emitter<GameDetailState> emit) async {
     _currentGameId = event.gameId;
     emit(GameDetailLoading());
 
-    gameRepository.getGameStream(event.gameId).listen(
-      (game) {
-        if (game != null) {
-          emit(GameDetailLoaded(game: game));
-        } else {
-          emit(GameDetailError(message: 'Game not found'));
-        }
-      },
-      onError: (error) {
-        emit(GameDetailError(message: error.toString()));
-      },
+    // emit.forEach keeps the emitter valid for the whole life of the stream,
+    // instead of .listen() emitting after the handler returns (which throws
+    // "emit was called after an event handler completed normally").
+    await emit.forEach<Game?>(
+      gameRepository.getGameStream(event.gameId),
+      onData: (game) => game != null
+          ? GameDetailLoaded(game: game)
+          : GameDetailError(message: 'Game not found'),
+      onError: (error, _) => GameDetailError(message: error.toString()),
     );
   }
 

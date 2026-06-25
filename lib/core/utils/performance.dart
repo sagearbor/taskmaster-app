@@ -194,14 +194,21 @@ class _PerformanceOverlayState extends State<PerformanceOverlay> {
   @override
   Widget build(BuildContext context) {
     if (!widget.enabled) return widget.child;
-    
-    return Stack(
-      children: [
-        widget.child,
-        Positioned(
-          top: 50,
-          right: 10,
-          child: Container(
+
+    // This overlay can wrap the whole app (above MaterialApp), where there is
+    // no Directionality ancestor and constraints are tight. Provide our own
+    // Directionality and expand the Stack so the wrapped app fills the screen —
+    // otherwise the Stack throws "No Directionality widget found" every frame.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          widget.child,
+          Positioned(
+            top: 50,
+            right: 10,
+            child: Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: _fps < 30 
@@ -221,7 +228,8 @@ class _PerformanceOverlayState extends State<PerformanceOverlay> {
             ),
           ),
         ),
-      ],
+        ],
+      ),
     );
   }
 }

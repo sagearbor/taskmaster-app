@@ -31,7 +31,8 @@ class GameLobbyView extends StatelessWidget {
 
         return Padding(
           padding: const EdgeInsets.all(16),
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Game Status Card
@@ -124,8 +125,7 @@ class GameLobbyView extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Players List
-              Expanded(
-                child: Card(
+              Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -139,7 +139,8 @@ class GameLobbyView extends StatelessWidget {
                         ),
                         const SizedBox(height: 12),
                         if (game.players.isEmpty)
-                          Expanded(
+                          SizedBox(
+                            height: 140,
                             child: Center(
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -168,8 +169,9 @@ class GameLobbyView extends StatelessWidget {
                             ),
                           )
                         else
-                          Expanded(
-                            child: ListView.builder(
+                          ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
                               itemCount: game.players.length,
                               itemBuilder: (context, index) {
                                 final player = game.players[index];
@@ -224,12 +226,10 @@ class GameLobbyView extends StatelessWidget {
                                 );
                               },
                             ),
-                          ),
                       ],
                     ),
                   ),
                 ),
-              ),
               const SizedBox(height: 16),
 
               // Tasks Section
@@ -408,6 +408,7 @@ class GameLobbyView extends StatelessWidget {
                 ),
               ],
             ],
+          ),
           ),
         );
       },
