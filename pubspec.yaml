@@ -77,7 +77,15 @@ flutter_launcher_icons:
 
 flutter:
   uses-material-design: true
-  
+
   assets:
     - assets/images/
     - assets/data/
+
+  fonts:
+    - family: Fredoka
+      fonts:
+        - asset: assets/fonts/Fredoka.ttf
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans.ttf

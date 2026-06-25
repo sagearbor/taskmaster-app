@@ -83,7 +83,7 @@ class HomeView extends StatelessWidget {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               gradient: const LinearGradient(
-                colors: [Color(0xFFFF6B35), Color(0xFFFF8E53)],
+                colors: [Color(0xFFFB5779), Color(0xFFF59E0B)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
