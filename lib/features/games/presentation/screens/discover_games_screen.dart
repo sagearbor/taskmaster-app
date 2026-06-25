@@ -119,9 +119,8 @@ class _PublicGameCard extends StatelessWidget {
         authState.user.id,
         authState.user.displayName,
       );
-      messenger.showSnackBar(
-        SnackBar(content: Text('Created your copy of "${game.gameName}"')),
-      );
+      // Navigating into the fresh game is the confirmation — no snackbar
+      // needed (and avoids a floating snackbar racing the route transition).
       navigator.push(
         MaterialPageRoute(builder: (_) => GameDetailScreen(gameId: newId)),
       );

@@ -77,6 +77,7 @@ class TaskmasterApp extends StatelessWidget {
         title: 'Taskmaster Party App',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.light,
         debugShowCheckedModeBanner: false,
         home: const AuthWrapper(),
       ),

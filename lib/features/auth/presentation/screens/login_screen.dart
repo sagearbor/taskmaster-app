@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../bloc/auth_bloc.dart';
 import '../widgets/auth_form.dart';
 import 'register_screen.dart';
@@ -14,44 +15,62 @@ class LoginScreen extends StatelessWidget {
       listener: (context, state) {
         if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(state.message)),
           );
         }
       },
       child: Scaffold(
-        body: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const Icon(
-                  Icons.sports_esports,
-                  size: 80,
-                  color: Color(0xFF2E7D32),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Hero header
+              Container(
+                decoration: const BoxDecoration(
+                  gradient: AppTheme.heroGradient,
+                  borderRadius: BorderRadius.vertical(
+                      bottom: Radius.circular(36)),
                 ),
-                const SizedBox(height: 24),
-                Text(
-                  'Taskmaster Party App',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2E7D32),
-                  ),
-                  textAlign: TextAlign.center,
+                padding: EdgeInsets.fromLTRB(
+                    24, MediaQuery.of(context).padding.top + 56, 24, 44),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 88,
+                      height: 88,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.14),
+                        borderRadius: BorderRadius.circular(26),
+                        border: Border.all(
+                            color: Colors.white.withOpacity(0.25), width: 1.5),
+                      ),
+                      child: const Icon(Icons.star_rounded,
+                          size: 52, color: AppTheme.goldBright),
+                    ),
+                    const SizedBox(height: 20),
+                    Text(
+                      'Taskmaster Party',
+                      style: Theme.of(context)
+                          .textTheme
+                          .displaySmall
+                          ?.copyWith(color: Colors.white),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Compete in creative challenges with friends',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Colors.white.withOpacity(0.82)),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Compete in creative challenges with friends',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 48),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
                 AuthForm(
                   title: 'Sign In',
                   buttonText: 'Sign In',
@@ -87,8 +106,10 @@ class LoginScreen extends StatelessWidget {
                   },
                   child: const Text('Don\'t have an account? Sign up'),
                 ),
-              ],
-            ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

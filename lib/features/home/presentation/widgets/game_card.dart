@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/models/game.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class GameCard extends StatelessWidget {
   final Game game;
@@ -13,32 +14,75 @@ class GameCard extends StatelessWidget {
     required this.onTap,
   });
 
+  static Color _statusColor(GameStatus s) {
+    switch (s) {
+      case GameStatus.lobby:
+        return AppTheme.gold;
+      case GameStatus.inProgress:
+        return AppTheme.violet;
+      case GameStatus.completed:
+        return AppTheme.coral;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final accent = _statusColor(game.status);
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(22),
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Container(
+                    width: 52,
+                    height: 52,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [accent, Color.lerp(accent, Colors.black, 0.18)!],
+                      ),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(
+                            color: accent.withOpacity(0.35),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4)),
+                      ],
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      game.gameName.isNotEmpty
+                          ? game.gameName[0].toUpperCase()
+                          : '?',
+                      style: const TextStyle(
+                          fontFamily: 'Fredoka',
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
                   Expanded(
                     child: Text(
                       game.gameName,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                   _StatusChip(status: game.status),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               Row(
                 children: [
                   Icon(
@@ -114,12 +158,15 @@ class GameCard extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.grey[100],
-                        borderRadius: BorderRadius.circular(12),
+                        color: AppTheme.violetSoft.withOpacity(0.6),
+                        borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
                         player.displayName,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppTheme.violetDeep,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     );
                   }).toList(),
@@ -151,27 +198,25 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color backgroundColor;
-    Color textColor;
-    String text;
+    late final Color accent;
+    late final String text;
 
     switch (status) {
       case GameStatus.lobby:
-        backgroundColor = Colors.blue.withOpacity(0.1);
-        textColor = Colors.blue[700]!;
+        accent = AppTheme.gold;
         text = 'Lobby';
         break;
       case GameStatus.inProgress:
-        backgroundColor = Colors.green.withOpacity(0.1);
-        textColor = Colors.green[700]!;
-        text = 'In Progress';
+        accent = AppTheme.violet;
+        text = 'Live';
         break;
       case GameStatus.completed:
-        backgroundColor = Colors.grey.withOpacity(0.1);
-        textColor = Colors.grey[700]!;
-        text = 'Completed';
+        accent = AppTheme.coral;
+        text = 'Done';
         break;
     }
+    final backgroundColor = accent.withOpacity(0.12);
+    final textColor = accent;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
