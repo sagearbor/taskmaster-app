@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF2E7D32); // Taskmaster green
@@ -19,11 +18,10 @@ class AppTheme {
         surface: surfaceColor,
         error: errorColor,
       ),
-      textTheme: GoogleFonts.robotoTextTheme(),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 2,
-        titleTextStyle: GoogleFonts.roboto(
+        titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,
@@ -63,11 +61,10 @@ class AppTheme {
         brightness: Brightness.dark,
         secondary: secondaryColor,
       ),
-      textTheme: GoogleFonts.robotoTextTheme(ThemeData.dark().textTheme),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 2,
-        titleTextStyle: GoogleFonts.roboto(
+        titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: Colors.white,

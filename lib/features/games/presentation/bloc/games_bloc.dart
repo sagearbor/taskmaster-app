@@ -29,16 +29,16 @@ class GamesBloc extends Bloc<GamesEvent, GamesState> {
     on<QuickPlayGame>(_onQuickPlayGame);
   }
 
-  void _onLoadGames(LoadGames event, Emitter<GamesState> emit) {
+  Future<void> _onLoadGames(LoadGames event, Emitter<GamesState> emit) async {
     emit(GamesLoading());
-    
-    gameRepository.getGamesStream().listen(
-      (games) {
-        emit(GamesLoaded(games: games));
-      },
-      onError: (error) {
-        emit(GamesError(message: error.toString()));
-      },
+
+    // emit.forEach keeps the emitter valid for the life of the stream, instead
+    // of .listen() emitting after the handler returns (which throws "emit was
+    // called after an event handler completed normally" and leaks the sub).
+    await emit.forEach<List<Game>>(
+      gameRepository.getGamesStream(),
+      onData: (games) => GamesLoaded(games: games),
+      onError: (error, _) => GamesError(message: error.toString()),
     );
   }
 
