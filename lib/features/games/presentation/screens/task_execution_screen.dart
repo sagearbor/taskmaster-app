@@ -12,6 +12,7 @@ import '../bloc/task_execution_event.dart';
 import '../bloc/task_execution_state.dart';
 import '../widgets/submission_progress_widget.dart';
 import '../widgets/task_timer_widget.dart';
+import 'video_viewing_screen.dart';
 
 class TaskExecutionScreen extends StatelessWidget {
   final String gameId;
@@ -158,25 +159,14 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           }
 
           if (state is TaskExecutionSubmitted) {
-            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Submission successful! ✅'),
-                backgroundColor: Colors.green,
-              ),
+              const SnackBar(content: Text('Submission successful! ✅')),
             );
-
-            // Navigate to video viewing screen after short delay
-            Future.delayed(const Duration(seconds: 1), () {
-              if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed(
-                  '/video-viewing',
-                  arguments: {
-                    'gameId': state.gameId,
-                    'taskIndex': state.taskIndex,
-                  },
-                );
-              }
+            // Return to the game. (The old code pushed a named route
+            // '/video-viewing' that was never registered, which left the
+            // screen stuck blank after a successful submit.)
+            Future.delayed(const Duration(milliseconds: 600), () {
+              if (context.mounted) Navigator.of(context).pop();
             });
           }
         },
@@ -208,7 +198,8 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
             return _buildTaskExecutionForm(context, state);
           }
 
-          return const SizedBox.shrink();
+          // Initial / Submitted — show a spinner instead of a blank screen.
+          return const Center(child: CircularProgressIndicator());
         },
       ),
     ),
@@ -326,13 +317,12 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
             if (state.canUserViewVideos)
               ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.of(context).pushNamed(
-                    '/video-viewing',
-                    arguments: {
-                      'gameId': widget.gameId,
-                      'taskIndex': widget.taskIndex,
-                    },
-                  );
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => VideoViewingScreen(
+                      gameId: widget.gameId,
+                      taskIndex: widget.taskIndex,
+                    ),
+                  ));
                 },
                 icon: const Icon(Icons.play_circle_outline),
                 label: const Text('View Submissions'),
