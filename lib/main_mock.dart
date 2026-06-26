@@ -27,7 +27,7 @@ void main() async {
     ErrorBoundary(
       child: perf.PerformanceOverlay(
         enabled: AppConfig.isDevelopment,
-        child: const TaskmasterApp(),
+        child: const TaskCasterApp(),
       ),
     ),
   );
@@ -61,8 +61,8 @@ Future<void> _initializeApp() async {
   await ServiceLocator.init(useMockServices: true);
 }
 
-class TaskmasterApp extends StatelessWidget {
-  const TaskmasterApp({super.key});
+class TaskCasterApp extends StatelessWidget {
+  const TaskCasterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +74,7 @@ class TaskmasterApp extends StatelessWidget {
         authRepository: sl<AuthRepository>(),
       )..add(AuthCheckRequested()),
       child: MaterialApp(
-        title: 'Taskmaster Party App',
+        title: 'TaskCaster Party App',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,

@@ -8,7 +8,7 @@ class StoreScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Taskmaster Store'),
+        title: const Text('TaskCaster Store'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -39,7 +39,7 @@ class StoreScreen extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         const Text(
-                          'Taskmaster Pro',
+                          'TaskCaster Pro',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/services/notification_service.dart';
+import 'package:taskcaster_app/core/services/notification_service.dart';
 
 void main() {
   group('MockNotificationService', () {

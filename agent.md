@@ -1,7 +1,7 @@
 # agent.md — taskmaster-app
 
 ## Overview
-Cross-platform Flutter app for Taskmaster-style party games. Firebase backend, targets iOS/Android/Web simultaneously. Live at https://taskmaster-app-3d480.web.app
+Cross-platform Flutter app for TaskCaster-style party games. Firebase backend, targets iOS/Android/Web simultaneously. Live at https://taskmaster-app-3d480.web.app
 
 ## Tech Stack
 - Flutter / Dart

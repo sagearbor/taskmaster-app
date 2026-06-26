@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/models/game.dart';
-import 'package:taskmaster_app/core/models/game_settings.dart';
-import 'package:taskmaster_app/core/models/player.dart';
-import 'package:taskmaster_app/core/models/task.dart';
-import 'package:taskmaster_app/features/games/data/datasources/mock_game_data_source.dart';
-import 'package:taskmaster_app/features/games/data/repositories/game_repository_impl.dart';
+import 'package:taskcaster_app/core/models/game.dart';
+import 'package:taskcaster_app/core/models/game_settings.dart';
+import 'package:taskcaster_app/core/models/player.dart';
+import 'package:taskcaster_app/core/models/task.dart';
+import 'package:taskcaster_app/features/games/data/datasources/mock_game_data_source.dart';
+import 'package:taskcaster_app/features/games/data/repositories/game_repository_impl.dart';
 
 void main() {
   group('Public games', () {

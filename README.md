@@ -1,5 +1,5 @@
-# Taskmaster Party App
-An unofficial, fan-made mobile and web application for playing Taskmaster-style party games with friends, whether you're in the same room or across the globe.
+# TaskCaster Party App
+An unofficial, fan-made mobile and web application for playing TaskCaster-style party games with friends, whether you're in the same room or across the globe.
 
 ## 🚀 Project Status
 **Live App:** https://taskmaster-app-3d480.web.app
@@ -27,7 +27,7 @@ Tell AI: *"Read DEVELOPMENT_CHECKLIST.md and implement the next incomplete secti
 - **Game Creation & Management**: Create and manage party games
 - **User Authentication**: Login/Register with mock auth service  
 - **Real-time Gameplay**: Live task updates and score tracking
-- **Remote Judging**: Designated Taskmaster awards points
+- **Remote Judging**: Designated TaskCaster awards points
 - **Cross-Platform**: iOS, Android, and Web support
 
 ### Advanced Features ✅  
@@ -120,4 +120,4 @@ flutter run -d linux -t lib/main_mock.dart
   to generate mobile Firebase config before it runs. See `docs/MOBILE_SETUP.md`.
 - **Windows / macOS**: ⚠️ Requires additional setup
 
-This is an independent project created by a fan and is not affiliated with the official Taskmaster show or its creators.
+This is an independent project created by a fan and is not affiliated with the official TaskCaster show or its creators.

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/features/tasks/presentation/screens/task_browser_screen.dart';
-import 'package:taskmaster_app/features/tasks/data/datasources/prebuilt_tasks_data.dart';
+import 'package:taskcaster_app/features/tasks/presentation/screens/task_browser_screen.dart';
+import 'package:taskcaster_app/features/tasks/data/datasources/prebuilt_tasks_data.dart';
 
 void main() {
   group('TaskBrowserScreen', () {

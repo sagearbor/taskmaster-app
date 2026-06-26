@@ -1,4 +1,4 @@
-# Firebase Setup Status - Taskmaster App
+# Firebase Setup Status - TaskCaster App
 
 ## ✅ What's Been Completed
 
@@ -8,7 +8,7 @@
 
 ### 2. Firebase Project Configuration - Completed ✅
 - Project ID: `taskmaster-app-3d480`
-- Web app registered: `taskmaster_app`
+- Web app registered: `taskcaster_app`
 - Configuration file generated: `lib/firebase_options.dart`
 
 ### 3. Firebase Services - Enabled in Console ✅

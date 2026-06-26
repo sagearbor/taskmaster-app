@@ -8,7 +8,7 @@ void main() {
     MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Taskmaster Minimal Test'),
+          title: const Text('TaskCaster Minimal Test'),
           backgroundColor: Colors.green,
         ),
         body: const Center(

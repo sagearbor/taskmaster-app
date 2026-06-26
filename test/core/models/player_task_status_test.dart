@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/models/player_task_status.dart';
+import 'package:taskcaster_app/core/models/player_task_status.dart';
 
 void main() {
   group('PlayerTaskStatus', () {

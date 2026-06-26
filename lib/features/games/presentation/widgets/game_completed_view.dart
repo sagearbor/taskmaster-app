@@ -226,7 +226,7 @@ class GameCompletedView extends StatelessWidget {
         .join('\n');
     final text = '🏆 ${game.gameName} — Final Results\n\n'
         '$standings\n\n'
-        'Played on Taskmaster Party!';
+        'Played on TaskCaster Party!';
     Share.share(text, subject: '${game.gameName} — Results');
   }
 }

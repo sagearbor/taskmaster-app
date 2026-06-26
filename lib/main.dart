@@ -1,4 +1,4 @@
-/// Main entry point for Taskmaster Party App
+/// Main entry point for TaskCaster Party App
 /// Run with: flutter run -d chrome
 
 import 'package:flutter/material.dart';
@@ -43,11 +43,11 @@ void main() async {
     }
   }
 
-  runApp(const TaskmasterApp());
+  runApp(const TaskCasterApp());
 }
 
-class TaskmasterApp extends StatelessWidget {
-  const TaskmasterApp({super.key});
+class TaskCasterApp extends StatelessWidget {
+  const TaskCasterApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class TaskmasterApp extends StatelessWidget {
         authRepository: sl<AuthRepository>(),
       )..add(AuthCheckRequested()),
       child: MaterialApp(
-        title: 'Taskmaster Party App',
+        title: 'TaskCaster Party App',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,

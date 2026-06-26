@@ -1,10 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/di/service_locator.dart';
-import 'package:taskmaster_app/core/models/game.dart';
-import 'package:taskmaster_app/core/models/player.dart';
-import 'package:taskmaster_app/core/models/submission.dart';
-import 'package:taskmaster_app/core/models/task.dart';
-import 'package:taskmaster_app/features/games/domain/repositories/game_repository.dart';
+import 'package:taskcaster_app/core/di/service_locator.dart';
+import 'package:taskcaster_app/core/models/game.dart';
+import 'package:taskcaster_app/core/models/player.dart';
+import 'package:taskcaster_app/core/models/submission.dart';
+import 'package:taskcaster_app/core/models/task.dart';
+import 'package:taskcaster_app/features/games/domain/repositories/game_repository.dart';
 
 /// End-to-end flow test for the core game loop, driven through the real
 /// [GameRepository] + BLoC logic against the mock data source. Runs headlessly

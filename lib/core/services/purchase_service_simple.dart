@@ -60,7 +60,7 @@ class MockPurchaseService implements PurchaseService {
   static const List<ProductDetails> _catalog = [
     ProductDetails(
       id: PurchaseServiceImpl.proVersionId,
-      title: 'Taskmaster Pro',
+      title: 'TaskCaster Pro',
       description: 'Remove ads and unlock premium features',
       price: '\$4.99',
       rawPrice: 4.99,
@@ -124,7 +124,7 @@ class MockPurchaseService implements PurchaseService {
 /// Placeholder for the real implementation. Reuses the mock behaviour until
 /// `in_app_purchase` is wired up and store products are configured.
 class PurchaseServiceImpl extends MockPurchaseService {
-  static const String proVersionId = 'taskmaster_pro';
+  static const String proVersionId = 'taskcaster_pro';
   static const String taskPackBasicId = 'task_pack_basic';
   static const String taskPackPremiumId = 'task_pack_premium';
   static const String taskPackUltimateId = 'task_pack_ultimate';

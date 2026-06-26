@@ -1,4 +1,4 @@
-# Taskmaster App - Session Handoff Status
+# TaskCaster App - Session Handoff Status
 **Date:** 2025-09-30
 **Branch:** `feature/day26-30-testing-and-quick-play`
 **Deployed URL:** https://taskmaster-app-3d480.web.app

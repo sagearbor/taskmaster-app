@@ -13,7 +13,7 @@ class TestApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Taskmaster Test',
+      title: 'TaskCaster Test',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
@@ -23,7 +23,7 @@ class TestApp extends StatelessWidget {
       home: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text('Taskmaster Party App'),
+          title: const Text('TaskCaster Party App'),
           backgroundColor: Colors.green,
           foregroundColor: Colors.white,
         ),

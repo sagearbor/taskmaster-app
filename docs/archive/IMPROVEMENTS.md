@@ -1,7 +1,7 @@
-# Taskmaster App - Architectural Improvements
+# TaskCaster App - Architectural Improvements
 
 ## Overview
-This document outlines the critical improvements made to enhance the production-readiness, performance, and maintainability of the Taskmaster Party App.
+This document outlines the critical improvements made to enhance the production-readiness, performance, and maintainability of the TaskCaster Party App.
 
 ## 🏗️ Architecture Enhancements
 

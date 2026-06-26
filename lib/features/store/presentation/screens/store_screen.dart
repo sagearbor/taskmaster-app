@@ -105,7 +105,7 @@ class _StoreScreenState extends State<StoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Taskmaster Store'),
+        title: const Text('TaskCaster Store'),
         actions: [
           TextButton(
             onPressed: _restorePurchases,
@@ -222,7 +222,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Taskmaster Pro',
+                      'TaskCaster Pro',
                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

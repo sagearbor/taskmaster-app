@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/widgets/skeleton_loaders.dart';
+import 'package:taskcaster_app/core/widgets/skeleton_loaders.dart';
 
 void main() {
   group('SkeletonLoaders', () {

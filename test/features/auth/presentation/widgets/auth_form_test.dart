@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:taskmaster_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:taskmaster_app/features/auth/presentation/widgets/auth_form.dart';
+import 'package:taskcaster_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:taskcaster_app/features/auth/presentation/widgets/auth_form.dart';
 
 class MockAuthBloc extends Mock implements AuthBloc {}
 

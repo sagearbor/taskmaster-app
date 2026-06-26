@@ -1,6 +1,6 @@
 {
-    "name": "taskmaster_app",
-    "short_name": "taskmaster_app",
+    "name": "taskcaster_app",
+    "short_name": "taskcaster_app",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
