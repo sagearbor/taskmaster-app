@@ -95,14 +95,23 @@ def main() -> int:
         body={"track": args.track, "releases": [release]},
     ).execute()
 
-    # changesNotSentForReview=True is required by the Play API: it commits the
-    # edit without auto-submitting for review (review, when needed, is triggered
-    # from the Console). Internal-testing releases publish without a review step.
-    edits.commit(
-        packageName=args.package,
-        editId=edit_id,
-        changesNotSentForReview=True,
-    ).execute()
+    # On already-reviewed apps, changesNotSentForReview=True commits without
+    # auto-submitting for review. But a brand-new app still in first review
+    # rejects that flag ("Changes are sent for review automatically..."), so
+    # fall back to a plain commit (which auto-sends for review; internal-testing
+    # releases still reach testers immediately while review is pending).
+    from googleapiclient.errors import HttpError
+    try:
+        edits.commit(
+            packageName=args.package,
+            editId=edit_id,
+            changesNotSentForReview=True,
+        ).execute()
+    except HttpError as e:
+        if e.resp.status == 400 and b"changesNotSentForReview" in (e.content or b""):
+            edits.commit(packageName=args.package, editId=edit_id).execute()
+        else:
+            raise
     print(f"✓ Done. versionCode {version_code} → {args.track} ({args.status}).")
     return 0
 
