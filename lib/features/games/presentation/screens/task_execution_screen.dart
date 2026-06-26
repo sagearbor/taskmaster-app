@@ -14,6 +14,7 @@ import '../bloc/task_execution_state.dart';
 import '../widgets/submission_progress_widget.dart';
 import '../widgets/task_timer_widget.dart';
 import 'video_viewing_screen.dart';
+import '../../../../core/utils/link_utils.dart';
 
 class TaskExecutionScreen extends StatelessWidget {
   final String gameId;
@@ -66,6 +67,9 @@ class TaskExecutionView extends StatefulWidget {
 class _TaskExecutionViewState extends State<TaskExecutionView> {
   final _videoUrlController = TextEditingController();
   bool _isUrlValid = false;
+  // When true, show the submission form even though the user already submitted,
+  // so they can change/replace their video.
+  bool _editing = false;
 
   @override
   void dispose() {
@@ -179,8 +183,9 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           }
 
           if (state is TaskExecutionLoaded) {
-            // Check if user already submitted
-            if (state.hasUserSubmitted) {
+            // Check if user already submitted (unless they tapped "Change
+            // my video" to edit, in which case fall through to the form).
+            if (state.hasUserSubmitted && !_editing) {
               return _buildAlreadySubmittedView(context, state);
             }
 
@@ -250,29 +255,55 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppTheme.violetSoft,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              state.userStatus!.submissionUrl!,
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                            if (state.userStatus!.submittedAt != null) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                'Submitted ${_formatTimeAgo(state.userStatus!.submittedAt!)}',
-                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppTheme.inkSoft,
+                      InkWell(
+                        onTap: () => LinkUtils.openExternal(
+                            context, state.userStatus!.submissionUrl),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.violetSoft,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.open_in_new,
+                                      size: 16, color: AppTheme.violetDeep),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      state.userStatus!.submissionUrl!,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodySmall
+                                          ?.copyWith(
+                                            color: AppTheme.violetDeep,
+                                            decoration:
+                                                TextDecoration.underline,
+                                          ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
+                                  ),
+                                ],
                               ),
+                              if (state.userStatus!.submittedAt != null) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Submitted ${_formatTimeAgo(state.userStatus!.submittedAt!)}',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodySmall
+                                      ?.copyWith(
+                                        color: AppTheme.inkSoft,
+                                      ),
+                                ),
+                              ],
                             ],
-                          ],
+                          ),
                         ),
                       ),
                       if (state.task.deadline != null &&
@@ -317,6 +348,21 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                 label: const Text('View Submissions'),
               ),
             const SizedBox(height: 16),
+            // Let the player change their submission until it has been judged.
+            if (state.userStatus?.state != TaskPlayerState.judged)
+              OutlinedButton.icon(
+                onPressed: () {
+                  final current = state.userStatus?.submissionUrl ?? '';
+                  setState(() {
+                    _editing = true;
+                    _videoUrlController.text = current;
+                    _isUrlValid = _isValidVideoUrl(current);
+                  });
+                },
+                icon: const Icon(Icons.edit, size: 18),
+                label: const Text('Change my video'),
+              ),
+            const SizedBox(height: 8),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: const Text('Back to Game'),

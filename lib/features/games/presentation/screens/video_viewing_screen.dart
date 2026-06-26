@@ -277,7 +277,7 @@ class VideoViewingView extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        playerId[0].toUpperCase(),
+                        (playerId.isNotEmpty ? playerId[0] : '?').toUpperCase(),
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -365,7 +365,9 @@ class VideoViewingView extends StatelessWidget {
                     Expanded(
                       child: Text(
                         status.submissionUrl!,
-                        style: Theme.of(context).textTheme.bodySmall,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: AppTheme.violetDeep,
+                            ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -394,17 +396,18 @@ class VideoViewingView extends StatelessWidget {
   Future<void> _openVideoUrl(BuildContext context, String url) async {
     try {
       final uri = Uri.parse(url);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Could not open video link'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+      // Do NOT gate on canLaunchUrl(): on Android 11+ it returns false for
+      // http/https unless browser intents are declared, which made perfectly
+      // valid links look unopenable. Launch directly and only report a real
+      // failure.
+      final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!ok && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open video link'),
+            backgroundColor: Colors.red,
+          ),
+        );
       }
     } catch (e) {
       if (context.mounted) {
