@@ -30,4 +30,22 @@ abstract class GameRepository {
   Future<void> addTasksToGame(String gameId, List<Task> tasks);
   Future<void> submitTaskAnswer(String gameId, String taskId, Submission submission);
   Future<void> judgeSubmission(String gameId, int taskIndex, String playerId, int score);
+
+  /// Record an AR task result for [playerId] and immediately self-judge it.
+  ///
+  /// AR mini-games (e.g. Balloon Pop) score themselves, so the player jumps
+  /// straight to the `judged` state — bypassing the human judge UI. This
+  /// performs the SAME scoreboard mutation as [judgeSubmission]: it stamps the
+  /// player's status as judged with [score], synthesizes/stamps a matching
+  /// Submission row, bumps the player's total score, advances the task to
+  /// completed once all players are judged, and completes the game once all
+  /// tasks are done. [rawResult] (optional) is the raw gameplay metric (e.g.
+  /// balloons popped) stored on the task for display/analytics.
+  Future<void> submitArResult(
+    String gameId,
+    int taskIndex,
+    String playerId,
+    int score, {
+    int? rawResult,
+  });
 }

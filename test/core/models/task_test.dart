@@ -121,6 +121,53 @@ void main() {
       expect(modifiedTask.taskType, videoTask.taskType); // Unchanged
     });
 
+    test('should identify AR tasks and round-trip AR fields through map', () {
+      final arTask = Task(
+        id: 'ar-task',
+        title: 'Balloon Pop',
+        description: 'Pop as many balloons as you can',
+        taskType: TaskType.ar,
+        arGameId: 'balloon_pop',
+        arResult: 12,
+        submissions: const [],
+      );
+
+      // Type predicates.
+      expect(arTask.isArTask, true);
+      expect(arTask.isVideoTask, false);
+      expect(arTask.isPuzzleTask, false);
+
+      // Serialization round-trip preserves the AR-specific fields.
+      final map = arTask.toMap();
+      expect(map['taskType'], 'ar');
+      expect(map['arGameId'], 'balloon_pop');
+      expect(map['arResult'], 12);
+
+      final restored = Task.fromMap(map);
+      expect(restored.taskType, TaskType.ar);
+      expect(restored.isArTask, true);
+      expect(restored.arGameId, 'balloon_pop');
+      expect(restored.arResult, 12);
+      expect(restored, equals(arTask));
+    });
+
+    test('old serialized tasks without AR keys decode to null/video', () {
+      // Simulates legacy data persisted before the AR fields existed.
+      final legacyMap = {
+        'id': 'legacy',
+        'title': 'Legacy task',
+        'description': 'No AR keys here',
+        'taskType': 'video',
+        'submissions': <dynamic>[],
+      };
+
+      final restored = Task.fromMap(legacyMap);
+      expect(restored.taskType, TaskType.video);
+      expect(restored.arGameId, isNull);
+      expect(restored.arResult, isNull);
+      expect(restored.isArTask, false);
+    });
+
     test('should handle puzzle answers correctly', () {
       expect(puzzleTask.puzzleAnswer, 'keyboard');
       expect(videoTask.puzzleAnswer, isNull);

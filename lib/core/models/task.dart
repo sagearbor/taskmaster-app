@@ -3,7 +3,7 @@ import 'submission.dart';
 import 'task_modifier.dart';
 import 'player_task_status.dart';
 
-enum TaskType { video, puzzle }
+enum TaskType { video, puzzle, ar }
 
 enum TaskStatus {
   waiting_for_submissions,
@@ -21,6 +21,13 @@ class Task extends Equatable {
   final List<Submission> submissions;
   final List<TaskModifier> modifiers;
 
+  // AR task fields. Nullable so existing serialized tasks (which lack these
+  // keys) deserialize cleanly to null. [arGameId] identifies the AR mini-game
+  // to launch (e.g. "balloon_pop"); [arResult] is the raw gameplay result
+  // (e.g. balloons popped) recorded alongside the awarded score.
+  final String? arGameId;
+  final int? arResult;
+
   // NEW: Async game fields
   final TaskStatus status;
   final DateTime? deadline; // Deadline for submissions
@@ -35,6 +42,8 @@ class Task extends Equatable {
     this.puzzleAnswer,
     required this.submissions,
     this.modifiers = const [],
+    this.arGameId,
+    this.arResult,
     this.status = TaskStatus.waiting_for_submissions,
     this.deadline,
     this.durationSeconds,
@@ -51,6 +60,8 @@ class Task extends Equatable {
         orElse: () => TaskType.video,
       ),
       puzzleAnswer: map['puzzleAnswer'] as String?,
+      arGameId: map['arGameId'] as String?,
+      arResult: map['arResult'] as int?,
       submissions: (map['submissions'] as List<dynamic>?)
           ?.map((e) => Submission.fromMap(e as Map<String, dynamic>))
           .toList() ?? [],
@@ -82,6 +93,8 @@ class Task extends Equatable {
       'description': description,
       'taskType': taskType.name,
       'puzzleAnswer': puzzleAnswer,
+      'arGameId': arGameId,
+      'arResult': arResult,
       'submissions': submissions.map((e) => e.toMap()).toList(),
       'modifiers': modifiers.map((e) => e.toMap()).toList(),
       'status': status.name,
@@ -101,6 +114,8 @@ class Task extends Equatable {
     String? puzzleAnswer,
     List<Submission>? submissions,
     List<TaskModifier>? modifiers,
+    String? arGameId,
+    int? arResult,
     TaskStatus? status,
     DateTime? deadline,
     int? durationSeconds,
@@ -114,6 +129,8 @@ class Task extends Equatable {
       puzzleAnswer: puzzleAnswer ?? this.puzzleAnswer,
       submissions: submissions ?? this.submissions,
       modifiers: modifiers ?? this.modifiers,
+      arGameId: arGameId ?? this.arGameId,
+      arResult: arResult ?? this.arResult,
       status: status ?? this.status,
       deadline: deadline ?? this.deadline,
       durationSeconds: durationSeconds ?? this.durationSeconds,
@@ -123,6 +140,7 @@ class Task extends Equatable {
 
   bool get isVideoTask => taskType == TaskType.video;
   bool get isPuzzleTask => taskType == TaskType.puzzle;
+  bool get isArTask => taskType == TaskType.ar;
 
   Submission? getSubmissionByUser(String userId) {
     try {
@@ -204,6 +222,8 @@ class Task extends Equatable {
         puzzleAnswer,
         submissions,
         modifiers,
+        arGameId,
+        arResult,
         status,
         deadline,
         durationSeconds,
