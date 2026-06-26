@@ -271,8 +271,8 @@ class GameDetailView extends StatelessWidget {
   }
 
   void _shareInvite(Game game) {
-    final text = 'Join my Taskmaster game "${game.gameName}"!\n\n'
+    final text = 'Join my TaskCaster game "${game.gameName}"!\n\n'
         'Open the app and enter invite code: ${game.inviteCode}';
-    Share.share(text, subject: 'Taskmaster game invite');
+    Share.share(text, subject: 'TaskCaster game invite');
   }
 }

@@ -1,4 +1,4 @@
-# Taskmaster App - Current Status
+# TaskCaster App - Current Status
 
 ## ✅ What's Working
 

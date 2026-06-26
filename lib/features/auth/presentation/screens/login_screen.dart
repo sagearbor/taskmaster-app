@@ -49,7 +49,7 @@ class LoginScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     Text(
-                      'Taskmaster Party',
+                      'TaskCaster Party',
                       style: Theme.of(context)
                           .textTheme
                           .displaySmall

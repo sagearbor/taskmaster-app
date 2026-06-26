@@ -7,7 +7,7 @@ class PrebuiltTasksData {
 
   static List<Task> getAllTasks() {
     return [
-      // Classic Taskmaster Tasks (50 tasks)
+      // Classic TaskCaster Tasks (50 tasks)
       ..._getClassicTasks(),
       
       // Creative & Artistic Tasks (30 tasks)

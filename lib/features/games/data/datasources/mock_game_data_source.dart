@@ -123,14 +123,14 @@ class MockGameDataSource implements GameRemoteDataSource {
       {
         'id': 'game_public_warriors',
         'gameName': 'Weekend Warriors',
-        'creatorId': 'taskmaster_official',
-        'judgeId': 'taskmaster_official',
+        'creatorId': 'taskcaster_official',
+        'judgeId': 'taskcaster_official',
         'status': 'inProgress',
         'inviteCode': 'WARRIOR',
         'isPublic': true,
         'createdAt': DateTime.now().subtract(const Duration(days: 2)).toIso8601String(),
         'players': [
-          {'userId': 'taskmaster_official', 'displayName': 'Taskmaster', 'totalScore': 0},
+          {'userId': 'taskcaster_official', 'displayName': 'TaskCaster', 'totalScore': 0},
           {'userId': 'demo_player_1', 'displayName': 'Sam', 'totalScore': 0},
         ],
         'tasks': [
@@ -155,14 +155,14 @@ class MockGameDataSource implements GameRemoteDataSource {
       {
         'id': 'game_public_epic',
         'gameName': 'Epic Adventure',
-        'creatorId': 'taskmaster_official',
-        'judgeId': 'taskmaster_official',
+        'creatorId': 'taskcaster_official',
+        'judgeId': 'taskcaster_official',
         'status': 'lobby',
         'inviteCode': 'EPIC',
         'isPublic': true,
         'createdAt': DateTime.now().subtract(const Duration(days: 3)).toIso8601String(),
         'players': [
-          {'userId': 'taskmaster_official', 'displayName': 'Taskmaster', 'totalScore': 0},
+          {'userId': 'taskcaster_official', 'displayName': 'TaskCaster', 'totalScore': 0},
         ],
         'tasks': [
           {

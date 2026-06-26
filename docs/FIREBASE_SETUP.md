@@ -1,4 +1,4 @@
-# Firebase Setup Guide - Taskmaster App
+# Firebase Setup Guide - TaskCaster App
 
 ## ✅ What You Already Have
 

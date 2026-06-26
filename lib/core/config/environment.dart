@@ -17,11 +17,11 @@ class AppConfig {
   static String get firebaseProjectId {
     switch (_environment) {
       case Environment.development:
-        return 'taskmaster-dev';
+        return 'taskcaster-dev';
       case Environment.staging:
-        return 'taskmaster-staging';
+        return 'taskcaster-staging';
       case Environment.production:
-        return 'taskmaster-prod';
+        return 'taskcaster-prod';
     }
   }
   
@@ -29,11 +29,11 @@ class AppConfig {
   static String get apiBaseUrl {
     switch (_environment) {
       case Environment.development:
-        return 'http://localhost:5001/taskmaster-dev/us-central1';
+        return 'http://localhost:5001/taskcaster-dev/us-central1';
       case Environment.staging:
-        return 'https://staging-api.taskmasterapp.com';
+        return 'https://staging-api.taskcasterapp.com';
       case Environment.production:
-        return 'https://api.taskmasterapp.com';
+        return 'https://api.taskcasterapp.com';
     }
   }
   
@@ -77,7 +77,7 @@ class AppConfig {
 class BuildConfig {
   static const String appName = String.fromEnvironment(
     'APP_NAME',
-    defaultValue: 'Taskmaster Party',
+    defaultValue: 'TaskCaster Party',
   );
   
   static const bool useMockServices = bool.fromEnvironment(

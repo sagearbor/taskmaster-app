@@ -1,12 +1,12 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:taskmaster_app/core/models/game.dart';
-import 'package:taskmaster_app/core/models/game_settings.dart';
-import 'package:taskmaster_app/core/models/player.dart';
-import 'package:taskmaster_app/core/models/task.dart';
-import 'package:taskmaster_app/features/games/domain/repositories/game_repository.dart';
-import 'package:taskmaster_app/features/games/presentation/bloc/game_detail_bloc.dart';
+import 'package:taskcaster_app/core/models/game.dart';
+import 'package:taskcaster_app/core/models/game_settings.dart';
+import 'package:taskcaster_app/core/models/player.dart';
+import 'package:taskcaster_app/core/models/task.dart';
+import 'package:taskcaster_app/features/games/domain/repositories/game_repository.dart';
+import 'package:taskcaster_app/features/games/presentation/bloc/game_detail_bloc.dart';
 
 class MockGameRepository extends Mock implements GameRepository {}
 

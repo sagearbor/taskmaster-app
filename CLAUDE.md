@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a cross-platform Flutter application for hosting Taskmaster-style party games. The app uses Firebase as the backend and targets iOS, Android, and Web platforms simultaneously.
+This is a cross-platform Flutter application for hosting TaskCaster-style party games. The app uses Firebase as the backend and targets iOS, Android, and Web platforms simultaneously.
 
 ## Technology Stack
 
@@ -19,7 +19,7 @@ This is a cross-platform Flutter application for hosting Taskmaster-style party 
 ### Project Setup
 ```bash
 # Create new Flutter project (if not exists)
-flutter create taskmaster_app
+flutter create taskcaster_app
 
 # IMPORTANT: Add platform support (required for web/desktop)
 flutter create --platforms=web,linux,windows .

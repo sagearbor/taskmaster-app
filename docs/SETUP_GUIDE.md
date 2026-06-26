@@ -1,4 +1,4 @@
-# Taskmaster App - Setup Guide
+# TaskCaster App - Setup Guide
 
 ## Quick Start (Development Mode)
 

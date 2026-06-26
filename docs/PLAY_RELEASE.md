@@ -4,8 +4,8 @@ The app is configured for Google Play internal testing, mirroring the
 `fitRival` setup.
 
 ## What's already set up
-- **Application id:** `com.sagearbor.taskmaster.app` (permanent once published)
-- **App name:** "Taskmaster Party" (`android:label`)
+- **Application id:** `com.sagearbor.taskcaster.app` (permanent once published)
+- **App name:** "TaskCaster Party" (`android:label`)
 - **Launcher icon:** gold star on purple, generated via `flutter_launcher_icons`
   from `assets/icons/app_icon.png` (regenerate with `dart run flutter_launcher_icons`)
 - **SDK levels:** `minSdk 23` (Firebase requirement), `targetSdk 35`, `compileSdk 35`, Java 17

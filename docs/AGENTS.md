@@ -1,6 +1,6 @@
 AGENTS.md: Technical Brief for AI Development Team
 1. Project Objective
-Your primary directive is to build a cross-platform (iOS, Android, Web) party game application called "Taskmaster Party App" using the Flutter framework. The app facilitates Taskmaster-style games where users receive tasks, submit video links of their attempts, and have a designated judge score them. The core architecture must be serverless, using Firebase for all backend services to ensure zero maintenance and cost scalability.
+Your primary directive is to build a cross-platform (iOS, Android, Web) party game application called "TaskCaster Party App" using the Flutter framework. The app facilitates TaskCaster-style games where users receive tasks, submit video links of their attempts, and have a designated judge score them. The core architecture must be serverless, using Firebase for all backend services to ensure zero maintenance and cost scalability.
 
 2. Technology Stack
 Core Framework: Flutter (latest stable version)

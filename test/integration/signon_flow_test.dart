@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/di/service_locator.dart';
-import 'package:taskmaster_app/core/theme/app_theme.dart';
-import 'package:taskmaster_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:taskmaster_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:taskmaster_app/features/auth/presentation/screens/auth_wrapper.dart';
+import 'package:taskcaster_app/core/di/service_locator.dart';
+import 'package:taskcaster_app/core/theme/app_theme.dart';
+import 'package:taskcaster_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:taskcaster_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:taskcaster_app/features/auth/presentation/screens/auth_wrapper.dart';
 
 /// Drives the real app widgets (mock services) through the first-run flow a
 /// new player sees: login -> guest sign-in -> home -> open the public games
@@ -18,7 +18,7 @@ Widget _appUnderTest() {
     create: (_) => AuthBloc(authRepository: sl<AuthRepository>())
       ..add(AuthCheckRequested()),
     child: MaterialApp(
-      title: 'Taskmaster Party App',
+      title: 'TaskCaster Party App',
       theme: AppTheme.lightTheme,
       home: const AuthWrapper(),
     ),

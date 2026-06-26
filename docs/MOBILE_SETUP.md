@@ -37,7 +37,7 @@ in `main.dart`. To make push actually deliver on mobile:
 
 ## 3. Bundle / application IDs
 
-Scaffolded with org `com.taskmaster` → application id `com.taskmaster.taskmaster_app`.
+Scaffolded with org `com.taskmaster` → application id `com.taskmaster.taskcaster_app`.
 Change in `android/app/build.gradle` (`applicationId`) and Xcode
 (`PRODUCT_BUNDLE_IDENTIFIER`) before store submission, then re-run
 `flutterfire configure` so the registered apps match.

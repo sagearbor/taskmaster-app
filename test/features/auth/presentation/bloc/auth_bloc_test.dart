@@ -1,9 +1,9 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:taskmaster_app/core/models/user.dart';
-import 'package:taskmaster_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:taskmaster_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:taskcaster_app/core/models/user.dart';
+import 'package:taskcaster_app/features/auth/domain/repositories/auth_repository.dart';
+import 'package:taskcaster_app/features/auth/presentation/bloc/auth_bloc.dart';
 
 class MockAuthRepository extends Mock implements AuthRepository {}
 

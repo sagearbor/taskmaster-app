@@ -1,4 +1,4 @@
-# DEVELOPMENT CHECKLIST - Taskmaster Async Game
+# DEVELOPMENT CHECKLIST - TaskCaster Async Game
 
 **Last Updated:** 2025-09-30
 **Current Phase:** Phase 5 Complete - Quick Play & Bug Fixes
@@ -977,7 +977,7 @@ Introduce revenue streams once the app has a stable, engaged user base.
 
 [ ] Configure real ad unit IDs (requires AdMob account)
 
-[x] 2. Create "Taskmaster Pro" (UI ONLY):
+[x] 2. Create "TaskCaster Pro" (UI ONLY):
 
 [x] Store screen with Pro version UI
 

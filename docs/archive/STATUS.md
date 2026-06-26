@@ -1,4 +1,4 @@
-# Taskmaster App - Current Status
+# TaskCaster App - Current Status
 
 **Last Updated:** 2025-09-30
 **Deployed URL:** https://taskmaster-app-3d480.web.app
@@ -56,7 +56,7 @@ Tasks have these fields:
 ### Task Categories (225 total tasks)
 Located in `lib/features/tasks/data/datasources/prebuilt_tasks_data.dart`:
 
-1. **Classic Taskmaster** (50 tasks) - "Make the best noise", "Hide from camera"
+1. **Classic TaskCaster** (50 tasks) - "Make the best noise", "Hide from camera"
 2. **Creative & Artistic** (30 tasks) - "Create superhero costume", "Stop-motion animation"
 3. **Physical & Active** (25 tasks) - "Most jumping jacks", "Longest plank"
 4. **Mental & Puzzle** (25 tasks) - Riddles, memory challenges, math puzzles

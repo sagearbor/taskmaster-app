@@ -36,7 +36,7 @@ if (hasReleaseKeystore) {
 }
 
 android {
-    namespace = "com.sagearbor.taskmaster.app"
+    namespace = "com.sagearbor.taskcaster.app"
     compileSdk = 35
     ndkVersion = flutter.ndkVersion
 
@@ -50,7 +50,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.sagearbor.taskmaster.app"
+        applicationId = "com.sagearbor.taskcaster.app"
         // Firebase Auth/Firestore require minSdk 23.
         minSdk = 23
         // Google Play requires targetSdk >= 34/35 for new submissions.

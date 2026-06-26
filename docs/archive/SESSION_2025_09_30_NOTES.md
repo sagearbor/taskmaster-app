@@ -1,4 +1,4 @@
-# Project Status - Taskmaster App
+# Project Status - TaskCaster App
 
 **Live URL:** https://taskmaster-app-3d480.web.app
 **Branch:** `main`

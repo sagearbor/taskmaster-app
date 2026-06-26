@@ -225,10 +225,10 @@ class Episode extends Equatable {
 }
 
 class EpisodeTemplate {
-  static Episode createTaskmasterClassic() {
+  static Episode createTaskCasterClassic() {
     return Episode.create(
-      title: 'Taskmaster Classic',
-      description: 'A classic Taskmaster episode format with 5 varied tasks',
+      title: 'TaskCaster Classic',
+      description: 'A classic TaskCaster episode format with 5 varied tasks',
       createdBy: 'system',
       isPublic: true,
       tags: ['classic', 'original', 'balanced'],

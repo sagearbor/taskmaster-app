@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taskmaster_app/core/models/task.dart';
-import 'package:taskmaster_app/core/models/submission.dart';
+import 'package:taskcaster_app/core/models/task.dart';
+import 'package:taskcaster_app/core/models/submission.dart';
 
 void main() {
   group('Task Model Tests', () {

@@ -5,7 +5,7 @@
 Copy and paste this to Claude in your next session:
 
 ```
-I'm continuing Day 26-30 work on the Taskmaster Flutter app.
+I'm continuing Day 26-30 work on the TaskCaster Flutter app.
 
 Branch: feature/day26-30-testing-and-quick-play
 
@@ -147,7 +147,7 @@ Test flow:
 If you just want to fix the tasks issue:
 
 ```
-The Taskmaster app GameDetailScreen shows game title but no tasks.
+The TaskCaster app GameDetailScreen shows game title but no tasks.
 
 Debug this issue:
 - Branch: feature/day26-30-testing-and-quick-play
