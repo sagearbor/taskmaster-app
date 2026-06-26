@@ -17,6 +17,8 @@ import '../widgets/game_lobby_view.dart';
 import '../widgets/game_in_progress_view.dart';
 import '../widgets/game_completed_view.dart';
 import '../widgets/game_status_banner.dart';
+import 'task_execution_screen.dart';
+import 'judging_screen.dart';
 
 class GameDetailScreen extends StatelessWidget {
   final String gameId;
@@ -154,27 +156,35 @@ class GameDetailView extends StatelessWidget {
       final currentTask = game.tasks[game.currentTaskIndex];
       final playerStatus = currentTask.playerStatuses[currentUserId];
 
-      if (playerStatus?.state == TaskPlayerState.not_started ||
-          playerStatus?.state == TaskPlayerState.in_progress) {
-        // Navigate to task execution
-        Navigator.pushNamed(
-          context,
-          '/task-execution',
-          arguments: {
-            'gameId': game.id,
-            'taskIndex': game.currentTaskIndex,
-            'userId': currentUserId,
-          },
+      if (playerStatus == null ||
+          playerStatus.state == TaskPlayerState.not_started ||
+          playerStatus.state == TaskPlayerState.in_progress) {
+        // Navigate to task execution (mirrors the working push in
+        // game_in_progress_view.dart). TaskExecutionScreen builds its own
+        // bloc and reads the app-wide AuthBloc, so no provider forwarding
+        // is required here.
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => TaskExecutionScreen(
+              gameId: game.id,
+              taskIndex: game.currentTaskIndex,
+            ),
+          ),
         );
       } else if (game.judgeId == currentUserId && currentTask.status == TaskStatus.ready_to_judge) {
-        // Navigate to judging
-        Navigator.pushNamed(
-          context,
-          '/judging',
-          arguments: {
-            'gameId': game.id,
-            'taskIndex': game.currentTaskIndex,
-          },
+        // Navigate to judging. JudgingScreen and its downstream screens read
+        // GameDetailBloc, which is only provided inside this screen, so we
+        // forward it down the route via BlocProvider.value.
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => BlocProvider.value(
+              value: context.read<GameDetailBloc>(),
+              child: JudgingScreen(
+                gameId: game.id,
+                taskIndex: game.currentTaskIndex,
+              ),
+            ),
+          ),
         );
       } else if (currentTask.status == TaskStatus.completed) {
         // Navigate to scoreboard

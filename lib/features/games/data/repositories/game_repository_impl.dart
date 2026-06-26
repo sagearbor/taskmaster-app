@@ -261,8 +261,27 @@ class GameRepositoryImpl implements GameRepository {
 
     // Skip tasks already on the game (by id) so this is safe to call twice.
     final existingIds = game.tasks.map((t) => t.id).toSet();
-    final newTasks = tasks.where((t) => !existingIds.contains(t.id)).toList();
+    var newTasks = tasks.where((t) => !existingIds.contains(t.id)).toList();
     if (newTasks.isEmpty) return;
+
+    // If the game is already in progress, seed per-player statuses for the new
+    // tasks (mirroring startGame). Without this, submitting against a task that
+    // was added mid-game fails with "Player status not found".
+    if (game.status == GameStatus.inProgress && game.players.isNotEmpty) {
+      final seededStatuses = <String, PlayerTaskStatus>{
+        for (final player in game.players)
+          player.userId: PlayerTaskStatus(
+            playerId: player.userId,
+            state: TaskPlayerState.not_started,
+          ),
+      };
+      newTasks = newTasks
+          .map((t) => t.copyWith(
+                playerStatuses: seededStatuses,
+                status: TaskStatus.waiting_for_submissions,
+              ))
+          .toList();
+    }
 
     await updateGame(
       gameId,
@@ -299,10 +318,18 @@ class GameRepositoryImpl implements GameRepository {
     );
 
     final updatedTasks = List<Task>.from(game.tasks);
-    updatedTasks[taskIndex] = task.copyWith(
+    var updatedTask = task.copyWith(
       submissions: [...task.submissions, submission],
       playerStatuses: statuses,
     );
+
+    // Advance the task to ready_to_judge once every player has submitted.
+    if (updatedTask.allPlayersSubmitted &&
+        updatedTask.status == TaskStatus.waiting_for_submissions) {
+      updatedTask = updatedTask.copyWith(status: TaskStatus.ready_to_judge);
+    }
+
+    updatedTasks[taskIndex] = updatedTask;
 
     await updateGame(gameId, game.copyWith(tasks: updatedTasks));
   }
@@ -326,24 +353,61 @@ class GameRepositoryImpl implements GameRepository {
     final task = updatedTasks[taskIndex];
 
     final updatedPlayerStatuses = Map<String, PlayerTaskStatus>.from(task.playerStatuses);
-    final playerStatus = updatedPlayerStatuses[playerId];
+    // Tolerate a missing status (e.g. a player added mid-game) by treating it
+    // as a fresh, not-started status instead of throwing.
+    final playerStatus = updatedPlayerStatuses[playerId] ??
+        PlayerTaskStatus(
+          playerId: playerId,
+          state: TaskPlayerState.not_started,
+        );
 
-    if (playerStatus == null) {
-      throw Exception('Player status not found for player: $playerId');
-    }
-
-    // Update player status with score
+    // Update player status with score.
     updatedPlayerStatuses[playerId] = playerStatus.copyWith(
       score: score,
       state: TaskPlayerState.judged,
+      scoredAt: DateTime.now(),
     );
 
-    // Update task with new player statuses
-    updatedTasks[taskIndex] = task.copyWith(
+    // Keystone: keep the dual submission model in sync. Scoring writes the
+    // per-player status above; here we also stamp the matching entry in
+    // task.submissions so completion/scoreboard logic (which reads
+    // submissions[].isJudged/score) agrees. If no submission row exists yet
+    // (the task-execution flow only writes playerStatuses), create one from
+    // the player's status so the task can actually complete.
+    final updatedSubmissions = List<Submission>.from(task.submissions);
+    final subIndex =
+        updatedSubmissions.indexWhere((s) => s.userId == playerId);
+    if (subIndex != -1) {
+      updatedSubmissions[subIndex] = updatedSubmissions[subIndex].copyWith(
+        score: score,
+        isJudged: true,
+      );
+    } else {
+      updatedSubmissions.add(Submission(
+        id: _uuid.v4(),
+        userId: playerId,
+        videoUrl: playerStatus.submissionUrl,
+        score: score,
+        isJudged: true,
+        submittedAt: playerStatus.submittedAt ?? DateTime.now(),
+      ));
+    }
+
+    // Update task with new player statuses + submissions, then advance status.
+    var updatedTask = task.copyWith(
       playerStatuses: updatedPlayerStatuses,
+      submissions: updatedSubmissions,
     );
 
-    // Update player's total score
+    if (updatedTask.allPlayersJudged) {
+      updatedTask = updatedTask.copyWith(status: TaskStatus.completed);
+    } else if (updatedTask.allPlayersSubmitted) {
+      updatedTask = updatedTask.copyWith(status: TaskStatus.ready_to_judge);
+    }
+
+    updatedTasks[taskIndex] = updatedTask;
+
+    // Update player's total score.
     final updatedPlayers = gameObj.players.map((player) {
       if (player.userId == playerId) {
         return player.copyWith(
@@ -353,11 +417,17 @@ class GameRepositoryImpl implements GameRepository {
       return player;
     }).toList();
 
-    // Update game with new tasks and players
-    final updatedGame = gameObj.copyWith(
+    // Update game with new tasks and players. When every task is completed,
+    // the whole game is completed.
+    var updatedGame = gameObj.copyWith(
       tasks: updatedTasks,
       players: updatedPlayers,
     );
+
+    if (updatedGame.tasks.isNotEmpty &&
+        updatedGame.tasks.every((t) => t.status == TaskStatus.completed)) {
+      updatedGame = updatedGame.copyWith(status: GameStatus.completed);
+    }
 
     await updateGame(gameId, updatedGame);
   }

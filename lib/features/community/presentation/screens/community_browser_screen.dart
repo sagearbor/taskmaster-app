@@ -106,7 +106,10 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const SubmitTaskScreen(),
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<CommunityBloc>(),
+                    child: const SubmitTaskScreen(),
+                  ),
                 ),
               );
             },
@@ -254,7 +257,10 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
                             onPressed: () {
                               Navigator.of(context).push(
                                 MaterialPageRoute(
-                                  builder: (context) => const SubmitTaskScreen(),
+                                  builder: (_) => BlocProvider.value(
+                                    value: context.read<CommunityBloc>(),
+                                    child: const SubmitTaskScreen(),
+                                  ),
                                 ),
                               );
                             },
@@ -299,7 +305,10 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const SubmitTaskScreen(),
+              builder: (_) => BlocProvider.value(
+                value: context.read<CommunityBloc>(),
+                child: const SubmitTaskScreen(),
+              ),
             ),
           );
         },

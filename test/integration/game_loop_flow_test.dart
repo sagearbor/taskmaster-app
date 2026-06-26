@@ -104,6 +104,71 @@ void main() {
       expect(standings.last.userId, creatorId); // Alice (3) second
     });
 
+    test(
+        'judging every player completes the task + game and stamps submissions',
+        () async {
+      const creatorId = 'alice';
+      const challengerId = 'bob';
+
+      final gameId = await repo.createGame('Finale', creatorId, creatorId);
+      final created = await repo.getGameStream(gameId).first;
+      await repo.joinGame(created!.inviteCode, challengerId, 'Bob');
+      await repo.addTasksToGame(gameId, [
+        const Task(
+          id: 'task-1',
+          title: 'Only task',
+          description: 'Single task game',
+          taskType: TaskType.video,
+          submissions: [],
+        ),
+      ]);
+      await repo.startGame(gameId);
+
+      // Both players submit.
+      for (final id in [creatorId, challengerId]) {
+        await repo.submitTaskAnswer(
+          gameId,
+          'task-1',
+          Submission(
+            id: 'sub-$id',
+            userId: id,
+            videoUrl: 'https://example.com/$id',
+            score: 0,
+            isJudged: false,
+            submittedAt: DateTime.now(),
+          ),
+        );
+      }
+
+      // Once everyone has submitted, the task is ready to judge.
+      final readyGame = await repo.getGameStream(gameId).first;
+      expect(readyGame!.tasks.single.status, TaskStatus.ready_to_judge);
+
+      // Judge both players.
+      await repo.judgeSubmission(gameId, 0, challengerId, 5);
+      await repo.judgeSubmission(gameId, 0, creatorId, 3);
+
+      final done = await repo.getGameStream(gameId).first;
+      final task = done!.tasks.single;
+
+      // Submissions carry the awarded scores and are flagged judged.
+      final bobSub = task.submissions.firstWhere((s) => s.userId == challengerId);
+      final aliceSub = task.submissions.firstWhere((s) => s.userId == creatorId);
+      expect(bobSub.score, 5);
+      expect(bobSub.isJudged, isTrue);
+      expect(aliceSub.score, 3);
+      expect(aliceSub.isJudged, isTrue);
+
+      // Task completes, and with all tasks complete the game completes too.
+      expect(task.status, TaskStatus.completed);
+      expect(task.allPlayersJudged, isTrue);
+      expect(done.status, GameStatus.completed);
+
+      // Player totals reflect the awarded scores.
+      expect(done.players.firstWhere((p) => p.userId == challengerId).totalScore, 5);
+      expect(done.players.firstWhere((p) => p.userId == creatorId).totalScore, 3);
+    });
+
     test('starting a game with fewer than 2 players is rejected', () async {
       final gameId = await repo.createGame('Solo', 'alice', 'alice');
       final game = await repo.getGameStream(gameId).first;

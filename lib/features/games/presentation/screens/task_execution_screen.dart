@@ -79,29 +79,17 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
   }
 
   bool _isValidVideoUrl(String url) {
-    if (url.isEmpty) return false;
+    final trimmed = url.trim();
+    if (trimmed.isEmpty) return false;
 
-    // Basic URL validation
-    final urlPattern = RegExp(
-      r'^https?://',
-      caseSensitive: false,
-    );
-
-    if (!urlPattern.hasMatch(url)) return false;
-
-    // Check for common video hosting platforms
-    final validDomains = [
-      'youtube.com',
-      'youtu.be',
-      'photos.google.com',
-      'photos.app.goo.gl',
-      'drive.google.com',
-      'dropbox.com',
-      'vimeo.com',
-      'streamable.com',
-    ];
-
-    return validDomains.any((domain) => url.toLowerCase().contains(domain));
+    // Accept any well-formed http(s) URL with a real host. We deliberately do
+    // not gate on a hardcoded allowlist of platforms: players legitimately host
+    // videos in many places, and blocking valid links was a dead end. The
+    // platform names in the UI are guidance only.
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null) return false;
+    if (uri.scheme != 'http' && uri.scheme != 'https') return false;
+    return uri.host.isNotEmpty;
   }
 
   @override

@@ -75,12 +75,13 @@ class TaskExecutionBloc extends Bloc<TaskExecutionEvent, TaskExecutionState> {
       }
 
       final task = game.tasks[event.taskIndex];
-      final currentStatus = task.getPlayerStatus(event.userId);
-
-      if (currentStatus == null) {
-        emit(const TaskExecutionError(message: 'Player status not found'));
-        return;
-      }
+      // Treat a missing status (e.g. a player added after the task was created)
+      // as a fresh, not-started status instead of erroring out.
+      final currentStatus = task.getPlayerStatus(event.userId) ??
+          PlayerTaskStatus(
+            playerId: event.userId,
+            state: TaskPlayerState.not_started,
+          );
 
       // Update player status to in_progress
       final updatedStatus = currentStatus.copyWith(
@@ -125,12 +126,13 @@ class TaskExecutionBloc extends Bloc<TaskExecutionEvent, TaskExecutionState> {
       }
 
       final task = game.tasks[event.taskIndex];
-      final currentStatus = task.getPlayerStatus(event.userId);
-
-      if (currentStatus == null) {
-        emit(const TaskExecutionError(message: 'Player status not found'));
-        return;
-      }
+      // Treat a missing status (e.g. a player added mid-game) as a fresh,
+      // not-started status instead of erroring out.
+      final currentStatus = task.getPlayerStatus(event.userId) ??
+          PlayerTaskStatus(
+            playerId: event.userId,
+            state: TaskPlayerState.not_started,
+          );
 
       // Update player status to submitted
       final updatedStatus = currentStatus.copyWith(
@@ -197,12 +199,13 @@ class TaskExecutionBloc extends Bloc<TaskExecutionEvent, TaskExecutionState> {
       }
 
       final task = game.tasks[event.taskIndex];
-      final currentStatus = task.getPlayerStatus(event.userId);
-
-      if (currentStatus == null) {
-        emit(const TaskExecutionError(message: 'Player status not found'));
-        return;
-      }
+      // Treat a missing status (e.g. a player added mid-game) as a fresh,
+      // not-started status instead of erroring out.
+      final currentStatus = task.getPlayerStatus(event.userId) ??
+          PlayerTaskStatus(
+            playerId: event.userId,
+            state: TaskPlayerState.not_started,
+          );
 
       // Update player status to skipped
       final updatedStatus = currentStatus.copyWith(

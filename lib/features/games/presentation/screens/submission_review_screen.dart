@@ -106,31 +106,35 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
               final game = gameDetailState.game;
               final task = game.tasks[state.taskIndex];
 
-              // Calculate task scores from the judging state
-              // We need to get the scores from the previous JudgingLoaded state
-              Map<String, int> taskScores = {};
-              Map<String, int> previousTotals = {};
+              // Calculate task scores from the per-player task statuses, which
+              // judgeSubmission always populates with the awarded score. (The
+              // submissions list can be empty when players submit through the
+              // task-execution flow, so reading from it risked a crash and
+              // zeroed-out scoreboards.)
+              final Map<String, int> taskScores = {};
+              final Map<String, int> previousTotals = {};
 
-              // Get scores from the submissions
-              for (var player in game.players) {
-                previousTotals[player.userId] = player.totalScore;
-                // Find the submission for this player
-                final submission = task.submissions.firstWhere(
-                  (sub) => sub.userId == player.userId,
-                  orElse: () => task.submissions.first,
-                );
-                taskScores[player.userId] = submission.score ?? 0;
+              for (final player in game.players) {
+                final status = task.getPlayerStatus(player.userId);
+                final taskScore = status?.score ?? 0;
+                taskScores[player.userId] = taskScore;
+                // player.totalScore already includes this task's score, so
+                // subtract it to recover the pre-task total for the reveal.
+                previousTotals[player.userId] = player.totalScore - taskScore;
               }
 
               // Navigate to task scoreboard
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(
-                  builder: (context) => TaskScoreboardScreen(
-                    game: game,
-                    completedTask: task,
-                    taskIndex: state.taskIndex,
-                    taskScores: taskScores,
-                    previousTotals: previousTotals,
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<GameDetailBloc>(),
+                    child: TaskScoreboardScreen(
+                      game: game,
+                      completedTask: task,
+                      taskIndex: state.taskIndex,
+                      taskScores: taskScores,
+                      previousTotals: previousTotals,
+                    ),
                   ),
                 ),
               );

@@ -39,12 +39,18 @@ class HomeView extends StatelessWidget {
     return BlocListener<GamesBloc, GamesState>(
       listener: (context, state) {
         if (state is QuickPlaySuccess) {
-          // Navigate directly to game detail
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => GameDetailScreen(gameId: state.gameId),
-            ),
-          );
+          // Navigate directly to game detail. When the player returns, the
+          // bloc is still parked in QuickPlaySuccess (the games builder would
+          // otherwise fall through to a blank list), so re-load the games
+          // stream to restore the list + pull-to-refresh.
+          final gamesBloc = context.read<GamesBloc>();
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (context) => GameDetailScreen(gameId: state.gameId),
+                ),
+              )
+              .then((_) => gamesBloc.add(LoadGames()));
         }
       },
       child: Scaffold(

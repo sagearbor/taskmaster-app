@@ -5,6 +5,7 @@ import '../../../../core/di/service_locator.dart';
 import '../../../../core/widgets/skeleton_loaders.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/repositories/game_repository.dart';
+import '../bloc/game_detail_bloc.dart';
 import '../bloc/judging_bloc.dart';
 import '../bloc/judging_event.dart';
 import '../bloc/judging_state.dart';
@@ -235,9 +236,12 @@ class JudgingView extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => SubmissionReviewScreen(
-                      gameId: gameId,
-                      taskIndex: taskIndex,
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<GameDetailBloc>(),
+                      child: SubmissionReviewScreen(
+                        gameId: gameId,
+                        taskIndex: taskIndex,
+                      ),
                     ),
                   ),
                 );
