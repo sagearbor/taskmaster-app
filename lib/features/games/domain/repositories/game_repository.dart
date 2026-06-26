@@ -21,6 +21,11 @@ abstract class GameRepository {
   Future<void> deleteGame(String gameId);
   Stream<Game?> getGameStream(String gameId);
   Future<String> joinGame(String inviteCode, String userId, String displayName);
+
+  /// Remove [userId] from the game's player roster. Used when a non-creator
+  /// leaves a game. No-op if the user is not a player.
+  Future<void> leaveGame(String gameId, String userId);
+
   Future<void> startGame(String gameId);
   Future<void> addTasksToGame(String gameId, List<Task> tasks);
   Future<void> submitTaskAnswer(String gameId, String taskId, Submission submission);

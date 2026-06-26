@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 import 'core/di/service_locator.dart';
 import 'core/config/environment.dart';
 import 'core/error/error_handler.dart';
@@ -59,6 +60,9 @@ Future<void> _initializeApp() async {
   
   // Initialize service locator with MOCK services only
   await ServiceLocator.init(useMockServices: true);
+
+  // Load the persisted theme preference before first frame.
+  await ThemeController.instance.load();
 }
 
 class TaskCasterApp extends StatelessWidget {
@@ -73,13 +77,16 @@ class TaskCasterApp extends StatelessWidget {
       create: (context) => AuthBloc(
         authRepository: sl<AuthRepository>(),
       )..add(AuthCheckRequested()),
-      child: MaterialApp(
-        title: 'TaskCaster',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.light,
-        debugShowCheckedModeBanner: false,
-        home: const AuthWrapper(),
+      child: ListenableBuilder(
+        listenable: ThemeController.instance,
+        builder: (context, _) => MaterialApp(
+          title: 'TaskCaster',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeController.instance.themeMode,
+          debugShowCheckedModeBanner: false,
+          home: const AuthWrapper(),
+        ),
       ),
     );
   }

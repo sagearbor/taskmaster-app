@@ -16,6 +16,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpRequested>(_onSignUpRequested);
     on<SignOutRequested>(_onSignOutRequested);
     on<AnonymousSignInRequested>(_onAnonymousSignInRequested);
+    on<UpdateProfileRequested>(_onUpdateProfileRequested);
+    on<UpgradeGuestRequested>(_onUpgradeGuestRequested);
+    on<PasswordResetRequested>(_onPasswordResetRequested);
   }
 
   Future<void> _onAuthCheckRequested(AuthCheckRequested event, Emitter<AuthState> emit) async {
@@ -77,6 +80,55 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthAuthenticated(user: user));
     } catch (e) {
       emit(AuthError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onUpdateProfileRequested(
+      UpdateProfileRequested event, Emitter<AuthState> emit) async {
+    final current = state;
+    if (current is! AuthAuthenticated) return;
+    try {
+      final user = await authRepository.updateProfile(
+        displayName: event.displayName,
+        avatarEmoji: event.avatarEmoji,
+      );
+      emit(AuthProfileUpdated(user: user));
+    } catch (e) {
+      // Stay authenticated; surface the failure without flipping to login.
+      emit(AuthProfileUpdateFailure(
+        user: current.user,
+        message: e.toString(),
+      ));
+    }
+  }
+
+  Future<void> _onUpgradeGuestRequested(
+      UpgradeGuestRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final user = await authRepository.upgradeGuestAccount(
+        event.email,
+        event.password,
+        event.displayName,
+      );
+      emit(AuthAuthenticated(user: user));
+    } catch (e) {
+      emit(AuthError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onPasswordResetRequested(
+      PasswordResetRequested event, Emitter<AuthState> emit) async {
+    final previous = state;
+    try {
+      await authRepository.sendPasswordReset(event.email);
+      emit(AuthPasswordResetSent(email: event.email));
+    } catch (e) {
+      emit(AuthError(message: e.toString()));
+    } finally {
+      // Restore the prior screen state (authenticated or unauthenticated)
+      // after the one-shot notification so navigation is unaffected.
+      emit(previous);
     }
   }
 }

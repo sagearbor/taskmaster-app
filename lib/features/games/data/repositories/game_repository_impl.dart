@@ -191,6 +191,22 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
+  Future<void> leaveGame(String gameId, String userId) async {
+    final data = await remoteDataSource.getGameStream(gameId).first;
+    if (data == null) {
+      throw Exception('Game not found');
+    }
+    final game = Game.fromMap({...data, 'id': gameId});
+
+    final remaining =
+        game.players.where((p) => p.userId != userId).toList();
+    // No-op if the player wasn't on the roster.
+    if (remaining.length == game.players.length) return;
+
+    await updateGame(gameId, game.copyWith(players: remaining));
+  }
+
+  @override
   Future<void> startGame(String gameId) async {
     // Load the current game state
     final game = await remoteDataSource.getGameStream(gameId).first;

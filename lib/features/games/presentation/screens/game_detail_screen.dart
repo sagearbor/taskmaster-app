@@ -57,29 +57,72 @@ class GameDetailView extends StatelessWidget {
         actions: [
           BlocBuilder<GameDetailBloc, GameDetailState>(
             builder: (context, state) {
-              if (state is GameDetailLoaded) {
-                return PopupMenuButton<String>(
-                  onSelected: (value) {
-                    if (value == 'share') {
-                      _showShareDialog(context, state.game);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    if (state.game.isInLobby)
-                      const PopupMenuItem(
-                        value: 'share',
-                        child: Row(
-                          children: [
-                            Icon(Icons.share),
-                            SizedBox(width: 8),
-                            Text('Share Invite'),
-                          ],
-                        ),
-                      ),
-                  ],
-                );
+              if (state is! GameDetailLoaded) {
+                return const SizedBox.shrink();
               }
-              return const SizedBox.shrink();
+
+              final authState = context.read<AuthBloc>().state;
+              final currentUserId =
+                  authState is AuthAuthenticated ? authState.user.id : '';
+              final isCreator = state.game.creatorId == currentUserId;
+              final isPlayer =
+                  state.game.players.any((p) => p.userId == currentUserId);
+
+              final items = <PopupMenuEntry<String>>[
+                if (state.game.isInLobby)
+                  const PopupMenuItem(
+                    value: 'share',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.share),
+                      title: Text('Share Invite'),
+                    ),
+                  ),
+                // Non-creators who are in the game can leave it.
+                if (!isCreator && isPlayer)
+                  const PopupMenuItem(
+                    value: 'leave',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.exit_to_app),
+                      title: Text('Leave game'),
+                    ),
+                  ),
+                // The creator can delete the whole game.
+                if (isCreator)
+                  PopupMenuItem(
+                    value: 'delete',
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Icon(Icons.delete_outline,
+                          color: Theme.of(context).colorScheme.error),
+                      title: Text('Delete game',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.error)),
+                    ),
+                  ),
+              ];
+
+              // Hide the overflow button entirely when there's nothing to show
+              // (previously it opened an empty menu).
+              if (items.isEmpty) return const SizedBox.shrink();
+
+              return PopupMenuButton<String>(
+                onSelected: (value) {
+                  switch (value) {
+                    case 'share':
+                      _showShareDialog(context, state.game);
+                      break;
+                    case 'leave':
+                      _confirmLeave(context, state.game.id, currentUserId);
+                      break;
+                    case 'delete':
+                      _confirmDelete(context, state.game.id);
+                      break;
+                  }
+                },
+                itemBuilder: (context) => items,
+              );
             },
           ),
         ],
@@ -198,6 +241,83 @@ class GameDetailView extends StatelessWidget {
     } else if (game.status == GameStatus.lobby && game.players.length < 2) {
       // Share invite code
       _showShareDialog(context, game);
+    }
+  }
+
+  Future<void> _confirmLeave(
+      BuildContext context, String gameId, String userId) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Leave game?'),
+        content: const Text(
+            'You will be removed from this game. You can re-join later with '
+            'the invite code.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Leave'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await sl<GameRepository>().leaveGame(gameId, userId);
+      messenger.showSnackBar(
+        const SnackBar(content: Text('You left the game')),
+      );
+      navigator.pop(); // back to home
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not leave game: $e')),
+      );
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context, String gameId) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Delete game?'),
+        content: const Text(
+            'This permanently deletes the game for everyone. This cannot be '
+            'undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await sl<GameRepository>().deleteGame(gameId);
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Game deleted')),
+      );
+      navigator.pop(); // back to home
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not delete game: $e')),
+      );
     }
   }
 

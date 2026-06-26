@@ -11,8 +11,10 @@ class AuthRepositoryImpl implements AuthRepository {
   Stream<String?> get authStateChanges => remoteDataSource.authStateChanges;
 
   @override
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
-    final userId = await remoteDataSource.signInWithEmailAndPassword(email, password);
+  Future<User> signInWithEmailAndPassword(
+      String email, String password) async {
+    final userId =
+        await remoteDataSource.signInWithEmailAndPassword(email, password);
     return User(
       id: userId,
       displayName: email.split('@')[0], // Simple display name extraction
@@ -22,8 +24,16 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<User> createUserWithEmailAndPassword(String email, String password, String displayName) async {
-    final userId = await remoteDataSource.createUserWithEmailAndPassword(email, password);
+  Future<User> createUserWithEmailAndPassword(
+      String email, String password, String displayName) async {
+    final userId =
+        await remoteDataSource.createUserWithEmailAndPassword(email, password);
+    // Persist the chosen display name so it survives reloads.
+    try {
+      await remoteDataSource.updateProfile(displayName: displayName);
+    } catch (_) {
+      // Non-fatal: the account exists even if the name write fails.
+    }
     return User(
       id: userId,
       displayName: displayName,
@@ -43,17 +53,22 @@ class AuthRepositoryImpl implements AuthRepository {
     final userId = getCurrentUserId();
     if (userId == null) return null;
 
-    // Get actual user data from data source
-    final userData = remoteDataSource.getCurrentUserData();
+    // Full profile (async) so avatarEmoji is included.
+    final userData = await remoteDataSource.getCurrentUserProfile();
     if (userData == null) return null;
+
+    final createdAtRaw = userData['createdAt'] as String?;
 
     return User(
       id: userId,
       displayName: userData['displayName'] ??
-                   userData['email']?.split('@')[0] ??
-                   (userData['isAnonymous'] == true ? 'Guest' : 'User'),
+          userData['email']?.split('@')[0] ??
+          (userData['isAnonymous'] == true ? 'Guest' : 'User'),
       email: userData['email'],
-      createdAt: DateTime.now(),
+      createdAt: createdAtRaw != null
+          ? (DateTime.tryParse(createdAtRaw) ?? DateTime.now())
+          : DateTime.now(),
+      avatarEmoji: userData['avatarEmoji'] as String?,
     );
   }
 
@@ -72,5 +87,37 @@ class AuthRepositoryImpl implements AuthRepository {
   bool isCurrentUserAnonymous() {
     final userData = remoteDataSource.getCurrentUserData();
     return userData?['isAnonymous'] == true;
+  }
+
+  @override
+  Future<User> updateProfile({String? displayName, String? avatarEmoji}) async {
+    await remoteDataSource.updateProfile(
+      displayName: displayName,
+      avatarEmoji: avatarEmoji,
+    );
+    final updated = await getCurrentUser();
+    if (updated == null) {
+      throw Exception('No signed-in user to update');
+    }
+    return updated;
+  }
+
+  @override
+  Future<void> sendPasswordReset(String email) =>
+      remoteDataSource.sendPasswordReset(email);
+
+  @override
+  Future<User> upgradeGuestAccount(
+      String email, String password, String displayName) async {
+    final userId =
+        await remoteDataSource.upgradeGuestAccount(email, password, displayName);
+    return User(
+      id: userId,
+      displayName: displayName.trim().isNotEmpty
+          ? displayName.trim()
+          : email.split('@')[0],
+      email: email,
+      createdAt: DateTime.now(),
+    );
   }
 }

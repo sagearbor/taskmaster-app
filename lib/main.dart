@@ -7,6 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 import 'core/di/service_locator.dart';
 import 'core/services/notification_service.dart';
 import 'features/auth/domain/repositories/auth_repository.dart';
@@ -33,6 +34,9 @@ void main() async {
 
   await ServiceLocator.init(useMockServices: useMock);
 
+  // Load the persisted theme preference before first frame.
+  await ThemeController.instance.load();
+
   // Initialize push notifications (best-effort; never blocks startup). Only
   // meaningful with real services.
   if (!useMock) {
@@ -55,13 +59,16 @@ class TaskCasterApp extends StatelessWidget {
       create: (context) => AuthBloc(
         authRepository: sl<AuthRepository>(),
       )..add(AuthCheckRequested()),
-      child: MaterialApp(
-        title: 'TaskCaster',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.light,
-        debugShowCheckedModeBanner: false,
-        home: const AuthScreen(),
+      child: ListenableBuilder(
+        listenable: ThemeController.instance,
+        builder: (context, _) => MaterialApp(
+          title: 'TaskCaster',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: ThemeController.instance.themeMode,
+          debugShowCheckedModeBanner: false,
+          home: const AuthScreen(),
+        ),
       ),
     );
   }

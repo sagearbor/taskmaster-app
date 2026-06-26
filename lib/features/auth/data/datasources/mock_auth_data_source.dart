@@ -3,8 +3,16 @@ import 'dart:async';
 import 'auth_remote_data_source.dart';
 
 class MockAuthDataSource implements AuthRemoteDataSource {
-  final StreamController<String?> _authStateController = StreamController<String?>.broadcast();
+  final StreamController<String?> _authStateController =
+      StreamController<String?>.broadcast();
   String? _currentUserId;
+
+  // In-memory profile for the signed-in user so profile edits/upgrades are
+  // reflected back through getCurrentUser(...).
+  String _displayName = 'Mock User';
+  String? _email;
+  String? _avatarEmoji;
+  bool _isAnonymous = false;
 
   MockAuthDataSource() {
     // Simulate no user logged in initially
@@ -15,7 +23,8 @@ class MockAuthDataSource implements AuthRemoteDataSource {
   Stream<String?> get authStateChanges => _authStateController.stream;
 
   @override
-  Future<String> signInWithEmailAndPassword(String email, String password) async {
+  Future<String> signInWithEmailAndPassword(
+      String email, String password) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 800));
 
@@ -30,13 +39,17 @@ class MockAuthDataSource implements AuthRemoteDataSource {
 
     // Simulate successful login
     _currentUserId = 'mock_user_${email.hashCode.abs()}';
+    _email = email;
+    _displayName = email.split('@')[0];
+    _isAnonymous = false;
     _authStateController.add(_currentUserId);
-    
+
     return _currentUserId!;
   }
 
   @override
-  Future<String> createUserWithEmailAndPassword(String email, String password) async {
+  Future<String> createUserWithEmailAndPassword(
+      String email, String password) async {
     // Simulate network delay
     await Future.delayed(const Duration(milliseconds: 1000));
 
@@ -55,8 +68,11 @@ class MockAuthDataSource implements AuthRemoteDataSource {
 
     // Simulate successful account creation
     _currentUserId = 'mock_user_${email.hashCode.abs()}';
+    _email = email;
+    _displayName = email.split('@')[0];
+    _isAnonymous = false;
     _authStateController.add(_currentUserId);
-    
+
     return _currentUserId!;
   }
 
@@ -67,6 +83,10 @@ class MockAuthDataSource implements AuthRemoteDataSource {
 
     // Create anonymous user ID
     _currentUserId = 'mock_anon_${DateTime.now().millisecondsSinceEpoch}';
+    _email = null;
+    _displayName = 'Guest';
+    _avatarEmoji = null;
+    _isAnonymous = true;
     _authStateController.add(_currentUserId);
 
     return _currentUserId!;
@@ -78,6 +98,9 @@ class MockAuthDataSource implements AuthRemoteDataSource {
     await Future.delayed(const Duration(milliseconds: 300));
 
     _currentUserId = null;
+    _email = null;
+    _avatarEmoji = null;
+    _isAnonymous = false;
     _authStateController.add(null);
   }
 
@@ -91,10 +114,62 @@ class MockAuthDataSource implements AuthRemoteDataSource {
     if (_currentUserId == null) return null;
 
     return {
-      'displayName': 'Mock User',
-      'email': 'mock@example.com',
-      'isAnonymous': _currentUserId!.startsWith('mock_anon_'),
+      'displayName': _displayName,
+      'email': _email,
+      'isAnonymous': _isAnonymous,
+      'avatarEmoji': _avatarEmoji,
     };
+  }
+
+  @override
+  Future<Map<String, dynamic>?> getCurrentUserProfile() async {
+    return getCurrentUserData();
+  }
+
+  @override
+  Future<void> updateProfile({String? displayName, String? avatarEmoji}) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (_currentUserId == null) {
+      throw Exception('No signed-in user to update');
+    }
+    if (displayName != null && displayName.trim().isNotEmpty) {
+      _displayName = displayName.trim();
+    }
+    if (avatarEmoji != null) {
+      _avatarEmoji = avatarEmoji.isEmpty ? null : avatarEmoji;
+    }
+  }
+
+  @override
+  Future<void> sendPasswordReset(String email) async {
+    await Future.delayed(const Duration(milliseconds: 400));
+    if (email.isEmpty || !email.contains('@')) {
+      throw Exception('Please enter a valid email address');
+    }
+    // Mock: no-op (no email actually sent).
+  }
+
+  @override
+  Future<String> upgradeGuestAccount(
+      String email, String password, String displayName) async {
+    await Future.delayed(const Duration(milliseconds: 800));
+    if (_currentUserId == null || !_isAnonymous) {
+      throw Exception('Only a guest account can be upgraded');
+    }
+    if (!email.contains('@')) {
+      throw Exception('Invalid email format');
+    }
+    if (password.length < 6) {
+      throw Exception('Password must be at least 6 characters');
+    }
+    // Keep the SAME uid so existing game data is preserved.
+    _email = email;
+    _displayName =
+        displayName.trim().isNotEmpty ? displayName.trim() : email.split('@')[0];
+    _isAnonymous = false;
+    // Re-emit the (unchanged) uid so listeners refresh.
+    _authStateController.add(_currentUserId);
+    return _currentUserId!;
   }
 
   void dispose() {

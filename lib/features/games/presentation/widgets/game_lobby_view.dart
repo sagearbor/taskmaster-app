@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/game.dart';
 import '../../../../core/utils/link_utils.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../../community/presentation/screens/community_browser_screen.dart';
 import '../../domain/repositories/game_repository.dart';
@@ -180,19 +181,12 @@ class GameLobbyView extends StatelessWidget {
                                 final isPlayerCreator = game.creatorId == player.userId;
 
                                 return ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: isCurrentUser 
+                                  leading: UserAvatar(
+                                    displayName: player.displayName,
+                                    radius: 20,
+                                    borderColor: isCurrentUser
                                         ? Theme.of(context).colorScheme.primary
-                                        : Colors.grey[300],
-                                    child: Text(
-                                      player.displayName.isNotEmpty 
-                                          ? player.displayName[0].toUpperCase()
-                                          : 'P',
-                                      style: TextStyle(
-                                        color: isCurrentUser ? Colors.white : Colors.grey[700],
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                        : null,
                                   ),
                                   title: Text(
                                     player.displayName,
