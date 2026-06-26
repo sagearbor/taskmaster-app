@@ -9,7 +9,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: const Text('TaskCaster Party'),
+      title: const Text('TaskCaster'),
       actions: [
         BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {

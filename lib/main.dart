@@ -1,4 +1,4 @@
-/// Main entry point for TaskCaster Party App
+/// Main entry point for TaskCaster
 /// Run with: flutter run -d chrome
 
 import 'package:flutter/material.dart';
@@ -56,7 +56,7 @@ class TaskCasterApp extends StatelessWidget {
         authRepository: sl<AuthRepository>(),
       )..add(AuthCheckRequested()),
       child: MaterialApp(
-        title: 'TaskCaster Party App',
+        title: 'TaskCaster',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,

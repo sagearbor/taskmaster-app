@@ -77,7 +77,7 @@ class AppConfig {
 class BuildConfig {
   static const String appName = String.fromEnvironment(
     'APP_NAME',
-    defaultValue: 'TaskCaster Party',
+    defaultValue: 'TaskCaster',
   );
   
   static const bool useMockServices = bool.fromEnvironment(

@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "488967944620",
+    "project_id": "taskmaster-app-3d480",
+    "storage_bucket": "taskmaster-app-3d480.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488967944620:android:66b953a2a16547b19c2209",
+        "android_client_info": {
+          "package_name": "com.sagearbor.taskcaster.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488967944620-l1snmv0bnd824p1kfkjv81k5aldrvjcf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYYaQyBi2fKe2bSETJPl91I2bVNZOTm84"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488967944620-l1snmv0bnd824p1kfkjv81k5aldrvjcf.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "488967944620-lhugdf44nsemgruva1s0p8kkpo2cd6mc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sagearbor.taskcaster.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

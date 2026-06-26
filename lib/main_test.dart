@@ -20,7 +20,7 @@ class TestApp extends StatelessWidget {
       ),
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('TaskCaster Party App'),
+          title: const Text('TaskCaster'),
           backgroundColor: Colors.green,
         ),
         body: Center(

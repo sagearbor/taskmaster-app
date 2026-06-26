@@ -74,7 +74,7 @@ class TaskCasterApp extends StatelessWidget {
         authRepository: sl<AuthRepository>(),
       )..add(AuthCheckRequested()),
       child: MaterialApp(
-        title: 'TaskCaster Party App',
+        title: 'TaskCaster',
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.light,
