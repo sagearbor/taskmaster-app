@@ -18,6 +18,7 @@ import '../widgets/game_in_progress_view.dart';
 import '../widgets/game_completed_view.dart';
 import '../widgets/game_status_banner.dart';
 import 'task_execution_screen.dart';
+import 'ar_task_screen.dart';
 import 'judging_screen.dart';
 
 class GameDetailScreen extends StatelessWidget {
@@ -208,12 +209,19 @@ class GameDetailView extends StatelessWidget {
         // game_in_progress_view.dart). TaskExecutionScreen builds its own
         // bloc and reads the app-wide AuthBloc, so no provider forwarding
         // is required here.
+        // AR tasks launch the AR flow (capability check + scaffold); all other
+        // task types use the standard task-execution screen.
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => TaskExecutionScreen(
-              gameId: game.id,
-              taskIndex: game.currentTaskIndex,
-            ),
+            builder: (_) => currentTask.isArTask
+                ? ARTaskScreen(
+                    gameId: game.id,
+                    taskIndex: game.currentTaskIndex,
+                  )
+                : TaskExecutionScreen(
+                    gameId: game.id,
+                    taskIndex: game.currentTaskIndex,
+                  ),
           ),
         );
       } else if (game.judgeId == currentUserId && currentTask.status == TaskStatus.ready_to_judge) {
