@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/models/game.dart';
@@ -11,6 +13,7 @@ import '../datasources/game_remote_data_source.dart';
 class GameRepositoryImpl implements GameRepository {
   final GameRemoteDataSource remoteDataSource;
   final Uuid _uuid = const Uuid();
+  final Random _rng = Random();
 
   GameRepositoryImpl(this.remoteDataSource);
 
@@ -449,9 +452,11 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   String _generateInviteCode() {
-    // Generate a 6-character alphanumeric code
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    final random = DateTime.now().millisecondsSinceEpoch;
-    return List.generate(6, (index) => chars[random % chars.length]).join();
+    // 6 random chars. Each position is independently random (the old code
+    // computed one modulo and reused it, so every code was 6 identical
+    // characters, e.g. "ZZZZZZ"). Ambiguous look-alikes (0/O, 1/I/L) are
+    // dropped so codes are easy to read and type.
+    const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    return List.generate(6, (_) => chars[_rng.nextInt(chars.length)]).join();
   }
 }

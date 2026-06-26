@@ -178,7 +178,9 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
                     Text(
                       'Ask the game creator for the 6-character invite code. You can find it on their game lobby screen.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.ink,
+                        // Theme-aware so it stays readable in dark mode
+                        // (was hardcoded dark AppTheme.ink → invisible on dark).
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],

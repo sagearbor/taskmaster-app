@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/game.dart';
+import '../../../../core/models/task.dart';
 import '../../../../core/utils/link_utils.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
@@ -331,6 +332,12 @@ class GameLobbyView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
+                FilledButton.icon(
+                  onPressed: () => _showCreateTaskDialog(context, game),
+                  icon: const Icon(Icons.edit_note),
+                  label: const Text('Create your own task'),
+                ),
+                const SizedBox(height: 8),
                 OutlinedButton.icon(
                   onPressed: () {
                     Navigator.of(context).push(
@@ -341,7 +348,7 @@ class GameLobbyView extends StatelessWidget {
                     );
                   },
                   icon: const Icon(Icons.playlist_add),
-                  label: const Text('Add Community Tasks'),
+                  label: const Text('Browse community tasks'),
                 ),
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
@@ -407,5 +414,89 @@ class GameLobbyView extends StatelessWidget {
         );
       },
     );
+  }
+
+  /// Let the creator write a custom task that goes straight into THIS game
+  /// (group-specific) — no community submission required.
+  void _showCreateTaskDialog(BuildContext context, Game game) {
+    final titleController = TextEditingController();
+    final descController = TextEditingController();
+    final messenger = ScaffoldMessenger.of(context);
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Create a task'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: titleController,
+                  autofocus: true,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    labelText: 'Task title',
+                    hintText: 'e.g. Best slow-motion entrance',
+                  ),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: descController,
+                  textCapitalization: TextCapitalization.sentences,
+                  minLines: 2,
+                  maxLines: 4,
+                  decoration: const InputDecoration(
+                    labelText: 'Description',
+                    hintText: 'What should players do?',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final title = titleController.text.trim();
+                final desc = descController.text.trim();
+                if (title.isEmpty) return;
+                Navigator.of(dialogContext).pop();
+                try {
+                  await sl<GameRepository>().addTasksToGame(game.id, [
+                    Task(
+                      id: 'custom_${DateTime.now().microsecondsSinceEpoch}',
+                      title: title,
+                      description: desc.isEmpty
+                          ? 'Record a video completing this task.'
+                          : desc,
+                      taskType: TaskType.video,
+                      submissions: const [],
+                    ),
+                  ]);
+                  messenger.showSnackBar(
+                    SnackBar(content: Text('Added "$title" to your game')),
+                  );
+                } catch (e) {
+                  messenger.showSnackBar(
+                    SnackBar(
+                      content: Text('Could not add task: $e'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Add task'),
+            ),
+          ],
+        );
+      },
+    ).then((_) {
+      titleController.dispose();
+      descController.dispose();
+    });
   }
 }
