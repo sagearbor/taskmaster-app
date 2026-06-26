@@ -14,6 +14,7 @@ import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
+import 'features/onboarding/presentation/screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +68,7 @@ class TaskCasterApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeController.instance.themeMode,
           debugShowCheckedModeBanner: false,
-          home: const AuthScreen(),
+          home: const OnboardingGate(child: AuthScreen()),
         ),
       ),
     );

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
+import 'game_detail_screen.dart';
 
 class JoinGameScreen extends StatefulWidget {
   const JoinGameScreen({super.key});
@@ -39,9 +41,9 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
     final authState = context.read<AuthBloc>().state;
     if (authState is! AuthAuthenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('You must be logged in to join a game'),
-          backgroundColor: Colors.red,
+        SnackBar(
+          content: const Text('You must be logged in to join a game'),
+          backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );
       return;
@@ -53,18 +55,21 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
 
     try {
       final gameRepository = sl<GameRepository>();
-      await gameRepository.joinGame(
+      final gameId = await gameRepository.joinGame(
         _inviteCodeController.text.trim().toUpperCase(),
         authState.user.id,
         authState.user.displayName,
       );
 
       if (mounted) {
-        Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Successfully joined the game!'),
-            backgroundColor: Colors.green,
+          const SnackBar(content: Text('You\'re in! 🎉 Welcome to the game.')),
+        );
+        // Drop the player straight into the game lobby they just joined,
+        // replacing this screen so "back" returns home rather than here.
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => GameDetailScreen(gameId: gameId),
           ),
         );
       }
@@ -72,8 +77,8 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to join game: $e'),
-            backgroundColor: Colors.red,
+            content: Text(_friendlyJoinError(e)),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -84,6 +89,17 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
         });
       }
     }
+  }
+
+  /// Turn a raw thrown error into something friendly. A wrong/expired code
+  /// surfaces as an "Exception: Game not found ..." string from the data layer;
+  /// players should never see that.
+  String _friendlyJoinError(Object error) {
+    final text = error.toString().toLowerCase();
+    if (text.contains('not found') || text.contains('no game')) {
+      return 'We couldn\'t find a game with that code. Double-check it and try again.';
+    }
+    return 'Couldn\'t join the game. Please try again.';
   }
 
   @override
@@ -103,7 +119,7 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
                 'Join the Fun!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E7D32),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -111,7 +127,7 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
               Text(
                 'Enter the invite code to join an existing game',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
+                  color: AppTheme.inkSoft,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -138,22 +154,22 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.amber.withOpacity(0.3)),
+                  color: AppTheme.gold.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.gold.withOpacity(0.4)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.lightbulb_outline, color: Colors.amber[700]),
+                        const Icon(Icons.lightbulb_outline, color: AppTheme.gold),
                         const SizedBox(width: 8),
                         Text(
                           'Need an invite code?',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.amber[700],
+                            color: AppTheme.gold,
                           ),
                         ),
                       ],
@@ -162,7 +178,7 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
                     Text(
                       'Ask the game creator for the 6-character invite code. You can find it on their game lobby screen.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.amber[700],
+                        color: AppTheme.ink,
                       ),
                     ),
                   ],

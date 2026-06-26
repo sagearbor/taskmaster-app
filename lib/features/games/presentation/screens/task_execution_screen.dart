@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/models/player_task_status.dart';
 import '../../../../core/widgets/skeleton_loaders.dart';
 import '../../../../core/widgets/error_view.dart';
@@ -252,7 +253,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.grey[100],
+                          color: AppTheme.violetSoft,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Column(
@@ -267,7 +268,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                               Text(
                                 'Submitted ${_formatTimeAgo(state.userStatus!.submittedAt!)}',
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: Colors.grey[600],
+                                      color: AppTheme.inkSoft,
                                     ),
                               ),
                             ],
@@ -378,8 +379,8 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           if (state.task.deadline != null)
             Card(
               color: state.task.hasDeadlinePassed
-                  ? Colors.red.withOpacity(0.1)
-                  : Colors.blue.withOpacity(0.1),
+                  ? Theme.of(context).colorScheme.error.withOpacity(0.1)
+                  : AppTheme.violetSoft,
               child: Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Row(
@@ -389,8 +390,8 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                           ? Icons.warning
                           : Icons.schedule,
                       color: state.task.hasDeadlinePassed
-                          ? Colors.red
-                          : Colors.blue,
+                          ? Theme.of(context).colorScheme.error
+                          : AppTheme.violet,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
@@ -439,7 +440,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           Text(
             'Paste a link to your video (YouTube, Google Photos, etc.)',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.grey[600],
+                  color: AppTheme.inkSoft,
                 ),
           ),
           const SizedBox(height: 12),
@@ -461,7 +462,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           const SizedBox(height: 24),
 
           // Submit Button
-          ElevatedButton(
+          ElevatedButton.icon(
             onPressed: _isUrlValid
                 ? () {
                     context.read<TaskExecutionBloc>().add(
@@ -476,10 +477,9 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                 : null,
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(16),
-              backgroundColor: Colors.green,
-              foregroundColor: Colors.white,
             ),
-            child: Text(
+            icon: const Icon(Icons.send_rounded),
+            label: Text(
               'Submit Video',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     color: Colors.white,
@@ -504,7 +504,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
 
           // Help Text
           Card(
-            color: Colors.grey[100],
+            color: AppTheme.violetSoft,
             child: Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
@@ -512,7 +512,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.info_outline, color: Colors.grey[700]),
+                      const Icon(Icons.info_outline, color: AppTheme.violet),
                       const SizedBox(width: 8),
                       Text(
                         'How to submit',

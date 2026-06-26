@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/skeleton_loaders.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../domain/repositories/game_repository.dart';
@@ -164,7 +165,7 @@ class JudgingView extends StatelessWidget {
                   const SizedBox(height: 16),
                   LinearProgressIndicator(
                     value: state.submittedCount / state.totalSubmissions,
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor: AppTheme.violetSoft,
                     valueColor: AlwaysStoppedAnimation<Color>(
                       state.allSubmitted ? Colors.green : Colors.orange,
                     ),
@@ -196,7 +197,7 @@ class JudgingView extends StatelessWidget {
                         leading: CircleAvatar(
                           backgroundColor: submission.status.hasSubmitted
                               ? Colors.green
-                              : Colors.grey[400],
+                              : AppTheme.inkSoft,
                           child: Text(
                             submission.playerName.isNotEmpty
                                 ? submission.playerName[0].toUpperCase()
@@ -215,12 +216,12 @@ class JudgingView extends StatelessWidget {
                           style: TextStyle(
                             color: submission.status.hasSubmitted
                                 ? Colors.green[700]
-                                : Colors.grey[600],
+                                : AppTheme.inkSoft,
                           ),
                         ),
                         trailing: submission.status.hasSubmitted
                             ? const Icon(Icons.check_circle, color: Colors.green)
-                            : Icon(Icons.schedule, color: Colors.grey[400]),
+                            : const Icon(Icons.schedule, color: AppTheme.inkSoft),
                       ),
                     );
                   }).toList(),
@@ -248,7 +249,7 @@ class JudgingView extends StatelessWidget {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.all(16),
-                backgroundColor: Colors.purple,
+                backgroundColor: AppTheme.violet,
                 foregroundColor: Colors.white,
               ),
               icon: const Icon(Icons.gavel),
@@ -265,7 +266,7 @@ class JudgingView extends StatelessWidget {
               Text(
                 'You can judge now or wait for all players to submit',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: AppTheme.inkSoft,
                     ),
                 textAlign: TextAlign.center,
               ),
@@ -273,18 +274,18 @@ class JudgingView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: AppTheme.violetSoft,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: Colors.blue[700]),
+                  const Icon(Icons.info_outline, color: AppTheme.violet),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'No submissions yet. Players will see this task and can submit their videos.',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.blue[700],
+                            color: AppTheme.violetDeep,
                           ),
                     ),
                   ),

@@ -195,8 +195,10 @@ class GameDetailView extends StatelessWidget {
     if (game.status == GameStatus.lobby && game.creatorId == currentUserId && game.players.length >= 2) {
       // Start game action
       context.read<GameDetailBloc>().add(StartGame(gameId: game.id));
-    } else if (game.status == GameStatus.inProgress && game.tasks.isNotEmpty) {
-      final currentTask = game.tasks[game.currentTaskIndex];
+    } else if (game.status == GameStatus.inProgress && game.currentTask != null) {
+      // Use the safe getter rather than tasks[currentTaskIndex], which could
+      // throw a RangeError if the index ever drifts past the task list.
+      final currentTask = game.currentTask!;
       final playerStatus = currentTask.playerStatuses[currentUserId];
 
       if (playerStatus == null ||

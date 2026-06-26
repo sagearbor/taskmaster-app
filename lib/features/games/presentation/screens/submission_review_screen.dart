@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../bloc/judging_bloc.dart';
 import '../bloc/judging_event.dart';
@@ -197,7 +198,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
                     Icon(
                       Icons.assignment,
                       size: 64,
-                      color: Colors.grey[400],
+                      color: AppTheme.inkSoft,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -286,7 +287,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
             child: Text(
               'Submission ${index + 1} of $total',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey[600],
+                    color: AppTheme.inkSoft,
                   ),
             ),
           ),
@@ -377,8 +378,6 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
                       onPressed: () => _openUrl(submission.submissionUrl!),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.all(16),
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
                       ),
                       icon: const Icon(Icons.open_in_new),
                       label: const Text('Open Video'),
@@ -387,7 +386,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
                     Text(
                       submission.submissionUrl!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: AppTheme.inkSoft,
                           ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,

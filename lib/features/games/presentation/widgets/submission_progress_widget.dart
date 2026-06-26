@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/models/player_task_status.dart';
 
 class SubmissionProgressWidget extends StatelessWidget {
@@ -55,7 +56,7 @@ class SubmissionProgressWidget extends StatelessWidget {
             const SizedBox(height: 16),
             LinearProgressIndicator(
               value: totalPlayers > 0 ? submittedCount / totalPlayers : 0,
-              backgroundColor: Colors.grey[200],
+              backgroundColor: AppTheme.violetSoft,
               valueColor: AlwaysStoppedAnimation<Color>(
                 _getProgressColor(submittedCount, totalPlayers),
               ),
@@ -77,7 +78,7 @@ class SubmissionProgressWidget extends StatelessWidget {
                 );
               }).toList(),
             ),
-            if (submittedCount == totalPlayers) ...[
+            if (totalPlayers > 0 && submittedCount == totalPlayers) ...[
               const SizedBox(height: 12),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -155,7 +156,7 @@ class SubmissionProgressWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: isCurrentUser
             ? Theme.of(context).colorScheme.secondary.withOpacity(0.1)
-            : Colors.grey[100],
+            : AppTheme.violetSoft.withOpacity(0.5),
         borderRadius: BorderRadius.circular(20),
         border: isCurrentUser
             ? Border.all(
@@ -177,7 +178,7 @@ class SubmissionProgressWidget extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                playerId[0].toUpperCase(),
+                playerId.isNotEmpty ? playerId[0].toUpperCase() : '?',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -214,7 +215,7 @@ class SubmissionProgressWidget extends StatelessWidget {
                   _formatSubmissionTime(status.submittedAt!),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontSize: 10,
-                        color: Colors.grey[600],
+                        color: AppTheme.inkSoft,
                       ),
                 ),
             ],

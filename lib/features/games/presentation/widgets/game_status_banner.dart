@@ -114,8 +114,9 @@ class GameStatusBanner extends StatelessWidget {
       }
     }
 
-    if (game.status == GameStatus.inProgress && game.tasks.isNotEmpty) {
-      final currentTask = game.tasks[game.currentTaskIndex];
+    if (game.status == GameStatus.inProgress && game.currentTask != null) {
+      // Safe getter avoids a RangeError if currentTaskIndex is out of bounds.
+      final currentTask = game.currentTask!;
       final playerStatus = currentTask.playerStatuses[currentUserId];
 
       // Check submission status for current player

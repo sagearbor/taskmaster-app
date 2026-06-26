@@ -99,6 +99,15 @@ class _TaskScoreboardScreenState extends State<TaskScoreboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Defensive: a game with no players has no scoreboard to reveal. Guard
+    // before any `.first` access below.
+    if (widget.game.players.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Task ${widget.taskIndex + 1} Results')),
+        body: const Center(child: Text('No players to score yet.')),
+      );
+    }
+
     // Calculate sorted players with position changes
     final playersWithScores = widget.game.players.map((player) {
       final taskScore = widget.taskScores[player.userId] ?? 0;

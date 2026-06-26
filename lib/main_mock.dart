@@ -20,6 +20,7 @@ import 'core/utils/performance.dart' as perf;
 import 'features/auth/domain/repositories/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/presentation/screens/auth_wrapper.dart';
+import 'features/onboarding/presentation/screens/onboarding_screen.dart';
 
 void main() async {
   await _initializeApp();
@@ -85,7 +86,7 @@ class TaskCasterApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme,
           themeMode: ThemeController.instance.themeMode,
           debugShowCheckedModeBanner: false,
-          home: const AuthWrapper(),
+          home: const OnboardingGate(child: AuthWrapper()),
         ),
       ),
     );

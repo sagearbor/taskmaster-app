@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/models/player_task_status.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
@@ -100,7 +101,9 @@ class VideoViewingView extends StatelessWidget {
             return _buildVideoGrid(context, state);
           }
 
-          return const SizedBox.shrink();
+          // Initial / transitional states — show a spinner instead of a blank
+          // screen.
+          return const Center(child: CircularProgressIndicator());
         },
       ),
     );
@@ -165,7 +168,7 @@ class VideoViewingView extends StatelessWidget {
             Icon(
               Icons.videocam_off,
               size: 64,
-              color: Colors.grey[400],
+              color: AppTheme.inkSoft.withOpacity(0.5),
             ),
             const SizedBox(height: 16),
             Text(
@@ -330,10 +333,12 @@ class VideoViewingView extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          _formatSubmissionTime(status.submittedAt!),
+                          status.submittedAt != null
+                              ? _formatSubmissionTime(status.submittedAt!)
+                              : 'Submitted',
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.grey[600],
+                                    color: AppTheme.inkSoft,
                                   ),
                         ),
                       ],
@@ -346,15 +351,15 @@ class VideoViewingView extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: AppTheme.violetSoft,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.link,
                       size: 16,
-                      color: Colors.grey[600],
+                      color: AppTheme.inkSoft,
                     ),
                     const SizedBox(width: 8),
                     Expanded(

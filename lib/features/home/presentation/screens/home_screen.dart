@@ -202,10 +202,13 @@ class HomeView extends StatelessWidget {
   }
 
   Widget _buildFloatingButtons(BuildContext context) {
+    // Labeled extended FABs so first-time players can read what each does.
+    // Quick Play remains the hero banner up top.
     return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
-        FloatingActionButton(
+        FloatingActionButton.extended(
           heroTag: 'discover',
           onPressed: () {
             Navigator.of(context).push(
@@ -215,10 +218,12 @@ class HomeView extends StatelessWidget {
             );
           },
           backgroundColor: Theme.of(context).colorScheme.tertiary,
-          child: const Icon(Icons.public),
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.public),
+          label: const Text('Discover'),
         ),
-        const SizedBox(height: 16),
-        FloatingActionButton(
+        const SizedBox(height: 12),
+        FloatingActionButton.extended(
           heroTag: 'join',
           onPressed: () {
             Navigator.of(context).push(
@@ -228,15 +233,18 @@ class HomeView extends StatelessWidget {
             );
           },
           backgroundColor: Theme.of(context).colorScheme.secondary,
-          child: const Icon(Icons.group_add),
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.group_add),
+          label: const Text('Join Game'),
         ),
-        const SizedBox(height: 16),
-        FloatingActionButton(
+        const SizedBox(height: 12),
+        FloatingActionButton.extended(
           heroTag: 'create',
           onPressed: () {
             _handleCreateGame(context);
           },
-          child: const Icon(Icons.add),
+          icon: const Icon(Icons.add),
+          label: const Text('Create Game'),
         ),
       ],
     );
