@@ -16,18 +16,26 @@ class TelephoneSessionScreen extends StatelessWidget {
   final String playerId;
   final String displayName;
 
+  /// The repository backing this game. Defaults to the app's shared
+  /// [TelephoneRepository] (online play). "Practice (solo)" passes a local,
+  /// fully-offline repository here so the same screens drive a bot game with no
+  /// Firebase involved.
+  final TelephoneRepository? repository;
+
   const TelephoneSessionScreen({
     super.key,
     required this.sessionId,
     required this.playerId,
     required this.displayName,
+    this.repository,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TelephoneBloc(repository: sl<TelephoneRepository>())
-        ..add(TelephoneSubscribed(sessionId)),
+      create: (_) =>
+          TelephoneBloc(repository: repository ?? sl<TelephoneRepository>())
+            ..add(TelephoneSubscribed(sessionId)),
       child: _SessionView(
         sessionId: sessionId,
         playerId: playerId,
