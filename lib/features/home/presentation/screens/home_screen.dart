@@ -277,6 +277,16 @@ class HomeView extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         FloatingActionButton.extended(
+          heroTag: 'ar',
+          onPressed: () =>
+              context.read<GamesBloc>().add(const QuickPlayGame(ar: true)),
+          backgroundColor: const Color(0xFFFB5779),
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.view_in_ar),
+          label: const Text('AR Games'),
+        ),
+        const SizedBox(height: 12),
+        FloatingActionButton.extended(
           heroTag: 'discover',
           onPressed: () {
             Navigator.of(context).push(

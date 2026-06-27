@@ -10,6 +10,7 @@ import '../../../../core/models/player_task_status.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 import '../../../tasks/data/datasources/prebuilt_tasks_data.dart';
 import '../../domain/repositories/game_repository.dart';
+import '../../../../core/services/ar/ar_games.dart';
 
 part 'games_event.dart';
 part 'games_state.dart';
@@ -94,8 +95,9 @@ class GamesBloc extends Bloc<GamesEvent, GamesState> {
       // Generate fun game name
       final gameName = _generateGameName();
 
-      // Select 5 random tasks from different categories
-      final randomTasks = _getRandomTasks(count: 5);
+      // AR quick-play seeds the AR mini-games; otherwise 5 random video tasks.
+      final randomTasks =
+          event.ar ? ArTaskSeeds.all() : _getRandomTasks(count: 5);
 
       // Initialize player statuses for all tasks
       final initializedTasks = randomTasks.map((task) {

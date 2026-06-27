@@ -107,9 +107,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Card(
             child: Column(
               children: [
-                const ListTile(
-                  leading: Icon(Icons.info_outline, color: AppTheme.violet),
-                  title: Text('Version'),
+                ListTile(
+                  leading: const Icon(Icons.info_outline, color: AppTheme.violet),
+                  title: const Text('Version'),
                   subtitle: Text(_appVersion),
                 ),
                 const Divider(height: 1),

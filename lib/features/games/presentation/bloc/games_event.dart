@@ -49,5 +49,11 @@ class DeleteGame extends GamesEvent {
 }
 
 class QuickPlayGame extends GamesEvent {
-  const QuickPlayGame();
+  /// When true, seed the solo game with the AR mini-game tasks (Balloon Pop,
+  /// Treasure Hunt) instead of random video tasks.
+  final bool ar;
+  const QuickPlayGame({this.ar = false});
+
+  @override
+  List<Object> get props => [ar];
 }
