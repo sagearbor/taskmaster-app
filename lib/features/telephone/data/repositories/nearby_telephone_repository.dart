@@ -140,13 +140,22 @@ class NearbyTelephoneRepository implements TelephoneRepository {
   /// Offline play never types an invite code — discovery handles addressing —
   /// so these are not part of the Nearby flow.
   @override
-  Future<String> createSession({
+  Future<({String sessionId, String inviteCode})> createSession({
     required String creatorUid,
     required String creatorName,
     String? gameName,
   }) {
     throw UnsupportedError(
         'Offline games are created via NearbyTelephoneRepository.host');
+  }
+
+  @override
+  Future<void> removePlayer({
+    required String sessionId,
+    required String uid,
+  }) async {
+    // Host kick isn't wired into the offline Nearby flow yet — no-op so the
+    // shared session screen's kick control can't crash an offline game.
   }
 
   @override
