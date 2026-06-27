@@ -174,10 +174,17 @@ class TelephoneSession extends Equatable {
       ),
       step: map['step'] as int? ?? 0,
       chains: (map['chains'] as List<dynamic>?)
-              ?.map((chain) => (chain as List<dynamic>)
-                  .map((e) => TelephoneEntry.fromMap(
-                      Map<String, dynamic>.from(e as Map)))
-                  .toList())
+              ?.map((chain) {
+                // New form: each chain is {'entries': [...]}. Tolerate the old
+                // raw-list form too for any in-flight sessions.
+                final entries = chain is Map
+                    ? (chain['entries'] as List<dynamic>? ?? const [])
+                    : (chain as List<dynamic>);
+                return entries
+                    .map((e) => TelephoneEntry.fromMap(
+                        Map<String, dynamic>.from(e as Map)))
+                    .toList();
+              })
               .toList() ??
           const [],
       submittedUids: (map['submittedUids'] as List<dynamic>?)
@@ -197,8 +204,13 @@ class TelephoneSession extends Equatable {
         'players': players.map((p) => p.toMap()).toList(),
         'phase': phase.name,
         'step': step,
-        'chains':
-            chains.map((c) => c.map((e) => e.toMap()).toList()).toList(),
+        // Firestore forbids an array that directly contains another array, so
+        // each chain is wrapped in a map: [{entries:[...]}, {entries:[...]}].
+        // Writing a raw List<List<...>> here is what caused the
+        // "[cloud_firestore/unknown]" failure when starting a game.
+        'chains': chains
+            .map((c) => {'entries': c.map((e) => e.toMap()).toList()})
+            .toList(),
         'submittedUids': submittedUids,
       };
 
