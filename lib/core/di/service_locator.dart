@@ -24,6 +24,11 @@ import '../../features/telephone/data/datasources/telephone_remote_data_source.d
 import '../../features/telephone/data/datasources/mock_telephone_data_source.dart';
 import '../../features/telephone/data/datasources/firestore_telephone_data_source.dart';
 
+import '../../features/trivia/data/repositories/trivia_repository_impl.dart';
+import '../../features/trivia/domain/repositories/trivia_repository.dart';
+import '../../features/trivia/data/datasources/trivia_remote_data_source.dart';
+import '../../features/trivia/data/datasources/mock_trivia_data_source.dart';
+
 import '../services/ad_service_simple.dart';
 import '../services/purchase_service_simple.dart';
 import '../services/ai_task_service.dart';
@@ -76,6 +81,17 @@ class ServiceLocator {
     );
     sl.registerLazySingleton<TelephoneRepository>(
       () => TelephoneRepositoryImpl(sl()),
+    );
+
+    // Trivia Buzzer is offline / host-authoritative-transport first: it always
+    // uses the in-memory data source for now. A Nearby / Bluetooth transport
+    // (or a Firestore source) implementing TriviaRemoteDataSource slots in here
+    // later — the repository and bloc are already transport-agnostic.
+    sl.registerLazySingleton<TriviaRemoteDataSource>(
+      () => MockTriviaDataSource(),
+    );
+    sl.registerLazySingleton<TriviaRepository>(
+      () => TriviaRepositoryImpl(sl()),
     );
 
     // AR capability gating. Single real implementation on all builds — it
