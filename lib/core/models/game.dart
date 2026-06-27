@@ -35,6 +35,11 @@ class Game extends Equatable {
   /// "most popular" sort in the public gallery).
   final int cloneCount;
 
+  /// Lowercased email addresses the creator has specifically invited to this
+  /// game. Lets players see "invites for you" and join without typing the
+  /// invite code. Backward-compatible: defaults to an empty list.
+  final List<String> invitedEmails;
+
   const Game({
     required this.id,
     required this.gameName,
@@ -50,6 +55,7 @@ class Game extends Equatable {
     this.currentTaskIndex = 0,
     this.isPublic = false,
     this.cloneCount = 0,
+    this.invitedEmails = const [],
   });
 
   factory Game.fromMap(Map<String, dynamic> map) {
@@ -80,6 +86,12 @@ class Game extends Equatable {
       currentTaskIndex: map['currentTaskIndex'] as int? ?? 0,
       isPublic: map['isPublic'] as bool? ?? false,
       cloneCount: map['cloneCount'] as int? ?? 0,
+      // Backward-compatible: older docs have no invitedEmails. Normalize to
+      // lowercase so lookups (which lowercase the query email) always match.
+      invitedEmails: (map['invitedEmails'] as List<dynamic>?)
+              ?.map((e) => (e as String).toLowerCase())
+              .toList() ??
+          const [],
     );
   }
 
@@ -99,6 +111,7 @@ class Game extends Equatable {
       'currentTaskIndex': currentTaskIndex,
       'isPublic': isPublic,
       'cloneCount': cloneCount,
+      'invitedEmails': invitedEmails,
     };
   }
 
@@ -117,6 +130,7 @@ class Game extends Equatable {
     int? currentTaskIndex,
     bool? isPublic,
     int? cloneCount,
+    List<String>? invitedEmails,
   }) {
     return Game(
       id: id ?? this.id,
@@ -133,6 +147,7 @@ class Game extends Equatable {
       currentTaskIndex: currentTaskIndex ?? this.currentTaskIndex,
       isPublic: isPublic ?? this.isPublic,
       cloneCount: cloneCount ?? this.cloneCount,
+      invitedEmails: invitedEmails ?? this.invitedEmails,
     );
   }
 
@@ -209,5 +224,6 @@ class Game extends Equatable {
         currentTaskIndex,
         isPublic,
         cloneCount,
+        invitedEmails,
       ];
 }

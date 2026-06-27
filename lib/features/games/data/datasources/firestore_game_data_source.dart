@@ -79,6 +79,26 @@ class FirestoreGameDataSource implements GameRemoteDataSource {
   }
 
   @override
+  Stream<List<Map<String, dynamic>>> getInvitedGamesStream(String email) {
+    final target = email.toLowerCase();
+    // Single array-contains filter only — Firestore auto-indexes single-field
+    // array-contains, so NO composite index is required. Status filtering and
+    // newest-first sorting happen in the repository (client-side), which also
+    // avoids the composite index an arrayContains + orderBy query would need.
+    return _firestore
+        .collection(_gamesCollection)
+        .where('invitedEmails', arrayContains: target)
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    });
+  }
+
+  @override
   Future<String> createGame(Map<String, dynamic> gameData) async {
     try {
       developer.log('=== CREATE GAME DEBUG ===');

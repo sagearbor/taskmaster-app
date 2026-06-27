@@ -219,6 +219,23 @@ class MockGameDataSource implements GameRemoteDataSource {
   }
 
   @override
+  Stream<List<Map<String, dynamic>>> getInvitedGamesStream(String email) async* {
+    final target = email.toLowerCase();
+    List<Map<String, dynamic>> invitedOnly(List<Map<String, dynamic>> all) =>
+        all.where((g) {
+          final invited = (g['invitedEmails'] as List<dynamic>?) ?? const [];
+          return invited
+              .map((e) => (e as String).toLowerCase())
+              .contains(target);
+        }).toList();
+
+    yield invitedOnly(_games);
+    await for (final games in _gamesController.stream) {
+      yield invitedOnly(games);
+    }
+  }
+
+  @override
   Future<String> createGame(Map<String, dynamic> gameData) async {
     await Future.delayed(const Duration(milliseconds: 500));
     

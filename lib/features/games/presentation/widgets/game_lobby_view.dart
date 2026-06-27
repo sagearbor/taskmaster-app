@@ -316,6 +316,8 @@ class GameLobbyView extends StatelessWidget {
 
               // Action Buttons
               if (isCreator) ...[
+                _InviteByEmailCard(game: game),
+                const SizedBox(height: 8),
                 Card(
                   child: SwitchListTile(
                     secondary: const Icon(Icons.public),
@@ -498,5 +500,181 @@ class GameLobbyView extends StatelessWidget {
       titleController.dispose();
       descController.dispose();
     });
+  }
+}
+
+/// Creator-only card for inviting specific people by email. The lowercased
+/// email is appended to the game's `invitedEmails` (deduped) and saved via
+/// [GameRepository.updateGame]. Invited people then see this game under
+/// "Invites for you" on the Join screen — no invite code needed.
+class _InviteByEmailCard extends StatefulWidget {
+  final Game game;
+
+  const _InviteByEmailCard({required this.game});
+
+  @override
+  State<_InviteByEmailCard> createState() => _InviteByEmailCardState();
+}
+
+class _InviteByEmailCardState extends State<_InviteByEmailCard> {
+  final _controller = TextEditingController();
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  bool _looksLikeEmail(String value) {
+    // Deliberately lenient: "x@y" passes. We only store the address, so we just
+    // guard against obvious non-emails rather than enforce RFC-perfect syntax.
+    return RegExp(r'^[^@\s]+@[^@\s]+\.?[^@\s]*$').hasMatch(value);
+  }
+
+  Future<void> _addInvite() async {
+    final email = _controller.text.trim().toLowerCase();
+    final messenger = ScaffoldMessenger.of(context);
+    if (email.isEmpty) return;
+    if (!_looksLikeEmail(email)) {
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email address')),
+      );
+      return;
+    }
+    if (widget.game.invitedEmails.contains(email)) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('$email is already invited')),
+      );
+      _controller.clear();
+      return;
+    }
+
+    setState(() => _saving = true);
+    try {
+      await sl<GameRepository>().updateGame(
+        widget.game.id,
+        widget.game.copyWith(
+          invitedEmails: [...widget.game.invitedEmails, email],
+        ),
+      );
+      if (mounted) {
+        _controller.clear();
+        messenger.showSnackBar(
+          SnackBar(content: Text('Invited $email')),
+        );
+      }
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Could not send invite: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _removeInvite(String email) async {
+    try {
+      await sl<GameRepository>().updateGame(
+        widget.game.id,
+        widget.game.copyWith(
+          invitedEmails:
+              widget.game.invitedEmails.where((e) => e != email).toList(),
+        ),
+      );
+    } catch (_) {
+      // Best-effort; the live game stream will reconcile the displayed list.
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final invited = widget.game.invitedEmails;
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.mail_outline,
+                    color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  'Invite by email',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Text(
+              'They\'ll see this game under "Invites for you" — no code needed.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    enabled: !_saving,
+                    keyboardType: TextInputType.emailAddress,
+                    autocorrect: false,
+                    decoration: const InputDecoration(
+                      labelText: 'Email address',
+                      hintText: 'friend@example.com',
+                      prefixIcon: Icon(Icons.alternate_email),
+                    ),
+                    onSubmitted: (_) => _addInvite(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: _saving ? null : _addInvite,
+                  child: _saving
+                      ? const SizedBox(
+                          height: 18,
+                          width: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Text('Add'),
+                ),
+              ],
+            ),
+            if (invited.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Text(
+                'Invited (${invited.length})',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: invited
+                    .map(
+                      (email) => Chip(
+                        label: Text(email),
+                        onDeleted: () => _removeInvite(email),
+                        deleteIcon: const Icon(Icons.close, size: 16),
+                      ),
+                    )
+                    .toList(),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }

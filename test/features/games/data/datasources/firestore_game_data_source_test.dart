@@ -93,6 +93,45 @@ void main() {
       });
     });
 
+    group('getInvitedGamesStream', () {
+      test('should return only games whose invitedEmails contains the email',
+          () async {
+        await fakeFirestore.collection('games').add({
+          'gameName': 'Invited Game',
+          'status': 'lobby',
+          'invitedEmails': ['bob@example.com'],
+          'createdAt': DateTime.now().toIso8601String(),
+        });
+        await fakeFirestore.collection('games').add({
+          'gameName': 'Other Game',
+          'status': 'lobby',
+          'invitedEmails': ['carol@example.com'],
+          'createdAt': DateTime.now().toIso8601String(),
+        });
+
+        final games =
+            await dataSource.getInvitedGamesStream('bob@example.com').first;
+
+        expect(games.length, 1);
+        expect(games.first['gameName'], 'Invited Game');
+        expect(games.first['id'], isNotNull);
+      });
+
+      test('should return empty when nobody matches', () async {
+        await fakeFirestore.collection('games').add({
+          'gameName': 'Invited Game',
+          'status': 'lobby',
+          'invitedEmails': ['bob@example.com'],
+          'createdAt': DateTime.now().toIso8601String(),
+        });
+
+        final games =
+            await dataSource.getInvitedGamesStream('nobody@example.com').first;
+
+        expect(games, isEmpty);
+      });
+    });
+
     group('getGameStream', () {
       test('should return game stream for specific game', () async {
         // Arrange

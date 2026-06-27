@@ -56,6 +56,19 @@ class FirebaseGameDataSource implements GameRemoteDataSource {
   }
 
   @override
+  Stream<List<Map<String, dynamic>>> getInvitedGamesStream(String email) {
+    final target = email.toLowerCase();
+    // Single array-contains filter only (no composite index needed); the
+    // repository applies the lobby filter and newest-first sort client-side.
+    return _firestore
+        .collection('games')
+        .where('invitedEmails', arrayContains: target)
+        .snapshots()
+        .map((snapshot) =>
+            snapshot.docs.map((doc) => {'id': doc.id, ...doc.data()}).toList());
+  }
+
+  @override
   Stream<Map<String, dynamic>?> getGameStream(String gameId) {
     developer.log('Getting game stream for gameId: $gameId');
 

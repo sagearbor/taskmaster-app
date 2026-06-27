@@ -39,6 +39,25 @@ class GameRepositoryImpl implements GameRepository {
   }
 
   @override
+  Stream<List<Game>> getInvitedGamesStream(String email) {
+    final normalized = email.toLowerCase();
+    return remoteDataSource.getInvitedGamesStream(normalized).map((list) {
+      final games = list
+          .map((data) => Game.fromMap(data))
+          // Only surface games you can still join (lobby). Belt-and-suspenders:
+          // re-check the email is actually in invitedEmails in case a data
+          // source returns a looser result set.
+          .where((g) =>
+              g.status == GameStatus.lobby &&
+              g.invitedEmails.contains(normalized))
+          .toList();
+      // Newest invited first (createdAt is our invite-recency proxy).
+      games.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return games;
+    });
+  }
+
+  @override
   Future<String> cloneGame(
       Game template, String creatorId, String displayName) async {
     // New game is private and owned by the cloner; creator is judge by default.

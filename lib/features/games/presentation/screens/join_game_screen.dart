@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
+import '../../../../core/models/game.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
@@ -18,6 +19,9 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
   final _formKey = GlobalKey<FormState>();
   final _inviteCodeController = TextEditingController();
   bool _isLoading = false;
+  // Id of the invited game currently being joined (drives a per-row spinner so
+  // tapping one "Join" doesn't grey out the whole list).
+  String? _joiningInviteId;
 
   @override
   void dispose() {
@@ -91,6 +95,54 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
     }
   }
 
+  /// Join a game the user was specifically invited to. Reuses the same
+  /// [GameRepository.joinGame] flow as the manual code path (it adds the player
+  /// to the roster), then drops them into that game's lobby.
+  Future<void> _joinInvitedGame(Game game) async {
+    final authState = context.read<AuthBloc>().state;
+    if (authState is! AuthAuthenticated) return;
+
+    setState(() => _joiningInviteId = game.id);
+    try {
+      final gameId = await sl<GameRepository>().joinGame(
+        game.inviteCode,
+        authState.user.id,
+        authState.user.displayName,
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('You\'re in! 🎉 Welcome to ${game.gameName}.')),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => GameDetailScreen(gameId: gameId),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(_friendlyJoinError(e)),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _joiningInviteId = null);
+    }
+  }
+
+  /// Compact "invited" recency label from the game's creation time. We don't
+  /// store a per-invite timestamp, so createdAt is our best proxy.
+  String _invitedAgo(DateTime when) {
+    final diff = DateTime.now().difference(when);
+    if (diff.inMinutes < 1) return 'just now';
+    if (diff.inMinutes < 60) return '${diff.inMinutes}m ago';
+    if (diff.inHours < 24) return '${diff.inHours}h ago';
+    return '${diff.inDays}d ago';
+  }
+
   /// Turn a raw thrown error into something friendly. A wrong/expired code
   /// surfaces as an "Exception: Game not found ..." string from the data layer;
   /// players should never see that.
@@ -104,13 +156,17 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+    final email =
+        authState is AuthAuthenticated ? authState.user.email : null;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Join Game'),
       ),
       body: Form(
         key: _formKey,
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -125,13 +181,32 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter the invite code to join an existing game',
+                'Tap an invite below, or enter a code to join a game',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: AppTheme.inkSoft,
                 ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 48),
+              const SizedBox(height: 32),
+              _buildInvitesSection(context, email),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Text(
+                      'OR ENTER A CODE',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                            color: AppTheme.inkSoft,
+                            letterSpacing: 1,
+                          ),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _inviteCodeController,
                 decoration: const InputDecoration(
@@ -186,7 +261,7 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
                   ],
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _isLoading ? null : _joinGame,
                 child: _isLoading
@@ -199,6 +274,127 @@ class _JoinGameScreenState extends State<JoinGameScreen> {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// "Invites for you": a live list of lobby games the current user has been
+  /// invited to (newest first), each with a one-tap Join. Falls back to a
+  /// friendly empty state when there are none.
+  Widget _buildInvitesSection(BuildContext context, String? email) {
+    final header = Row(
+      children: [
+        Icon(Icons.mark_email_unread_outlined,
+            color: Theme.of(context).colorScheme.primary),
+        const SizedBox(width: 8),
+        Text(
+          'Invites for you',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+        ),
+      ],
+    );
+
+    Widget emptyState() => Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Icon(Icons.inbox_outlined,
+                  size: 36, color: Theme.of(context).colorScheme.primary),
+              const SizedBox(height: 8),
+              Text(
+                'No invites yet — ask for a code.',
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
+              ),
+            ],
+          ),
+        );
+
+    if (email == null || email.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [header, const SizedBox(height: 12), emptyState()],
+      );
+    }
+
+    return StreamBuilder<List<Game>>(
+      stream: sl<GameRepository>().getInvitedGamesStream(email),
+      builder: (context, snapshot) {
+        final games = snapshot.data ?? const <Game>[];
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            header,
+            const SizedBox(height: 12),
+            if (snapshot.connectionState == ConnectionState.waiting &&
+                !snapshot.hasData)
+              const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            else if (games.isEmpty)
+              emptyState()
+            else
+              ...games.map((game) => _buildInviteCard(context, game)),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildInviteCard(BuildContext context, Game game) {
+    final creator = game.getPlayerById(game.creatorId)?.displayName;
+    final isJoining = _joiningInviteId == game.id;
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    game.gameName,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${creator != null ? 'From $creator · ' : ''}invited ${_invitedAgo(game.createdAt)}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            FilledButton(
+              onPressed: isJoining ? null : () => _joinInvitedGame(game),
+              child: isJoining
+                  ? const SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Join'),
+            ),
+          ],
         ),
       ),
     );

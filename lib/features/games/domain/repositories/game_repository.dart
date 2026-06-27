@@ -8,6 +8,10 @@ abstract class GameRepository {
   /// Games marked public — the discoverable community gallery.
   Stream<List<Game>> getPublicGamesStream();
 
+  /// Lobby games the user with [email] has been specifically invited to, newest
+  /// invited first. [email] is lowercased internally so callers needn't.
+  Stream<List<Game>> getInvitedGamesStream(String email);
+
   /// Create a few ready-made public template games owned by [ownerId] so the
   /// gallery has real content to discover. Used to bootstrap an empty gallery.
   Future<void> seedStarterPublicGames(String ownerId, String displayName);
