@@ -76,6 +76,27 @@ Everything #1–#18 is greenlit (user loves the list). Build behind the `mode`/`
 
 ---
 
+## Design refinements (review session)
+- **#10 Prediction Poker — it's a spectator LAYER, not a standalone pick.** Auto-activates
+  for whoever is NOT currently playing: while one player does their task/throw, everyone
+  else gets a betting screen ("how will they do?"). Solves the "what does everyone do while
+  one person plays" downtime. Toggle on for game night; rides on top of any turn-based game.
+- **#12 Reaction Roulette — keep simple base (kid-friendly), add an adult AR variant
+  "Spot & React":** instead of a screen buzz, a target appears somewhere in your room / in
+  the distance in AR; first to physically find + tap it wins the round. Reaction + spatial
+  hunt (where's-Waldo energy).
+- **#15 Ghost Race — enhanced (all feasible; it's recorded path-sample replay):**
+  - Replay ghosts at recorded pace so you see live whether you're ahead/behind.
+  - Encode rank/recency in trail opacity/color (older runs fade lighter; brighten the racer
+    you're tied with) — doubles as clutter control.
+  - 8 players: the Nth racer can replay all N−1 prior ghosts at once (cap/fade oldest to
+    avoid clutter).
+  - Path variants: (a) fixed/assigned course or (b) player-1-chooses-then-locks-for-all.
+    Constraint: ghosts are only comparable if everyone runs the **same course geometry**;
+    each player runs it in their own room (same relative gate layout replayed locally — no
+    shared anchors needed). Everyone-picks-own-path is NOT supported (ghosts wouldn't compare).
+- **#17 Dance-Off** — approved.
+
 ## Shared-Space AR track (#19, #20) — cross-platform via anchors
 **Goal (user):** make shared-room AR work across **Android + iPhone**.
 
