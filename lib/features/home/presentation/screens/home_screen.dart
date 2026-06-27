@@ -14,6 +14,7 @@ import '../../../games/presentation/screens/join_game_screen.dart';
 import '../../../games/presentation/screens/game_detail_screen.dart';
 import '../../../games/presentation/screens/discover_games_screen.dart';
 import '../../../telephone/presentation/screens/telephone_start_screen.dart';
+import '../../../trivia/presentation/screens/trivia_start_screen.dart';
 import '../widgets/game_card.dart';
 import '../widgets/home_app_bar.dart';
 
@@ -62,6 +63,8 @@ class HomeView extends StatelessWidget {
             _buildQuickPlayBanner(context),
             // Party game: Drawing Telephone (real-time, cross-device)
             _buildDrawingTelephoneBanner(context),
+            // Party game: Trivia Buzzer (offline, host-authoritative transport)
+            _buildTriviaBuzzerBanner(context),
             // Games List
             Expanded(
               child: BlocBuilder<GamesBloc, GamesState>(
@@ -198,6 +201,71 @@ class HomeView extends StatelessWidget {
                       SizedBox(height: 2),
                       Text(
                         'Draw → guess → laugh. Play across phones.',
+                        style: TextStyle(fontSize: 13, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios,
+                    color: Colors.white, size: 18),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTriviaBuzzerBanner(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Card(
+        elevation: 3,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const TriviaStartScreen(),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF6D28D9), Color(0xFFF59E0B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.quiz, size: 26, color: Colors.white),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '🧠 Trivia Buzzer',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Buzz in fast — fastest correct answer wins. Plays offline.',
                         style: TextStyle(fontSize: 13, color: Colors.white),
                       ),
                     ],
