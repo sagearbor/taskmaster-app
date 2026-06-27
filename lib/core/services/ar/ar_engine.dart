@@ -1,5 +1,17 @@
 import 'package:flutter/widgets.dart';
 
+/// A plain (plugin-agnostic) 3D position in AR world space, in meters relative
+/// to the session origin. Right-handed: +x right, +y up, -z forward (away from
+/// the device at session start). Kept free of any vector-math/plugin type so
+/// the mini-game logic and its tests never import an AR plugin.
+class ArVector3 {
+  final double x;
+  final double y;
+  final double z;
+
+  const ArVector3(this.x, this.y, this.z);
+}
+
 /// A detected AR plane (e.g. a floor or table) the player can place objects on.
 class ArPlane {
   final String id;
@@ -39,8 +51,22 @@ abstract class ArEngine {
   /// Stream of detected planes as tracking discovers surfaces.
   Stream<ArPlane> get planes;
 
-  /// Spawn an object (e.g. a balloon) at a plane/anchor, returning its node.
-  Future<ArNode> spawn({required String modelRef, ArPlane? onPlane});
+  /// Spawn an object (e.g. a balloon) at a world [position], returning its
+  /// node handle. [modelRef] is the asset path of the 3D model. When [onPlane]
+  /// is given the object is anchored to that plane; otherwise it is placed at
+  /// [position] relative to the session origin.
+  Future<ArNode> spawn({
+    required String modelRef,
+    required ArVector3 position,
+    ArPlane? onPlane,
+  });
+
+  /// Move an already-spawned [node] to a new world [position] (used for the
+  /// gentle bob/float animation). Best-effort: never throws.
+  Future<void> move(ArNode node, ArVector3 position);
+
+  /// Remove a spawned [node] from the scene (e.g. popping a balloon).
+  Future<void> remove(ArNode node);
 
   /// Stream of taps on spawned objects (e.g. balloon pops).
   Stream<ArTap> get taps;

@@ -217,6 +217,7 @@ class GameDetailView extends StatelessWidget {
                 ? ARTaskScreen(
                     gameId: game.id,
                     taskIndex: game.currentTaskIndex,
+                    arGameId: currentTask.arGameId,
                   )
                 : TaskExecutionScreen(
                     gameId: game.id,
