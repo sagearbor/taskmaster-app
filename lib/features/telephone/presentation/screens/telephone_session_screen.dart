@@ -16,10 +16,10 @@ class TelephoneSessionScreen extends StatelessWidget {
   final String playerId;
   final String displayName;
 
-  /// The repository backing this game. Defaults to the app's shared
-  /// [TelephoneRepository] (online play). "Practice (solo)" passes a local,
-  /// fully-offline repository here so the same screens drive a bot game with no
-  /// Firebase involved.
+  /// Optional transport override. Defaults to the app's shared online
+  /// [TelephoneRepository] (Firestore). "Practice (solo)" passes a local,
+  /// fully-offline bot repository; offline play passes the Nearby-backed
+  /// (Bluetooth / Wi-Fi Direct) repository — the same screens run over any.
   final TelephoneRepository? repository;
 
   const TelephoneSessionScreen({
