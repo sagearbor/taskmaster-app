@@ -104,6 +104,8 @@ class TaskCard extends StatelessWidget {
         return Icons.videocam;
       case TaskType.puzzle:
         return Icons.extension;
+      case TaskType.ar:
+        return Icons.view_in_ar;
     }
   }
 

@@ -22,6 +22,7 @@ import '../services/ad_service_simple.dart';
 import '../services/purchase_service_simple.dart';
 import '../services/ai_task_service.dart';
 import '../services/notification_service.dart';
+import '../services/ar/ar_capability_service.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -61,7 +62,16 @@ class ServiceLocator {
     sl.registerLazySingleton<TaskRepository>(
       () => TaskRepositoryImpl(sl()),
     );
-    
+
+    // AR capability gating. Single real implementation on all builds — it
+    // self-gates by platform/permission and never throws, so there is no need
+    // for a separate mock. Tests construct ArCapabilityServiceImpl directly
+    // with injected platform seams.
+    sl.registerLazySingleton<ArCapabilityService>(
+      () => ArCapabilityServiceImpl(),
+    );
+
+
     // Additional Services
     if (useMockServices) {
       sl.registerLazySingleton<AdService>(() => MockAdService());

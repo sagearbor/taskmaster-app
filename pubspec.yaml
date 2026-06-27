@@ -3,7 +3,7 @@ description: A cross-platform party game app for TaskCaster-style challenges
 
 publish_to: 'none'
 
-version: 1.1.2+4
+version: 1.2.0+5
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -36,15 +36,17 @@ dependencies:
   connectivity_plus: ^5.0.1
   
   # Location Services
-  geolocator: ^10.1.0
+  # Bumped 10.1.0 -> 12.0.0 to satisfy ar_flutter_plugin_2 (requires
+  # geolocator ^12.0.0). Only use is Geolocator.distanceBetween (stable API).
+  geolocator: ^12.0.0
   permission_handler: ^11.0.1
   
   # Monetization (commented out for initial testing)
   # google_mobile_ads: ^4.0.0
   # in_app_purchase: ^3.1.11
   
-  # AR Support (commented out - requires additional setup)
-  # ar_flutter_plugin: ^0.7.3
+  # AR Support — Balloon Pop AR task. Only ar_flutter_engine.dart imports this.
+  ar_flutter_plugin_2: ^0.0.3
   
   # AI Integration
   http: ^1.1.0
@@ -73,7 +75,7 @@ flutter_launcher_icons:
   image_path: "assets/icons/app_icon.png"
   adaptive_icon_foreground: "assets/icons/app_icon_foreground.png"
   adaptive_icon_background: "#4A148C"
-  min_sdk_android: 23
+  min_sdk_android: 28
 
 flutter:
   uses-material-design: true

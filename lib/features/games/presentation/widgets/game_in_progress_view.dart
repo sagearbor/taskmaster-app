@@ -5,6 +5,7 @@ import '../../../../core/models/game.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../screens/scoreboard_screen.dart';
 import '../screens/task_execution_screen.dart';
+import '../screens/ar_task_screen.dart';
 
 class GameInProgressView extends StatelessWidget {
   final Game game;
@@ -199,12 +200,19 @@ class GameInProgressView extends StatelessWidget {
                                   final userStatus = task.getPlayerStatus(userId);
                                   final hasSubmitted = userStatus?.hasSubmitted ?? false;
 
+                                  // AR tasks branch to the AR flow; everything
+                                  // else uses the standard execution screen.
                                   Navigator.of(context).push(
                                     MaterialPageRoute(
-                                      builder: (context) => TaskExecutionScreen(
-                                        gameId: game.id,
-                                        taskIndex: index,
-                                      ),
+                                      builder: (context) => task.isArTask
+                                          ? ARTaskScreen(
+                                              gameId: game.id,
+                                              taskIndex: index,
+                                            )
+                                          : TaskExecutionScreen(
+                                              gameId: game.id,
+                                              taskIndex: index,
+                                            ),
                                     ),
                                   );
                                 },

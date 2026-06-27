@@ -451,6 +451,104 @@ class GameRepositoryImpl implements GameRepository {
     await updateGame(gameId, updatedGame);
   }
 
+  @override
+  Future<void> submitArResult(
+    String gameId,
+    int taskIndex,
+    String playerId,
+    int score, {
+    int? rawResult,
+  }) async {
+    // Load current game.
+    final game = await remoteDataSource.getGameStream(gameId).first;
+    if (game == null) {
+      throw Exception('Game not found');
+    }
+
+    final gameObj = Game.fromMap({...game, 'id': gameId});
+
+    if (taskIndex >= gameObj.tasks.length) {
+      throw Exception('Task not found');
+    }
+
+    final updatedTasks = List<Task>.from(gameObj.tasks);
+    final task = updatedTasks[taskIndex];
+
+    // AR is an instant self-judge: stamp the player's status straight to
+    // judged (mirroring judgeSubmission), tolerating a missing status.
+    final updatedPlayerStatuses =
+        Map<String, PlayerTaskStatus>.from(task.playerStatuses);
+    final playerStatus = updatedPlayerStatuses[playerId] ??
+        PlayerTaskStatus(
+          playerId: playerId,
+          state: TaskPlayerState.not_started,
+        );
+
+    updatedPlayerStatuses[playerId] = playerStatus.copyWith(
+      score: score,
+      state: TaskPlayerState.judged,
+      submittedAt: playerStatus.submittedAt ?? DateTime.now(),
+      scoredAt: DateTime.now(),
+    );
+
+    // Keep the dual submission model in sync, exactly like judgeSubmission:
+    // stamp the matching submission row, or synthesize one if none exists
+    // (AR players never go through the video-submission flow).
+    final updatedSubmissions = List<Submission>.from(task.submissions);
+    final subIndex =
+        updatedSubmissions.indexWhere((s) => s.userId == playerId);
+    if (subIndex != -1) {
+      updatedSubmissions[subIndex] = updatedSubmissions[subIndex].copyWith(
+        score: score,
+        isJudged: true,
+      );
+    } else {
+      updatedSubmissions.add(Submission(
+        id: _uuid.v4(),
+        userId: playerId,
+        videoUrl: playerStatus.submissionUrl,
+        score: score,
+        isJudged: true,
+        submittedAt: playerStatus.submittedAt ?? DateTime.now(),
+      ));
+    }
+
+    var updatedTask = task.copyWith(
+      playerStatuses: updatedPlayerStatuses,
+      submissions: updatedSubmissions,
+      // Record the raw AR gameplay result for display/analytics.
+      arResult: rawResult ?? task.arResult,
+    );
+
+    if (updatedTask.allPlayersJudged) {
+      updatedTask = updatedTask.copyWith(status: TaskStatus.completed);
+    } else if (updatedTask.allPlayersSubmitted) {
+      updatedTask = updatedTask.copyWith(status: TaskStatus.ready_to_judge);
+    }
+
+    updatedTasks[taskIndex] = updatedTask;
+
+    // Bump the player's total score.
+    final updatedPlayers = gameObj.players.map((player) {
+      if (player.userId == playerId) {
+        return player.copyWith(totalScore: player.totalScore + score);
+      }
+      return player;
+    }).toList();
+
+    var updatedGame = gameObj.copyWith(
+      tasks: updatedTasks,
+      players: updatedPlayers,
+    );
+
+    if (updatedGame.tasks.isNotEmpty &&
+        updatedGame.tasks.every((t) => t.status == TaskStatus.completed)) {
+      updatedGame = updatedGame.copyWith(status: GameStatus.completed);
+    }
+
+    await updateGame(gameId, updatedGame);
+  }
+
   String _generateInviteCode() {
     // 6 random chars. Each position is independently random (the old code
     // computed one modulo and reused it, so every code was 6 identical

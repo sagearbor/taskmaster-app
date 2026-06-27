@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- AR (Balloon Pop) needs the camera. Marked not-required so the app still
+         installs on non-AR devices; capability is gated at runtime. -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera.ar" android:required="false"/>
     <application
         android:label="TaskCaster"
         android:name="${applicationName}"
@@ -30,6 +34,9 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- ARCore is optional: device shows AR when supported, falls back
+             gracefully otherwise. -->
+        <meta-data android:name="com.google.ar.core" android:value="optional" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

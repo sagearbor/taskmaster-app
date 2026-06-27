@@ -54,8 +54,10 @@ android {
 
     defaultConfig {
         applicationId = "com.sagearbor.taskcaster.app"
-        // Firebase Auth/Firestore require minSdk 23.
-        minSdk = 23
+        // Firebase Auth/Firestore require minSdk 23; ar_flutter_plugin_2 (ARCore)
+        // requires minSdk 28, so this is bumped 23 -> 28. Drops support for
+        // Android < 9 (Pie).
+        minSdk = 28
         // Google Play requires targetSdk >= 34/35 for new submissions.
         targetSdk = 35
         versionCode = flutterVersionCode.toInteger()
