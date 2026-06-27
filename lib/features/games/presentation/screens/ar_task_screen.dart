@@ -1,27 +1,34 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/services/ar/ar_capability_service.dart';
+import '../../../../core/services/ar/ar_games.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../bloc/ar_task_bloc.dart';
+import '../widgets/ar_minigame_view.dart';
 import '../widgets/ar_unsupported_view.dart';
 
 /// Entry point for an AR task. Runs the capability check and routes to the
-/// right state UI. When the device is capable it currently shows an INTERNAL
-/// SCAFFOLD (not a finished game): a dev-only "Simulate score" button proves
-/// the AR -> scoreboard loop end-to-end with zero AR plugin. The real Balloon
-/// Pop rendering is a later phase that needs a physical device.
+/// right state UI. On an AR-capable device it shows an instructions card and
+/// then launches the real mini-game ([ArMinigameView]) identified by
+/// [arGameId]; on unsupported devices it falls back gracefully so a player is
+/// never stuck.
 class ARTaskScreen extends StatelessWidget {
   final String gameId;
   final int taskIndex;
+
+  /// Which AR mini-game to launch (e.g. 'ar_balloon_pop'). Comes from the
+  /// task's [Task.arGameId]. When null/unknown the screen offers a graceful
+  /// skip instead of crashing.
+  final String? arGameId;
 
   const ARTaskScreen({
     super.key,
     required this.gameId,
     required this.taskIndex,
+    this.arGameId,
   });
 
   @override
@@ -37,18 +44,22 @@ class ARTaskScreen extends StatelessWidget {
         taskIndex: taskIndex,
         userId: userId,
       )..add(const ArCheckRequested()),
-      child: const _ARTaskView(),
+      child: _ARTaskView(arGameId: arGameId),
     );
   }
 }
 
 class _ARTaskView extends StatelessWidget {
-  const _ARTaskView();
+  final String? arGameId;
+
+  const _ARTaskView({required this.arGameId});
 
   @override
   Widget build(BuildContext context) {
+    final config = ArGameConfig.byId(arGameId);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('AR Task')),
+      appBar: AppBar(title: Text(config?.title ?? 'AR Task')),
       body: BlocConsumer<ArTaskBloc, ArTaskState>(
         listener: (context, state) {
           if (state is ArTaskSubmitted) {
@@ -90,86 +101,94 @@ class _ARTaskView extends StatelessWidget {
             );
           }
 
-          // Ready / Playing / Finished — the capable path.
-          return _ReadyScaffold(state: state);
+          // Capable path. If we somehow don't know which game to run, offer a
+          // graceful skip rather than a blank/crashing screen.
+          if (config == null) {
+            return _ErrorView(
+              message: 'Unknown AR game "${arGameId ?? ''}".',
+              onRetry: () => bloc.add(const ArCheckRequested()),
+              onSkip: () => bloc.add(const ArSkipRequested()),
+            );
+          }
+
+          // Playing — the live AR mini-game.
+          if (state is ArTaskPlaying) {
+            return ArMinigameView(
+              config: config,
+              onFinished: (score, rawResult) => bloc.add(
+                ArScoreSubmitted(score: score, rawResult: rawResult),
+              ),
+              onSkip: () => bloc.add(const ArSkipRequested()),
+            );
+          }
+
+          // Ready (or any post-check capable state) — instructions + Start.
+          return _IntroCard(
+            config: config,
+            onStart: () => bloc.add(const ArPlayStarted()),
+            onSkip: () => bloc.add(const ArSkipRequested()),
+          );
         },
       ),
     );
   }
 }
 
-/// The capable-device scaffold. Intentionally NOT a finished AR game — it is an
-/// internal harness that proves the score write-back loop.
-class _ReadyScaffold extends StatelessWidget {
-  final ArTaskState state;
+/// Pre-game instructions with a Start button. Gives the camera a beat to settle
+/// and tells the player what to do before the timer starts.
+class _IntroCard extends StatelessWidget {
+  final ArGameConfig config;
+  final VoidCallback onStart;
+  final VoidCallback onSkip;
 
-  const _ReadyScaffold({required this.state});
+  const _IntroCard({
+    required this.config,
+    required this.onStart,
+    required this.onSkip,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bloc = context.read<ArTaskBloc>();
-
+    final isTreasure = config.speedBonus;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.view_in_ar, size: 72, color: theme.colorScheme.primary),
+            Icon(
+              isTreasure ? Icons.diamond : Icons.celebration,
+              size: 72,
+              color: theme.colorScheme.primary,
+            ),
             const SizedBox(height: 16),
             Text(
-              'AR ready',
+              config.title,
               style: theme.textTheme.titleLarge
                   ?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
-              'Your device supports AR. The Balloon Pop mini-game renders here '
-              'in a later phase (needs a physical device).',
+              isTreasure
+                  ? 'Find and tap all ${config.objectCount} gems hidden around '
+                      'you. Faster finishes score higher — you have '
+                      '${config.duration.inSeconds}s.'
+                  : 'Pop as many balloons as you can in '
+                      '${config.duration.inSeconds} seconds. Move your phone to '
+                      'find them and tap to pop!',
               textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(color: Colors.grey[700]),
+              style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 24),
-
-            // ---- DEV-ONLY SCAFFOLD CONTROL -----------------------------------
-            // Temporary internal tool: proves the AR -> scoreboard loop without
-            // any AR plugin. Removed before shipping; never shown in release.
-            if (kDebugMode) ...[
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.amber.withOpacity(0.15),
-                  border: Border.all(color: Colors.amber),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Column(
-                  children: [
-                    const Text(
-                      'DEV SCAFFOLD ONLY — not a real game',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    FilledButton.icon(
-                      onPressed: () => bloc.add(
-                        const ArScoreSubmitted(score: 7, rawResult: 7),
-                      ),
-                      icon: const Icon(Icons.bolt),
-                      label: const Text('Simulate score (dev)'),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-
-            // Players can always opt out.
+            FilledButton.icon(
+              onPressed: onStart,
+              icon: const Icon(Icons.play_arrow),
+              label: const Text('Start'),
+            ),
+            const SizedBox(height: 8),
             TextButton.icon(
-              onPressed: () => bloc.add(const ArSkipRequested()),
+              onPressed: onSkip,
               icon: const Icon(Icons.skip_next),
               label: const Text('Skip this task'),
             ),

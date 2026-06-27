@@ -30,6 +30,8 @@ import '../services/purchase_service_simple.dart';
 import '../services/ai_task_service.dart';
 import '../services/notification_service.dart';
 import '../services/ar/ar_capability_service.dart';
+import '../services/ar/ar_engine.dart';
+import '../services/ar/ar_flutter_engine.dart';
 
 final GetIt sl = GetIt.instance;
 
@@ -92,6 +94,12 @@ class ServiceLocator {
     sl.registerLazySingleton<ArCapabilityService>(
       () => ArCapabilityServiceImpl(),
     );
+
+    // AR render engine. A FACTORY (not a singleton): each AR task gets a fresh
+    // engine so its platform AR view + streams are cleanly torn down on exit.
+    // Only constructed on AR-capable mobile devices (the capability check gates
+    // every caller), so the plugin is never instantiated on web/desktop.
+    sl.registerFactory<ArEngine>(() => ArFlutterEngine());
 
 
     // Additional Services

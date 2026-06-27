@@ -208,6 +208,7 @@ class GameInProgressView extends StatelessWidget {
                                           ? ARTaskScreen(
                                               gameId: game.id,
                                               taskIndex: index,
+                                              arGameId: task.arGameId,
                                             )
                                           : TaskExecutionScreen(
                                               gameId: game.id,
