@@ -1,0 +1,74 @@
+import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/models/telephone_session.dart';
+import '../../domain/repositories/telephone_repository.dart';
+
+part 'telephone_event.dart';
+part 'telephone_state.dart';
+
+/// Streams a single Drawing Telephone session and forwards player actions to
+/// the repository. Mutations (start/submit) are fire-and-forget against the
+/// repo — the authoritative state always comes back via the live stream, so
+/// every device converges on the same Firestore document.
+class TelephoneBloc extends Bloc<TelephoneEvent, TelephoneState> {
+  final TelephoneRepository repository;
+
+  TelephoneBloc({required this.repository})
+      : super(const TelephoneState.initial()) {
+    on<TelephoneSubscribed>(_onSubscribed);
+    on<TelephoneStarted>(_onStarted);
+    on<TelephoneEntrySubmitted>(_onSubmitted);
+  }
+
+  Future<void> _onSubscribed(
+    TelephoneSubscribed event,
+    Emitter<TelephoneState> emit,
+  ) async {
+    emit(state.copyWith(status: TelephoneStatus.loading));
+    await emit.forEach<TelephoneSession?>(
+      repository.watchSession(event.sessionId),
+      onData: (session) => session == null
+          ? state.copyWith(
+              status: TelephoneStatus.error,
+              error: 'This game no longer exists.',
+            )
+          : state.copyWith(
+              status: TelephoneStatus.loaded,
+              session: session,
+              clearError: true,
+            ),
+      onError: (error, _) =>
+          state.copyWith(status: TelephoneStatus.error, error: error.toString()),
+    );
+  }
+
+  Future<void> _onStarted(
+    TelephoneStarted event,
+    Emitter<TelephoneState> emit,
+  ) async {
+    try {
+      await repository.startGame(event.sessionId);
+    } catch (e) {
+      emit(state.copyWith(error: _friendly(e)));
+    }
+  }
+
+  Future<void> _onSubmitted(
+    TelephoneEntrySubmitted event,
+    Emitter<TelephoneState> emit,
+  ) async {
+    try {
+      await repository.submitEntry(
+        sessionId: event.sessionId,
+        uid: event.uid,
+        content: event.content,
+      );
+    } catch (e) {
+      emit(state.copyWith(error: _friendly(e)));
+    }
+  }
+
+  String _friendly(Object error) =>
+      error.toString().replaceFirst('Exception: ', '');
+}

@@ -18,6 +18,12 @@ import '../../features/tasks/data/datasources/task_remote_data_source.dart';
 import '../../features/tasks/data/datasources/mock_task_data_source.dart';
 import '../../features/tasks/data/datasources/firebase_task_data_source.dart';
 
+import '../../features/telephone/data/repositories/telephone_repository_impl.dart';
+import '../../features/telephone/domain/repositories/telephone_repository.dart';
+import '../../features/telephone/data/datasources/telephone_remote_data_source.dart';
+import '../../features/telephone/data/datasources/mock_telephone_data_source.dart';
+import '../../features/telephone/data/datasources/firestore_telephone_data_source.dart';
+
 import '../services/ad_service_simple.dart';
 import '../services/purchase_service_simple.dart';
 import '../services/ai_task_service.dart';
@@ -39,6 +45,9 @@ class ServiceLocator {
       sl.registerLazySingleton<TaskRemoteDataSource>(
         () => MockTaskDataSource(),
       );
+      sl.registerLazySingleton<TelephoneRemoteDataSource>(
+        () => MockTelephoneDataSource(),
+      );
     } else {
       // Firebase implementations
       sl.registerLazySingleton<AuthRemoteDataSource>(
@@ -49,6 +58,9 @@ class ServiceLocator {
       );
       sl.registerLazySingleton<TaskRemoteDataSource>(
         () => FirebaseTaskDataSource(),
+      );
+      sl.registerLazySingleton<TelephoneRemoteDataSource>(
+        () => FirestoreTelephoneDataSource(),
       );
     }
 
@@ -61,6 +73,9 @@ class ServiceLocator {
     );
     sl.registerLazySingleton<TaskRepository>(
       () => TaskRepositoryImpl(sl()),
+    );
+    sl.registerLazySingleton<TelephoneRepository>(
+      () => TelephoneRepositoryImpl(sl()),
     );
 
     // AR capability gating. Single real implementation on all builds — it

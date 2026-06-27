@@ -39,6 +39,20 @@ service cloud.firestore {
       allow delete: if isSignedIn() && request.auth.uid == resource.data.creatorId;
     }
 
+    // ---- Drawing Telephone sessions ----
+    // A real-time party game (mode: 'party'). Any signed-in user (incl.
+    // anonymous guests) may read a session, create one, and update it — players
+    // are identified by a per-session id rather than their auth uid, and game
+    // integrity is enforced app-side via atomic Firestore transactions. Only
+    // the creator can delete.
+    match /telephone_sessions/{sessionId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn() &&
+                       request.auth.uid == resource.data.creatorUid;
+    }
+
     // ---- Users ----
     match /users/{userId} {
       allow read: if isSignedIn();

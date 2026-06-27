@@ -13,6 +13,7 @@ import '../../../games/presentation/screens/create_game_screen.dart';
 import '../../../games/presentation/screens/join_game_screen.dart';
 import '../../../games/presentation/screens/game_detail_screen.dart';
 import '../../../games/presentation/screens/discover_games_screen.dart';
+import '../../../telephone/presentation/screens/telephone_start_screen.dart';
 import '../widgets/game_card.dart';
 import '../widgets/home_app_bar.dart';
 
@@ -59,6 +60,8 @@ class HomeView extends StatelessWidget {
           children: [
             // Quick Play Hero Banner
             _buildQuickPlayBanner(context),
+            // Party game: Drawing Telephone (real-time, cross-device)
+            _buildDrawingTelephoneBanner(context),
             // Games List
             Expanded(
               child: BlocBuilder<GamesBloc, GamesState>(
@@ -137,6 +140,71 @@ class HomeView extends StatelessWidget {
                   color: Colors.white,
                   size: 20,
                 ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDrawingTelephoneBanner(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Card(
+        elevation: 3,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const TelephoneStartScreen(),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: const LinearGradient(
+                colors: [Color(0xFF7C3AED), Color(0xFF2563EB)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.brush, size: 26, color: Colors.white),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '🎨 Drawing Telephone',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Draw → guess → laugh. Play across phones.',
+                        style: TextStyle(fontSize: 13, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios,
+                    color: Colors.white, size: 18),
               ],
             ),
           ),
