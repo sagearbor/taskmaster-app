@@ -21,23 +21,24 @@ class TelephoneRepositoryImpl implements TelephoneRepository {
   }
 
   @override
-  Future<String> createSession({
+  Future<({String sessionId, String inviteCode})> createSession({
     required String creatorUid,
     required String creatorName,
     String? gameName,
   }) async {
     final id = _uuid.v4();
+    final inviteCode = _generateInviteCode();
     final session = TelephoneSession.create(
       id: id,
       gameName: (gameName == null || gameName.trim().isEmpty)
           ? 'Drawing Telephone'
           : gameName.trim(),
-      inviteCode: _generateInviteCode(),
+      inviteCode: inviteCode,
       creatorUid: creatorUid,
       creatorName: creatorName,
     );
     await remoteDataSource.createSession(session.toMap());
-    return id;
+    return (sessionId: id, inviteCode: inviteCode);
   }
 
   @override
@@ -64,6 +65,17 @@ class TelephoneRepositoryImpl implements TelephoneRepository {
     });
 
     return sessionId;
+  }
+
+  @override
+  Future<void> removePlayer({
+    required String sessionId,
+    required String uid,
+  }) async {
+    await remoteDataSource.updateSession(sessionId, (current) {
+      final session = TelephoneSession.fromMap(current);
+      return session.withPlayerRemoved(uid).toMap();
+    });
   }
 
   @override

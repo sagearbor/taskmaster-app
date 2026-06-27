@@ -25,6 +25,17 @@ class TelephoneStarted extends TelephoneEvent {
   List<Object?> get props => [sessionId];
 }
 
+/// Host removes a player from the lobby (kick).
+class TelephonePlayerRemoved extends TelephoneEvent {
+  final String sessionId;
+  final String uid;
+
+  const TelephonePlayerRemoved({required this.sessionId, required this.uid});
+
+  @override
+  List<Object?> get props => [sessionId, uid];
+}
+
 /// A player submits the current step's contribution.
 class TelephoneEntrySubmitted extends TelephoneEvent {
   final String sessionId;
