@@ -3,6 +3,36 @@
          installs on non-AR devices; capability is gated at runtime. -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-feature android:name="android.hardware.camera.ar" android:required="false"/>
+
+    <!-- ============================================================
+         Offline local multiplayer (Drawing Telephone) via Google
+         Nearby Connections — Bluetooth + Wi-Fi Direct, no internet.
+         Per the nearby_connections plugin docs.
+         ============================================================ -->
+    <!-- Legacy Bluetooth (maxSdkVersion 30; replaced by the runtime
+         BLUETOOTH_* perms below on Android 12+). -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30"/>
+    <!-- Android 12+ (API 31+) Bluetooth runtime permissions. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation"/>
+    <!-- Location is required for BLE scanning up to Android 11; on 12+ it is
+         only needed if neverForLocation is not set, but Nearby's Wi-Fi path
+         still benefits. Kept for broad device coverage. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:maxSdkVersion="30"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <!-- Wi-Fi (Wi-Fi Direct transport used by Nearby Connections). -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!-- Android 13+ (API 33+): scan/connect to nearby Wi-Fi devices. -->
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES"
+        android:usesPermissionFlags="neverForLocation"/>
+
     <application
         android:label="TaskCaster"
         android:name="${applicationName}"

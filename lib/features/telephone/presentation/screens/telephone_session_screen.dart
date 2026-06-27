@@ -15,18 +15,26 @@ class TelephoneSessionScreen extends StatelessWidget {
   final String playerId;
   final String displayName;
 
+  /// Optional transport override. When null the screen uses the globally
+  /// registered (online/Firestore) repository; offline play passes the
+  /// Nearby-backed repository here so the exact same UI runs over Bluetooth /
+  /// Wi-Fi Direct.
+  final TelephoneRepository? repository;
+
   const TelephoneSessionScreen({
     super.key,
     required this.sessionId,
     required this.playerId,
     required this.displayName,
+    this.repository,
   });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => TelephoneBloc(repository: sl<TelephoneRepository>())
-        ..add(TelephoneSubscribed(sessionId)),
+      create: (_) =>
+          TelephoneBloc(repository: repository ?? sl<TelephoneRepository>())
+            ..add(TelephoneSubscribed(sessionId)),
       child: _SessionView(
         sessionId: sessionId,
         playerId: playerId,

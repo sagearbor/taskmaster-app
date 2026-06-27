@@ -40,7 +40,12 @@ dependencies:
   # geolocator ^12.0.0). Only use is Geolocator.distanceBetween (stable API).
   geolocator: ^12.0.0
   permission_handler: ^11.0.1
-  
+
+  # Offline / no-internet local multiplayer for Drawing Telephone.
+  # Google Nearby Connections (Bluetooth + Wi-Fi Direct). Android only — the
+  # plugin is a no-op shim on web/iOS, so offline play is gated to Android.
+  nearby_connections: ^4.3.0
+
   # Monetization (commented out for initial testing)
   # google_mobile_ads: ^4.0.0
   # in_app_purchase: ^3.1.11
