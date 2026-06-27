@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/theme/theme_controller.dart';
@@ -14,15 +15,28 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  static const String _appVersion = 'TaskCaster 1.0.1';
   static const String _notificationsPrefKey = 'notifications_enabled';
 
+  // Reads the real installed version at runtime (was hardcoded "1.0.1", which
+  // went stale and confused testers). Falls back to the bare name until loaded.
+  String _appVersion = 'TaskCaster';
   bool _notificationsEnabled = true;
 
   @override
   void initState() {
     super.initState();
     _loadNotificationsPref();
+    _loadVersion();
+  }
+
+  Future<void> _loadVersion() async {
+    try {
+      final info = await PackageInfo.fromPlatform();
+      if (!mounted) return;
+      setState(() => _appVersion = 'TaskCaster ${info.version}');
+    } catch (_) {
+      // Keep the fallback if package info is unavailable.
+    }
   }
 
   Future<void> _loadNotificationsPref() async {
