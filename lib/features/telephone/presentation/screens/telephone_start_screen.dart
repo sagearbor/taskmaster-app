@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/di/service_locator.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
 import '../../data/datasources/telephone_session_store.dart';
+import '../../data/practice/local_practice_telephone_repository.dart';
 import '../../domain/repositories/telephone_repository.dart';
 import 'telephone_session_screen.dart';
 
@@ -149,6 +150,37 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
     _open(saved.sessionId, saved.playerId, saved.displayName);
   }
 
+  /// Start a fully-offline solo game: just you plus two auto-playing bots, run
+  /// entirely in memory (no Firebase, no invite code, no waiting). Play every
+  /// step on the real game screens; the bots fill their turns the moment you
+  /// submit, all the way to the reveal.
+  Future<void> _practice() async {
+    setState(() => _busy = true);
+    try {
+      final playerId = _uuid.v4();
+      final repo = LocalPracticeTelephoneRepository();
+      final sessionId = await repo.startPractice(
+        humanUid: playerId,
+        humanName: _name,
+      );
+      if (!mounted) return;
+      // push (not pushReplacement) so "back" returns here; nothing is saved to
+      // the resume store, so practice never offers a stale "Rejoin".
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => TelephoneSessionScreen(
+            sessionId: sessionId,
+            playerId: playerId,
+            displayName: _name,
+            repository: repo,
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   void _open(String sessionId, String playerId, String displayName) {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
@@ -245,6 +277,19 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
                 onPressed: _busy ? null : _create,
                 icon: const Icon(Icons.add),
                 label: const Text('Create a new game'),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: _busy ? null : _practice,
+                icon: const Icon(Icons.smart_toy_outlined),
+                label: const Text('Practice (solo) — play vs bots'),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Try the whole game alone, offline. No friends or invite code '
+                'needed — two bots play along to the reveal.',
+                style: theme.textTheme.bodySmall,
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 28),
               Row(children: [
