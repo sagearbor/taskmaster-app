@@ -98,7 +98,7 @@ class SubmissionProgressWidget extends StatelessWidget {
                       child: Text(
                         'All players have submitted! Ready for judging.',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.green[800],
+                              color: Colors.green[300],
                               fontWeight: FontWeight.bold,
                             ),
                       ),
@@ -215,7 +215,7 @@ class SubmissionProgressWidget extends StatelessWidget {
                   _formatSubmissionTime(status.submittedAt!),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         fontSize: 10,
-                        color: AppTheme.inkSoft,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
             ],

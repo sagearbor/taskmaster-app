@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/models/game.dart';
 import '../../../../core/models/task.dart';
 import '../../../../core/models/player_task_status.dart';
@@ -153,8 +154,8 @@ class GameStatusBanner extends StatelessWidget {
           subtitle: 'Don\'t forget to submit!',
           icon: Icons.hourglass_empty,
           backgroundColor: Colors.amber,
-          iconColor: Colors.white,
-          textColor: Colors.white,
+          iconColor: AppTheme.ink,
+          textColor: AppTheme.ink,
         );
       }
 
@@ -254,8 +255,8 @@ class GameStatusBanner extends StatelessWidget {
             subtitle: 'Final score: ${sortedScores.first.value} points',
             icon: Icons.emoji_events,
             backgroundColor: Colors.amber,
-            iconColor: Colors.white,
-            textColor: Colors.white,
+            iconColor: AppTheme.ink,
+            textColor: AppTheme.ink,
           );
         } else {
           final yourScore = playerScores[currentUserId] ?? 0;

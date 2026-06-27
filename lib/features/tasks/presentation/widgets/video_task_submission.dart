@@ -173,7 +173,7 @@ class _VideoTaskSubmissionState extends State<VideoTaskSubmission> {
                           'How to submit',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue[700],
+                            color: Colors.blue[300],
                           ),
                         ),
                       ],
@@ -271,7 +271,7 @@ class _VideoTaskSubmissionState extends State<VideoTaskSubmission> {
                         child: Text(
                           'This submission has been judged and cannot be changed',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),

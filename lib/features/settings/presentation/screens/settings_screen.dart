@@ -100,21 +100,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.privacy_tip_outlined,
-                      color: AppTheme.inkSoft),
+                  leading: Icon(Icons.privacy_tip_outlined,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   title: const Text('Privacy Policy'),
-                  trailing: const Text('Coming soon',
-                      style: TextStyle(color: AppTheme.inkSoft)),
+                  trailing: Text('Coming soon',
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant)),
                   enabled: false,
                   onTap: null,
                 ),
                 const Divider(height: 1),
                 ListTile(
-                  leading: const Icon(Icons.description_outlined,
-                      color: AppTheme.inkSoft),
+                  leading: Icon(Icons.description_outlined,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   title: const Text('Terms of Service'),
-                  trailing: const Text('Coming soon',
-                      style: TextStyle(color: AppTheme.inkSoft)),
+                  trailing: Text('Coming soon',
+                      style: TextStyle(
+                          color:
+                              Theme.of(context).colorScheme.onSurfaceVariant)),
                   enabled: false,
                   onTap: null,
                 ),
@@ -143,7 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       child: Text(
         title.toUpperCase(),
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: AppTheme.inkSoft,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
               letterSpacing: 1.1,
             ),
       ),
@@ -154,7 +158,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ThemeMode current, IconData icon) {
     final selected = value == current;
     return ListTile(
-      leading: Icon(icon, color: selected ? AppTheme.violet : AppTheme.inkSoft),
+      leading: Icon(icon,
+          color: selected
+              ? AppTheme.violet
+              : Theme.of(context).colorScheme.onSurfaceVariant),
       title: Text(label),
       trailing: selected
           ? const Icon(Icons.check_circle, color: AppTheme.violet)

@@ -70,7 +70,7 @@ class GameLobbyView extends StatelessWidget {
                                 Text(
                                   '${game.players.length} player${game.players.length == 1 ? '' : 's'} joined',
                                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    color: Colors.grey[600],
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
@@ -156,7 +156,7 @@ class GameLobbyView extends StatelessWidget {
                                   Text(
                                     'No players yet',
                                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                      color: Colors.grey[600],
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                   const SizedBox(height: 8),
@@ -204,14 +204,14 @@ class GameLobbyView extends StatelessWidget {
                                       ],
                                       if (isPlayerJudge) ...[
                                         if (isPlayerCreator) const SizedBox(width: 8),
-                                        Icon(Icons.gavel, size: 16, color: Colors.purple[700]),
+                                        Icon(Icons.gavel, size: 16, color: Colors.purple[200]),
                                         const SizedBox(width: 4),
-                                        Text('Judge', style: TextStyle(color: Colors.purple[700])),
+                                        Text('Judge', style: TextStyle(color: Colors.purple[200])),
                                       ],
                                       if (isCurrentUser && !isPlayerCreator && !isPlayerJudge) ...[
-                                        Icon(Icons.person, size: 16, color: Colors.blue[700]),
+                                        Icon(Icons.person, size: 16, color: Colors.blue[300]),
                                         const SizedBox(width: 4),
-                                        Text('You', style: TextStyle(color: Colors.blue[700])),
+                                        Text('You', style: TextStyle(color: Colors.blue[300])),
                                       ],
                                     ],
                                   ),
@@ -294,7 +294,7 @@ class GameLobbyView extends StatelessWidget {
                                           task.description,
                                           style: TextStyle(
                                             fontSize: 12,
-                                            color: Colors.grey[600],
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
@@ -380,8 +380,8 @@ class GameLobbyView extends StatelessWidget {
                           : 'Ready to start! (${game.tasks.length} task${game.tasks.length == 1 ? '' : 's'}, ${game.players.length} player${game.players.length == 1 ? '' : 's'})',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: game.players.length >= 2 && game.tasks.isNotEmpty
-                        ? Colors.green[700]
-                        : Colors.grey[600],
+                        ? Colors.green[300]
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -394,13 +394,13 @@ class GameLobbyView extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.schedule, color: Colors.blue[700]),
+                      Icon(Icons.schedule, color: Colors.blue[200]),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           'Waiting for the game creator to start the game...',
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.blue[700],
+                            color: Colors.blue[200],
                           ),
                         ),
                       ),

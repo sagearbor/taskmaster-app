@@ -88,26 +88,26 @@ class GameCard extends StatelessWidget {
                   Icon(
                     Icons.people,
                     size: 16,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${game.players.length} players',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Icon(
                     Icons.assignment,
                     size: 16,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${game.tasks.length} tasks',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -118,13 +118,13 @@ class GameCard extends StatelessWidget {
                   Icon(
                     Icons.schedule,
                     size: 16,
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     'Created ${DateFormat('MMM d, y').format(game.createdAt)}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const Spacer(),
@@ -158,7 +158,7 @@ class GameCard extends StatelessWidget {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppTheme.violetSoft.withOpacity(0.6),
+                        color: AppTheme.violetSoft,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
@@ -177,7 +177,7 @@ class GameCard extends StatelessWidget {
                     child: Text(
                       '+ ${game.players.length - 4} more',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontStyle: FontStyle.italic,
                       ),
                     ),

@@ -48,16 +48,16 @@ class CommunityTaskCard extends StatelessWidget {
                         task.taskType == TaskType.video ? Icons.videocam : Icons.quiz,
                         size: 16,
                         color: task.taskType == TaskType.video 
-                            ? Colors.red[700]
-                            : Colors.blue[700],
+                            ? Colors.red[300]
+                            : Colors.blue[300],
                       ),
                       const SizedBox(width: 4),
                       Text(
                         task.taskType == TaskType.video ? 'Video' : 'Puzzle',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: task.taskType == TaskType.video 
-                              ? Colors.red[700]
-                              : Colors.blue[700],
+                              ? Colors.red[300]
+                              : Colors.blue[300],
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -70,13 +70,13 @@ class CommunityTaskCard extends StatelessWidget {
                     Icon(
                       Icons.thumb_up,
                       size: 16,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       '${task.upvotes}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -108,26 +108,26 @@ class CommunityTaskCard extends StatelessWidget {
                 Icon(
                   Icons.person,
                   size: 16,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'by Player ${task.submittedBy.substring(0, 8)}',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(width: 16),
                 Icon(
                   Icons.schedule,
                   size: 16,
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   DateFormat('MMM d, y').format(task.createdAt),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

@@ -145,7 +145,7 @@ class _SubmitTaskScreenState extends State<SubmitTaskScreen> {
                 'Share Your Creativity!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E7D32),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -266,7 +266,7 @@ class _SubmitTaskScreenState extends State<SubmitTaskScreen> {
                           'Submission Guidelines',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue[700],
+                            color: Colors.blue[300],
                           ),
                         ),
                       ],

@@ -373,7 +373,7 @@ class _TaskBrowserScreenState extends State<TaskBrowserScreen>
                         Text(
                           'No tasks found',
                           style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                         ),
                       ],

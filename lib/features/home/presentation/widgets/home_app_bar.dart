@@ -75,7 +75,10 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
-                                  ?.copyWith(color: AppTheme.inkSoft),
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ],

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/models/task.dart';
 import '../../../../core/models/submission.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/link_utils.dart';
 
 class SubmissionCard extends StatefulWidget {
@@ -207,7 +208,7 @@ class _SubmissionCardState extends State<SubmissionCard> {
                       Text(
                         'Submitted ${DateFormat('MMM d, y \'at\' h:mm a').format(widget.submission.submittedAt)}',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -326,7 +327,9 @@ class _SubmissionCardState extends State<SubmissionCard> {
                       ),
                       child: Text(
                         widget.submission.textAnswer!,
-                        style: Theme.of(context).textTheme.bodyLarge,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppTheme.ink,
+                        ),
                       ),
                     ),
                     if (widget.task.isPuzzleTask && widget.submission.isJudged) ...[

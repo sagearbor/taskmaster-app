@@ -216,7 +216,7 @@ class _PlayerScoreCard extends StatelessWidget {
       rankColor = Colors.amber[700]!;
       rankIcon = Icons.emoji_events;
     } else if (rank == 2) {
-      rankColor = Colors.grey[600]!;
+      rankColor = theme.colorScheme.onSurfaceVariant;
       rankIcon = Icons.military_tech;
     } else if (rank == 3) {
       rankColor = Colors.brown[400]!;
@@ -353,7 +353,7 @@ class _PlayerScoreCard extends StatelessWidget {
                 Text(
                   'points',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey[600],
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],

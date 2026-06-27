@@ -66,7 +66,7 @@ class TaskCard extends StatelessWidget {
               Text(
                 task.description,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,
@@ -80,13 +80,13 @@ class TaskCard extends StatelessWidget {
                     Icon(
                       Icons.timer,
                       size: 16,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 4),
                     Text(
                       _formatDuration(task.durationSeconds!),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],

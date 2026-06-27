@@ -216,12 +216,13 @@ class JudgingView extends StatelessWidget {
                           style: TextStyle(
                             color: submission.status.hasSubmitted
                                 ? Colors.green[700]
-                                : AppTheme.inkSoft,
+                                : Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         trailing: submission.status.hasSubmitted
                             ? const Icon(Icons.check_circle, color: Colors.green)
-                            : const Icon(Icons.schedule, color: AppTheme.inkSoft),
+                            : Icon(Icons.schedule,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                     );
                   }).toList(),
@@ -266,7 +267,7 @@ class JudgingView extends StatelessWidget {
               Text(
                 'You can judge now or wait for all players to submit',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.inkSoft,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                 textAlign: TextAlign.center,
               ),

@@ -56,10 +56,8 @@ class DiscoverGamesScreen extends StatelessWidget {
               'Add a few ready-made games to get the community started, '
               'or make one of your own games public.',
               textAlign: TextAlign.center,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
@@ -165,18 +163,24 @@ class _PublicGameCard extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(Icons.assignment, size: 16, color: Colors.grey[600]),
+                Icon(Icons.assignment,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 const SizedBox(width: 4),
                 Text('${game.tasks.length} task${game.tasks.length == 1 ? '' : 's'}',
                     style: Theme.of(context).textTheme.bodySmall),
                 const SizedBox(width: 12),
-                Icon(Icons.group, size: 16, color: Colors.grey[600]),
+                Icon(Icons.group,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant),
                 const SizedBox(width: 4),
                 Text('${game.players.length}',
                     style: Theme.of(context).textTheme.bodySmall),
                 if (game.cloneCount > 0) ...[
                   const SizedBox(width: 12),
-                  Icon(Icons.copy, size: 16, color: Colors.grey[600]),
+                  Icon(Icons.copy,
+                      size: 16,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                   const SizedBox(width: 4),
                   Text('played ${game.cloneCount}×',
                       style: Theme.of(context).textTheme.bodySmall),

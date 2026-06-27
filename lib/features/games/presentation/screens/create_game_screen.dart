@@ -193,7 +193,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                 'Let\'s Get Started!',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF2E7D32),
+                  color: Theme.of(context).colorScheme.primary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -201,7 +201,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
               Text(
                 'Create a game and invite your friends to join',
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -267,7 +267,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                         Text(
                           'No tasks selected yet',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                         ),
                         const SizedBox(height: 16),
@@ -398,13 +398,13 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.info_outline, color: Colors.blue[700]),
+                        Icon(Icons.info_outline, color: Colors.blue[300]),
                         const SizedBox(width: 8),
                         Text(
                           'How it works',
                           style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue[700],
+                            color: Colors.blue[300],
                           ),
                         ),
                       ],
@@ -417,7 +417,7 @@ class _CreateGameScreenState extends State<CreateGameScreen> {
                       '4. Players submit videos for each task\n'
                       '5. Judge scores submissions and declares winner!',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.blue[700],
+                        color: Colors.blue[300],
                       ),
                     ),
                   ],

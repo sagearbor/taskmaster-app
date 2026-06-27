@@ -129,7 +129,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
-                  ?.copyWith(color: AppTheme.inkSoft),
+                  ?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -208,14 +209,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                color: selected ? AppTheme.violet : Colors.black12,
+                color: selected
+                    ? AppTheme.violet
+                    : Theme.of(context).colorScheme.outlineVariant,
                 width: selected ? 2 : 1,
               ),
             ),
             alignment: Alignment.center,
             child: emoji == null
                 ? Icon(Icons.text_fields,
-                    color: selected ? AppTheme.violet : AppTheme.inkSoft)
+                    color: selected
+                        ? AppTheme.violet
+                        : Theme.of(context).colorScheme.onSurfaceVariant)
                 : Text(emoji, style: const TextStyle(fontSize: 24)),
           ),
         );

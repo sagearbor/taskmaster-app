@@ -43,7 +43,7 @@ class RegisterScreen extends StatelessWidget {
                 Text(
                   'Create an account to start playing',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.inkSoft,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                   textAlign: TextAlign.center,
                 ),

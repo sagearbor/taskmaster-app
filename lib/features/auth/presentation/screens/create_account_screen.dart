@@ -53,7 +53,7 @@ class CreateAccountScreen extends StatelessWidget {
                   'Create an account to keep your games, scores and avatar '
                   'across devices. Your current games stay with you.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.inkSoft,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                   textAlign: TextAlign.center,
                 ),

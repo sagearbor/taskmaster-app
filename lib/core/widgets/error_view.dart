@@ -8,6 +8,10 @@ class ErrorView extends StatelessWidget {
   final IconData icon;
   final Color? iconColor;
 
+  /// Marks a non-error, "muted" state (empty / not-found) so the icon falls
+  /// back to the theme's neutral colour instead of the error colour.
+  final bool _neutral;
+
   const ErrorView({
     super.key,
     required this.message,
@@ -15,7 +19,8 @@ class ErrorView extends StatelessWidget {
     this.onRetry,
     this.icon = Icons.error_outline,
     this.iconColor,
-  });
+    bool neutral = false,
+  }) : _neutral = neutral;
 
   /// Factory constructor for network errors
   factory ErrorView.network({
@@ -55,7 +60,7 @@ class ErrorView extends StatelessWidget {
       message: 'No $entity found',
       details: action != null ? 'Tap below to $action' : null,
       icon: Icons.inbox,
-      iconColor: Colors.grey,
+      neutral: true,
       onRetry: onAction,
     );
   }
@@ -69,7 +74,7 @@ class ErrorView extends StatelessWidget {
       message: '$entity not found',
       details: 'The requested $entity could not be found.',
       icon: Icons.search_off,
-      iconColor: Colors.grey,
+      neutral: true,
       onRetry: onRetry,
     );
   }
@@ -87,7 +92,10 @@ class ErrorView extends StatelessWidget {
             Icon(
               icon,
               size: 80,
-              color: iconColor ?? theme.colorScheme.error.withOpacity(0.6),
+              color: iconColor ??
+                  (_neutral
+                      ? theme.colorScheme.onSurfaceVariant
+                      : theme.colorScheme.error.withOpacity(0.6)),
             ),
             const SizedBox(height: 24),
             Text(

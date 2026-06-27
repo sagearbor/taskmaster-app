@@ -312,12 +312,12 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Icon(Icons.timer, size: 16, color: Colors.green[600]),
+                            Icon(Icons.timer, size: 16, color: Colors.green[400]),
                             const SizedBox(width: 4),
                             Text(
                               'Submitted on time',
                               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Colors.green[600],
+                                    color: Colors.green[400],
                                   ),
                             ),
                           ],
@@ -448,13 +448,16 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                             state.task.hasDeadlinePassed
                                 ? 'Deadline Passed'
                                 : 'Submit by:',
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: AppTheme.violetDeep,
+                                ),
                           ),
                           Text(
                             _formatDeadline(state.task.deadline!),
                             style:
                                 Theme.of(context).textTheme.bodyMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
+                                      color: AppTheme.violetDeep,
                                     ),
                           ),
                         ],
@@ -486,7 +489,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
           Text(
             'Paste a link to your video (YouTube, Google Photos, etc.)',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.inkSoft,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
           const SizedBox(height: 12),
@@ -564,6 +567,7 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                         'How to submit',
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
+                              color: AppTheme.violetDeep,
                             ),
                       ),
                     ],
@@ -574,7 +578,9 @@ class _TaskExecutionViewState extends State<TaskExecutionView> {
                     '2. Upload to YouTube, Google Photos, or another hosting service\n'
                     '3. Copy the shareable link\n'
                     '4. Paste the link above and submit',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.violetDeep,
+                        ),
                   ),
                 ],
               ),

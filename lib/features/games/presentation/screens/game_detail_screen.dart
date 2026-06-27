@@ -381,7 +381,7 @@ class GameDetailView extends StatelessWidget {
             Text(
               'Game: ${game.gameName}',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
           ],

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/di/service_locator.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../domain/repositories/game_repository.dart';
 import '../bloc/judging_bloc.dart';
 import '../bloc/judging_event.dart';
@@ -198,7 +197,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
                     Icon(
                       Icons.assignment,
                       size: 64,
-                      color: AppTheme.inkSoft,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -287,7 +286,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
             child: Text(
               'Submission ${index + 1} of $total',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppTheme.inkSoft,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
           ),
@@ -386,7 +385,7 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
                     Text(
                       submission.submissionUrl!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.inkSoft,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -515,14 +514,18 @@ class _SubmissionReviewViewState extends State<SubmissionReviewView> {
           iconSize: 48,
           icon: Icon(
             isSelected ? Icons.star : Icons.star_border,
-            color: isSelected ? Colors.amber : Colors.grey,
+            color: isSelected
+                ? Colors.amber
+                : Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
           '$score pt${score == 1 ? '' : 's'}',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? Colors.amber : Colors.grey,
+                color: isSelected
+                    ? Colors.amber
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
               ),
         ),
       ],

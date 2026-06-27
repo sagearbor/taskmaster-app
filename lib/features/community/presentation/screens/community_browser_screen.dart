@@ -210,7 +210,7 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
                         Text(
                           state.message,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -248,7 +248,7 @@ class _CommunityBrowserViewState extends State<CommunityBrowserView> {
                                 ? 'Try different search terms'
                                 : 'Be the first to submit a community task!',
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             textAlign: TextAlign.center,
                           ),

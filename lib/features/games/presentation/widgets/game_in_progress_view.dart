@@ -55,7 +55,7 @@ class GameInProgressView extends StatelessWidget {
                             Text(
                               '${game.tasks.length} task${game.tasks.length == 1 ? '' : 's'} available',
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -73,7 +73,7 @@ class GameInProgressView extends StatelessWidget {
                   Text(
                     '${game.tasks.where((t) => t.allSubmissionsJudged).length} of ${game.tasks.length} tasks completed',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -112,7 +112,7 @@ class GameInProgressView extends StatelessWidget {
                               Text(
                                 'No tasks available',
                                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                               const SizedBox(height: 8),
@@ -167,20 +167,20 @@ class GameInProgressView extends StatelessWidget {
                                         Icon(
                                           task.isVideoTask ? Icons.videocam : Icons.quiz,
                                           size: 16,
-                                          color: Colors.grey[600],
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           task.isVideoTask ? 'Video Task' : 'Puzzle Task',
                                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                            color: Colors.grey[600],
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                         const SizedBox(width: 16),
                                         Text(
                                           '${task.getJudgedSubmissions()}/${task.getTotalSubmissions()} judged',
                                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                            color: Colors.grey[600],
+                                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],

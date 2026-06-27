@@ -168,7 +168,7 @@ class VideoViewingView extends StatelessWidget {
             Icon(
               Icons.videocam_off,
               size: 64,
-              color: AppTheme.inkSoft.withOpacity(0.5),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
             Text(
@@ -338,7 +338,9 @@ class VideoViewingView extends StatelessWidget {
                               : 'Submitted',
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: AppTheme.inkSoft,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
                                   ),
                         ),
                       ],

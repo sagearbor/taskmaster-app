@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/models/game.dart';
 import '../../../../core/models/player.dart';
+import '../../../../core/theme/app_theme.dart';
 
 class ScoreboardScreen extends StatelessWidget {
   final Game game;
@@ -134,6 +135,7 @@ class ScoreboardScreen extends StatelessWidget {
                     'Game Statistics',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
+                      color: AppTheme.ink,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -260,7 +262,7 @@ class _PodiumPosition extends StatelessWidget {
         Text(
           '${player.totalScore} pts',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 4),
@@ -363,7 +365,7 @@ class _PlayerScoreCard extends StatelessWidget {
                   Text(
                     'Rank #$rank',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
