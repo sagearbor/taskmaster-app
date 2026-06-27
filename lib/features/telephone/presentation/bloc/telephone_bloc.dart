@@ -18,6 +18,7 @@ class TelephoneBloc extends Bloc<TelephoneEvent, TelephoneState> {
       : super(const TelephoneState.initial()) {
     on<TelephoneSubscribed>(_onSubscribed);
     on<TelephoneStarted>(_onStarted);
+    on<TelephonePlayerRemoved>(_onPlayerRemoved);
     on<TelephoneEntrySubmitted>(_onSubmitted);
   }
 
@@ -49,6 +50,20 @@ class TelephoneBloc extends Bloc<TelephoneEvent, TelephoneState> {
   ) async {
     try {
       await repository.startGame(event.sessionId);
+    } catch (e) {
+      emit(state.copyWith(error: _friendly(e)));
+    }
+  }
+
+  Future<void> _onPlayerRemoved(
+    TelephonePlayerRemoved event,
+    Emitter<TelephoneState> emit,
+  ) async {
+    try {
+      await repository.removePlayer(
+        sessionId: event.sessionId,
+        uid: event.uid,
+      );
     } catch (e) {
       emit(state.copyWith(error: _friendly(e)));
     }

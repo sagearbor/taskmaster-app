@@ -178,6 +178,41 @@ void main() {
     });
   });
 
+  group('TelephoneSession — host kick (withPlayerRemoved)', () {
+    TelephoneSession threePlayerLobby() => TelephoneSession.create(
+          id: 's1',
+          gameName: 'Test',
+          inviteCode: 'ABC123',
+          creatorUid: 'p0',
+          creatorName: 'P0',
+          createdAt: DateTime(2026, 1, 1),
+        ).withPlayerJoined('p1', 'P1').withPlayerJoined('p2', 'P2');
+
+    test('removes a non-host player from the lobby roster', () {
+      final s = threePlayerLobby();
+      final after = s.withPlayerRemoved('p1');
+      expect(after.playerCount, 2);
+      expect(after.hasPlayer('p1'), isFalse);
+      expect(after.hasPlayer('p0'), isTrue);
+      expect(after.hasPlayer('p2'), isTrue);
+    });
+
+    test('cannot remove the creator (host)', () {
+      final s = threePlayerLobby();
+      expect(s.withPlayerRemoved('p0').playerCount, 3);
+    });
+
+    test('removing an absent uid is a no-op', () {
+      final s = threePlayerLobby();
+      expect(s.withPlayerRemoved('ghost'), equals(s));
+    });
+
+    test('cannot remove once the game has started', () {
+      final s = threePlayerLobby().started();
+      expect(s.withPlayerRemoved('p1'), equals(s));
+    });
+  });
+
   group('TelephoneSession — start guards', () {
     test('cannot start with fewer than 2 players', () {
       final s = TelephoneSession.create(

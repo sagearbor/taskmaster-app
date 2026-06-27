@@ -3,6 +3,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../auth/domain/repositories/auth_repository.dart';
+import '../../data/datasources/telephone_session_store.dart';
 import '../../domain/repositories/telephone_repository.dart';
 import 'telephone_session_screen.dart';
 
@@ -23,11 +24,20 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
   final _uuid = const Uuid();
   bool _busy = false;
 
+  /// A previously-saved active session, if any. Drives the "Rejoin your game"
+  /// button so leaving the session screen is never fatal.
+  SavedTelephoneSession? _saved;
+
   TelephoneRepository get _repo => sl<TelephoneRepository>();
+  TelephoneSessionStore get _store => sl<TelephoneSessionStore>();
 
   @override
   void initState() {
     super.initState();
+    // Offer to resume a saved session, if one exists.
+    _store.load().then((saved) {
+      if (mounted) setState(() => _saved = saved);
+    });
     // Pre-fill with the signed-in display name when we have one.
     final auth = sl<AuthRepository>();
     auth.getCurrentUser().then((user) {
@@ -68,11 +78,20 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
     try {
       await _ensureSignedIn();
       final playerId = _uuid.v4();
-      final sessionId = await _repo.createSession(
+      final result = await _repo.createSession(
         creatorUid: playerId,
         creatorName: _name,
       );
-      _open(sessionId, playerId);
+      // Remember this device as the host so re-entering is a resume, not a
+      // duplicate join — the core fix for "host lost the Start button".
+      await _store.save(SavedTelephoneSession(
+        sessionId: result.sessionId,
+        playerId: playerId,
+        isHost: true,
+        sessionCode: result.inviteCode,
+        displayName: _name,
+      ));
+      _open(result.sessionId, playerId, _name);
     } catch (e) {
       _toast('Could not create game. Please try again.');
     } finally {
@@ -92,6 +111,15 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
     }
     setState(() => _busy = true);
     try {
+      // If we already have an identity for this exact code (we created it, or
+      // already joined it), resume as that same player instead of creating a
+      // duplicate. This is what stops "join your own game" adding a second you.
+      final saved = _saved;
+      if (saved != null && saved.sessionCode == code) {
+        _open(saved.sessionId, saved.playerId, saved.displayName);
+        return;
+      }
+
       await _ensureSignedIn();
       final playerId = _uuid.v4();
       final sessionId = await _repo.joinSession(
@@ -99,7 +127,14 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
         uid: playerId,
         displayName: _name,
       );
-      _open(sessionId, playerId);
+      await _store.save(SavedTelephoneSession(
+        sessionId: sessionId,
+        playerId: playerId,
+        isHost: false,
+        sessionCode: code,
+        displayName: _name,
+      ));
+      _open(sessionId, playerId, _name);
     } catch (e) {
       _toast(_friendly(e));
     } finally {
@@ -107,14 +142,21 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
     }
   }
 
-  void _open(String sessionId, String playerId) {
+  /// Resume the saved session as the existing player (host stays host).
+  void _rejoin() {
+    final saved = _saved;
+    if (saved == null) return;
+    _open(saved.sessionId, saved.playerId, saved.displayName);
+  }
+
+  void _open(String sessionId, String playerId, String displayName) {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => TelephoneSessionScreen(
           sessionId: sessionId,
           playerId: playerId,
-          displayName: _name,
+          displayName: displayName,
         ),
       ),
     );
@@ -160,6 +202,36 @@ class _TelephoneStartScreenState extends State<TelephoneStartScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 28),
+              if (_saved != null) ...[
+                Card(
+                  color: theme.colorScheme.primaryContainer,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          _saved!.isHost
+                              ? "You're hosting game ${_saved!.sessionCode}"
+                              : "You're in game ${_saved!.sessionCode}",
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            color: theme.colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        FilledButton.icon(
+                          onPressed: _busy ? null : _rejoin,
+                          icon: const Icon(Icons.login),
+                          label: const Text('Rejoin your game'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 28),
+              ],
               TextField(
                 controller: _nameController,
                 textCapitalization: TextCapitalization.words,

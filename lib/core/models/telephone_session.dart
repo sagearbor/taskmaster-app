@@ -292,6 +292,18 @@ class TelephoneSession extends Equatable {
     ]);
   }
 
+  /// Remove a player from the lobby roster (a host "kick"). No-op if the game
+  /// has left the lobby, the uid is the creator (the host can't be removed),
+  /// or the uid isn't present. Pure — returns a new session.
+  TelephoneSession withPlayerRemoved(String uid) {
+    if (!isInLobby) return this;
+    if (uid == creatorUid) return this;
+    if (!hasPlayer(uid)) return this;
+    return copyWith(
+      players: players.where((p) => p.uid != uid).toList(),
+    );
+  }
+
   /// Begin play: lock the roster, create one empty chain per player, and move
   /// to step 0 (prompt). Throws if called outside the lobby or with too few
   /// players. Idempotent-safe: re-starting an already-playing game is a no-op.

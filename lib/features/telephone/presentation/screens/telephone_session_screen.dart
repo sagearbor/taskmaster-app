@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/service_locator.dart';
 import '../../../../core/models/telephone_session.dart';
+import '../../data/datasources/telephone_session_store.dart';
 import '../../domain/repositories/telephone_repository.dart';
 import '../bloc/telephone_bloc.dart';
 import '../widgets/drawing_canvas.dart';
@@ -44,12 +45,19 @@ class _SessionView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<TelephoneBloc, TelephoneState>(
-      listenWhen: (prev, curr) => curr.error != null && prev.error != curr.error,
+      listenWhen: (prev, curr) =>
+          (curr.error != null && prev.error != curr.error) ||
+          (curr.status == TelephoneStatus.error && curr.session == null),
       listener: (context, state) {
         if (state.error != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.error!)),
           );
+        }
+        // Drop a stale saved pointer once the session is gone, so the start
+        // screen won't keep offering "Rejoin" for a game that no longer exists.
+        if (state.status == TelephoneStatus.error && state.session == null) {
+          sl<TelephoneSessionStore>().clearIfSession(sessionId);
         }
       },
       builder: (context, state) {
@@ -106,6 +114,39 @@ class _LobbyView extends StatelessWidget {
 
   const _LobbyView({required this.session, required this.playerId});
 
+  Future<void> _confirmRemove(
+    BuildContext context,
+    TelephoneSession session,
+    TelephonePlayer player,
+  ) async {
+    final bloc = context.read<TelephoneBloc>();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Remove player?'),
+        content: Text(
+            'Remove ${player.displayName} from the game? They can rejoin with '
+            'the invite code.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      bloc.add(TelephonePlayerRemoved(
+        sessionId: session.id,
+        uid: player.uid,
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -148,17 +189,30 @@ class _LobbyView extends StatelessWidget {
         Text('Players (${session.playerCount}/8)',
             style: theme.textTheme.titleMedium),
         const SizedBox(height: 8),
-        ...session.players.map((p) => ListTile(
-              dense: true,
-              leading: CircleAvatar(
-                child: Text(p.displayName.isNotEmpty
-                    ? p.displayName[0].toUpperCase()
-                    : '?'),
-              ),
-              title: Text(p.displayName +
-                  (p.uid == playerId ? ' (you)' : '') +
-                  (p.uid == session.creatorUid ? '  •  host' : '')),
-            )),
+        ...session.players.map((p) {
+          final isHostRow = p.uid == session.creatorUid;
+          // The host gets a kick control on every OTHER player's row — handy
+          // for clearing an accidental duplicate or a no-show.
+          final canKick = isCreator && !isHostRow;
+          return ListTile(
+            dense: true,
+            leading: CircleAvatar(
+              child: Text(p.displayName.isNotEmpty
+                  ? p.displayName[0].toUpperCase()
+                  : '?'),
+            ),
+            title: Text(p.displayName +
+                (p.uid == playerId ? ' (you)' : '') +
+                (isHostRow ? '  •  host' : '')),
+            trailing: canKick
+                ? IconButton(
+                    icon: const Icon(Icons.person_remove_outlined),
+                    tooltip: 'Remove ${p.displayName}',
+                    onPressed: () => _confirmRemove(context, session, p),
+                  )
+                : null,
+          );
+        }),
         const SizedBox(height: 24),
         if (isCreator)
           FilledButton.icon(

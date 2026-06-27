@@ -23,6 +23,7 @@ import '../../features/telephone/domain/repositories/telephone_repository.dart';
 import '../../features/telephone/data/datasources/telephone_remote_data_source.dart';
 import '../../features/telephone/data/datasources/mock_telephone_data_source.dart';
 import '../../features/telephone/data/datasources/firestore_telephone_data_source.dart';
+import '../../features/telephone/data/datasources/telephone_session_store.dart';
 
 import '../services/ad_service_simple.dart';
 import '../services/purchase_service_simple.dart';
@@ -76,6 +77,12 @@ class ServiceLocator {
     );
     sl.registerLazySingleton<TelephoneRepository>(
       () => TelephoneRepositoryImpl(sl()),
+    );
+
+    // Local persistence of the player's active Drawing Telephone identity, so a
+    // user who navigates away can rejoin as the same player (host stays host).
+    sl.registerLazySingleton<TelephoneSessionStore>(
+      () => TelephoneSessionStore(),
     );
 
     // AR capability gating. Single real implementation on all builds — it
