@@ -13,6 +13,7 @@ import '../../../games/presentation/screens/create_game_screen.dart';
 import '../../../games/presentation/screens/join_game_screen.dart';
 import '../../../games/presentation/screens/game_detail_screen.dart';
 import '../../../games/presentation/screens/discover_games_screen.dart';
+import '../../../balloon_blitz/presentation/screens/balloon_blitz_start_screen.dart';
 import '../../../telephone/presentation/screens/telephone_start_screen.dart';
 import '../../../trivia/presentation/screens/trivia_start_screen.dart';
 import '../widgets/game_card.dart';
@@ -65,6 +66,8 @@ class HomeView extends StatelessWidget {
             _buildDrawingTelephoneBanner(context),
             // Party game: Trivia Buzzer (offline, host-authoritative transport)
             _buildTriviaBuzzerBanner(context),
+            // Party game: Balloon Blitz (offline AR race, host-authoritative scores)
+            _buildBalloonBlitzBanner(context),
             // Games List
             Expanded(
               child: BlocBuilder<GamesBloc, GamesState>(
@@ -266,6 +269,73 @@ class HomeView extends StatelessWidget {
                       SizedBox(height: 2),
                       Text(
                         'Buzz in fast — fastest correct answer wins. Plays offline.',
+                        style: TextStyle(fontSize: 13, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(Icons.arrow_forward_ios,
+                    color: Colors.white, size: 18),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBalloonBlitzBanner(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+      child: Card(
+        elevation: 3,
+        child: InkWell(
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const BalloonBlitzStartScreen(),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: const LinearGradient(
+                colors: [Color(0xFFFB5779), Color(0xFFF59E0B)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.celebration,
+                      size: 26, color: Colors.white),
+                ),
+                const SizedBox(width: 14),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '🎈 Balloon Blitz (vs family, offline)',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 2),
+                      Text(
+                        'Race to pop the most balloons in AR. Scores sync live — '
+                        'no internet.',
                         style: TextStyle(fontSize: 13, color: Colors.white),
                       ),
                     ],
