@@ -22,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     '🎉', '🏆', '🎬', '🦊', '🚀', '🎨',
     '🍕', '👑', '😎', '🔥', '🎭', '🎯',
     '🦄', '🐙', '🌮', '🎸', '⚡', '🍀',
+    '🍔', '🐕‍⬛', // hamburger + black dog (a special request 🙂)
   ];
 
   late final TextEditingController _nameController;
