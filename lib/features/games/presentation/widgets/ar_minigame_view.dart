@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../../../core/di/service_locator.dart';
@@ -34,6 +36,10 @@ class _ArMinigameViewState extends State<ArMinigameView> {
   late final ArEngine _engine;
   late final ArMinigameController _controller;
   bool _submitted = false;
+  // If we're still scanning (nothing placed) after this long, it's probably too
+  // dark or there's no good surface — escalate the on-screen hint.
+  Timer? _scanTimer;
+  bool _scanTimedOut = false;
 
   @override
   void initState() {
@@ -42,10 +48,16 @@ class _ArMinigameViewState extends State<ArMinigameView> {
     _controller = ArMinigameController(engine: _engine, config: widget.config);
     // Kick off the session; spawning waits on plane detection internally.
     _controller.start();
+    _scanTimer = Timer(const Duration(seconds: 8), () {
+      if (mounted && !_controller.objectsSpawned) {
+        setState(() => _scanTimedOut = true);
+      }
+    });
   }
 
   @override
   void dispose() {
+    _scanTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -86,6 +98,7 @@ class _ArMinigameViewState extends State<ArMinigameView> {
               config: widget.config,
               controller: _controller,
               onSkip: widget.onSkip,
+              scanTimedOut: _scanTimedOut,
             );
           },
         ),
@@ -98,11 +111,13 @@ class _Hud extends StatelessWidget {
   final ArGameConfig config;
   final ArMinigameController controller;
   final VoidCallback onSkip;
+  final bool scanTimedOut;
 
   const _Hud({
     required this.config,
     required this.controller,
     required this.onSkip,
+    this.scanTimedOut = false,
   });
 
   @override
@@ -134,10 +149,38 @@ class _Hud extends StatelessWidget {
           ),
 
           if (scanning)
-            const Center(
-              child: _Pill(
-                icon: Icons.center_focus_strong,
-                label: 'Move your phone to scan the area…',
+            Center(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.all(18),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      scanTimedOut
+                          ? Icons.lightbulb_outline
+                          : Icons.center_focus_strong,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      scanTimedOut
+                          ? "Still can't find a surface — it may be too dark.\n"
+                              'AR needs light: move somewhere brighter and point '
+                              'at a textured floor or table.'
+                          : 'Point at a well-lit floor or table and move your '
+                              'phone slowly to scan.\nAR needs light to find a '
+                              'surface.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, height: 1.3),
+                    ),
+                  ],
+                ),
               ),
             ),
 
