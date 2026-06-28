@@ -50,6 +50,10 @@ class ArMinigameController extends ChangeNotifier {
   int get objectsRemaining =>
       config.respawnOnHit ? _activeNodes.length : config.objectCount - hits;
 
+  /// Whether at least one model actually placed. Lets the UI surface a
+  /// model-load failure instead of silently running a timer over an empty scene.
+  bool get hasLiveObjects => _activeNodes.isNotEmpty;
+
   // ---- Internals ----------------------------------------------------------
   final List<ArNode> _activeNodes = [];
   final Map<String, ArVector3> _basePos = {};

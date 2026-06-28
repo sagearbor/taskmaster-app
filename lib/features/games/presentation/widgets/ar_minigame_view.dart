@@ -80,7 +80,7 @@ class _ArMinigameViewState extends State<ArMinigameView> {
         AnimatedBuilder(
           animation: _controller,
           builder: (context, _) {
-            if (_controller.error != null && !_controller.objectsSpawned) {
+            if (_controller.error != null && !_controller.hasLiveObjects) {
               return _ErrorOverlay(
                 message: _controller.error!,
                 onSkip: widget.onSkip,
