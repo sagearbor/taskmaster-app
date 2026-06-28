@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:ar_flutter_plugin_2/datatypes/config_planedetection.dart';
 import 'package:ar_flutter_plugin_2/datatypes/node_types.dart';
@@ -8,7 +9,9 @@ import 'package:ar_flutter_plugin_2/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin_2/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin_2/models/ar_node.dart';
 import 'package:ar_flutter_plugin_2/widgets/ar_view.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:vector_math/vector_math_64.dart' as vm;
 
 import 'ar_engine.dart';
@@ -37,6 +40,12 @@ class ArFlutterEngine implements ArEngine {
   /// Spawned plugin nodes, keyed by node name, so [move]/[remove] can find the
   /// concrete [ARNode] behind an [ArNode] handle.
   final Map<String, ARNode> _nodes = {};
+
+  /// Asset path -> filename copied into the app documents folder. The plugin's
+  /// `localGLTF2` loader fails to add bundled models on-device (addNode returns
+  /// false); writing a `.glb` to the app's own documents dir and loading it via
+  /// `fileSystemAppFolderGLB` is the robust, fully-offline path.
+  final Map<String, String> _localModels = {};
 
   int _spawnCounter = 0;
 
@@ -104,6 +113,24 @@ class ArFlutterEngine implements ArEngine {
   @override
   Stream<ArTap> get taps => _tapController.stream;
 
+  /// Copies a bundled `.glb` asset into the app documents folder once and
+  /// returns its bare filename for [NodeType.fileSystemAppFolderGLB].
+  Future<String> _ensureLocalModel(String assetPath) async {
+    final cached = _localModels[assetPath];
+    if (cached != null) return cached;
+    final fileName = assetPath.split('/').last;
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/$fileName');
+    if (!await file.exists()) {
+      final data = await rootBundle.load(assetPath);
+      await file.writeAsBytes(
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+      );
+    }
+    _localModels[assetPath] = fileName;
+    return fileName;
+  }
+
   @override
   Future<ArNode> spawn({
     required String modelRef,
@@ -115,10 +142,11 @@ class ArFlutterEngine implements ArEngine {
       throw StateError('AR view not created yet — cannot spawn.');
     }
 
+    final fileName = await _ensureLocalModel(modelRef);
     final name = 'node_${_spawnCounter++}';
     final node = ARNode(
-      type: NodeType.localGLTF2,
-      uri: modelRef,
+      type: NodeType.fileSystemAppFolderGLB,
+      uri: fileName,
       name: name,
       position: vm.Vector3(position.x, position.y, position.z),
       scale: vm.Vector3(1.0, 1.0, 1.0),

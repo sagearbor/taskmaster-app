@@ -66,7 +66,7 @@ class ArGameConfig {
   static const ArGameConfig balloonPop = ArGameConfig(
     id: ArGameIds.balloonPop,
     title: 'Balloon Pop',
-    modelRef: 'assets/ar/balloon.gltf',
+    modelRef: 'assets/ar/balloon.glb',
     objectCount: 6,
     duration: Duration(seconds: 45),
     respawnOnHit: true,
@@ -77,7 +77,7 @@ class ArGameConfig {
   static const ArGameConfig treasureHunt = ArGameConfig(
     id: ArGameIds.treasureHunt,
     title: 'Treasure Hunt',
-    modelRef: 'assets/ar/gem.gltf',
+    modelRef: 'assets/ar/gem.glb',
     objectCount: 5,
     duration: Duration(seconds: 60),
     respawnOnHit: false,
