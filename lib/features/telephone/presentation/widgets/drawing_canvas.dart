@@ -121,6 +121,7 @@ class DrawingCanvas extends StatelessWidget {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onPanStart: (d) =>
                       controller.startStroke(normalize(d.localPosition)),
                   onPanUpdate: (d) =>

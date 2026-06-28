@@ -393,32 +393,40 @@ class _DrawInputState extends State<_DrawInput> {
   Widget build(BuildContext context) {
     final prompt = widget.session.promptEntryForUid(widget.playerId);
     final theme = Theme.of(context);
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        _StepHeader(
-          session: widget.session,
-          instruction: 'Draw this prompt',
-        ),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(12),
+    // NOT a ListView: a finger-drag on the canvas must DRAW, not scroll the
+    // page. The canvas is a direct child so it owns the drag gestures.
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _StepHeader(
+            session: widget.session,
+            instruction: 'Draw this prompt',
           ),
-          child: Text(
-            prompt?.content ?? '(missing prompt)',
-            style: theme.textTheme.titleMedium,
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              prompt?.content ?? '(missing prompt)',
+              style: theme.textTheme.titleMedium,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        DrawingCanvas(controller: _controller),
-        const SizedBox(height: 16),
-        FilledButton(
-          onPressed: _send,
-          child: const Text('Submit drawing'),
-        ),
-      ],
+          const SizedBox(height: 12),
+          DrawingCanvas(controller: _controller),
+          const SizedBox(height: 12),
+          FilledButton(
+            onPressed: _send,
+            child: const Text('Submit drawing'),
+          ),
+        ],
+      ),
     );
   }
 
